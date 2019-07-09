@@ -8,10 +8,16 @@
 
 * Java 8, par exemple AdoptOpenJDK 8 installé depuis [sdkman](https://sdkman.io).
 
-* Adaptez les variables d'environnement:
+* Adaptez les variables à chaque environnement:
 
 ```
-cp src/main/resources/application.properties.sample src/main/resources/application.properties
+cp src/main/resources/application-dev.properties.sample src/main/resources/application-dev.properties
+```
+
+* Activez les environnements en ajoutant:
+
+```
+-Dspring.profiles.active=test
 ```
 
 ### Dev
@@ -22,17 +28,17 @@ cp src/main/resources/application.properties.sample src/main/resources/applicati
 ### Lancement
 
 ```
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring.profiles.active=test
 ```
 
 ### Tests unitaires
 
 ```
-./mvnw test
+./mvnw test -Dspring.profiles.active=test
 ```
 
 ### Construction
 
 ```
-./mvnw clean package
+./mvnw package -Dspring.profiles.active=test
 ```

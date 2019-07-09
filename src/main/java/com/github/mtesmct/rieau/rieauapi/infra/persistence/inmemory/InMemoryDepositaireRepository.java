@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.rieauapi.infra.repositories.inmemory;
+package com.github.mtesmct.rieau.rieauapi.infra.persistence.inmemory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

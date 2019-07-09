@@ -2,7 +2,7 @@ HELP.md
 target/
 bin/
 .mvn/jvm.config
-src/main/resources/application.properties
+src/main/resources/application-*.properties
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
