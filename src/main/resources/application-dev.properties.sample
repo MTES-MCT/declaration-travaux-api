@@ -18,7 +18,7 @@ keycloak.use-resource-role-mappings = true
 # Persistence
 spring.jpa.open-in-view=false
 spring.datasource.driver-class-name=org.h2.Driver
-spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.username=sa
 spring.datasource.password=sa
 spring.flyway.locations=classpath:db/migration/{vendor}

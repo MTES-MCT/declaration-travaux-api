@@ -33,8 +33,16 @@ cp src/main/resources/application-dev.properties.sample src/main/resources/appli
 
 ### Tests unitaires
 
+* Lancez tous les tests:
+
 ```
 ./mvnw test -Dspring.profiles.active=test
+```
+
+* Lancez un seul test:
+
+```
+./mvnw test -Dspring.profiles.active=test -Dtest=
 ```
 
 ### Construction
