@@ -26,17 +26,12 @@ import com.github.mtesmct.rieau.api.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.IdentiteRepository;
-import com.github.mtesmct.rieau.api.infra.config.WebConfig;
-import com.github.mtesmct.rieau.api.infra.config.DomainBeansConfig;
-import com.github.mtesmct.rieau.api.infra.config.FakeDateConfig;
-import com.github.mtesmct.rieau.api.infra.config.InMemoryPersistenceConfig;
-import com.github.mtesmct.rieau.api.infra.config.WebSecurityConfig;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {InMemoryPersistenceConfig.class,WebSecurityConfig.class,FakeDateConfig.class,DomainBeansConfig.class,WebConfig.class})
+@SpringBootTest
 @AutoConfigureMockMvc
 @WithDepositaireDetails
 public class DepositaireControllerTests {

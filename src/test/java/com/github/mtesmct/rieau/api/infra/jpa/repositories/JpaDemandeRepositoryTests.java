@@ -16,8 +16,6 @@ import static org.hamcrest.core.IsNot.not;
 import com.github.mtesmct.rieau.api.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
-import com.github.mtesmct.rieau.api.infra.config.FakeDateConfig;
-import com.github.mtesmct.rieau.api.infra.config.JpaPersistenceConfig;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDemande;
 
 import org.junit.Before;
@@ -30,7 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {JpaPersistenceConfig.class,FakeDateConfig.class})
 @DataJpaTest
 public class JpaDemandeRepositoryTests {
 

@@ -3,8 +3,6 @@ package com.github.mtesmct.rieau.api.domain.entities;
 import static org.junit.Assert.assertThat;
 
 import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
-import com.github.mtesmct.rieau.api.infra.config.InMemoryPersistenceConfig;
-import com.github.mtesmct.rieau.api.infra.config.WebSecurityConfig;
 import com.github.mtesmct.rieau.api.infra.date.FakeDateRepository;
 import com.github.mtesmct.rieau.api.infra.http.WithDepositaireDetails;
 
@@ -14,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.Is.is;
@@ -25,7 +22,6 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WithDepositaireDetails
-@ContextConfiguration(classes = {InMemoryPersistenceConfig.class,WebSecurityConfig.class})
 public class DepositaireTests {
 	@Autowired
 	private DemandeRepository depositaireRepository;

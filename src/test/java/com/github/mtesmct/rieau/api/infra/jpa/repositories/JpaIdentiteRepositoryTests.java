@@ -10,8 +10,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 import com.github.mtesmct.rieau.api.domain.entities.Identite;
 import com.github.mtesmct.rieau.api.domain.repositories.IdentiteRepository;
-import com.github.mtesmct.rieau.api.infra.config.FakeDateConfig;
-import com.github.mtesmct.rieau.api.infra.config.JpaPersistenceConfig;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaIdentite;
 
 import org.junit.Test;
@@ -19,11 +17,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {JpaPersistenceConfig.class,FakeDateConfig.class})
 @DataJpaTest
 public class JpaIdentiteRepositoryTests {
 
