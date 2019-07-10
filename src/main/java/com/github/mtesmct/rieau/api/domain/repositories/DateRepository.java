@@ -4,4 +4,5 @@ import java.util.Date;
 
 public interface DateRepository {
     public Date now();
+    public String nowText();
 }

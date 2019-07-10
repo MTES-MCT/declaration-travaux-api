@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Repository;
 public class SystemDateRepository implements DateRepository {
 
     private Date date;
+    @Autowired
+    @Qualifier("dateTimeConverter")
+    private DateConverter converter;
 
     @Override
     public Date now() {
@@ -20,6 +25,11 @@ public class SystemDateRepository implements DateRepository {
 
     public SystemDateRepository() {
         this.date = new Date();
+    }
+
+    @Override
+    public String nowText() {
+        return this.converter.format(this.date);
     }
 
 }

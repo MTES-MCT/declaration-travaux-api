@@ -3,6 +3,7 @@ package com.github.mtesmct.rieau.api.domain.entities;
 import static org.junit.Assert.assertThat;
 
 import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
+import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.date.FakeDateRepository;
 import com.github.mtesmct.rieau.api.infra.http.WithDepositaireDetails;
 
@@ -10,9 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -29,12 +32,13 @@ public class DepositaireTests {
     private Depositaire depositaire;
     private FakeDateRepository dateRepository;
 
-	@Value("${date.format}")
-	private String formatDate;
+    @Autowired
+    @Qualifier("dateTimeConverter")
+	private DateConverter converter;
 
     @Before
     public void setUp() throws Exception {
-        this.dateRepository = new FakeDateRepository(this.formatDate,"01/01/2019 00:00:00");
+        this.dateRepository = new FakeDateRepository(this.converter,"01/01/2019 00:00:00");
         this.depositaire = new Depositaire(this.depositaireRepository, dateRepository);
     }
 
@@ -43,13 +47,13 @@ public class DepositaireTests {
     public void depose() {
         Demande demande = new Demande("0", "dp", "instruction", this.dateRepository.now());
         this.depositaire.depose(demande);
-        assertThat(this.depositaire.listeSesDemandes(), not(empty()));
-        assertThat(this.depositaire.listeSesDemandes().size(), is(1));
-        assertThat(this.depositaire.listeSesDemandes().get(0), notNullValue());
-        assertThat(this.depositaire.listeSesDemandes().get(0).getEtat(), is(demande.getEtat()));
-        assertThat(this.depositaire.listeSesDemandes().get(0).getDate().compareTo(this.dateRepository.now()), is(0));
+        assertThat(this.depositaire.listeMesDemandes(), not(empty()));
+        assertThat(this.depositaire.listeMesDemandes().size(), is(1));
+        assertThat(this.depositaire.listeMesDemandes().get(0), notNullValue());
+        assertThat(this.depositaire.listeMesDemandes().get(0).getEtat(), is(demande.getEtat()));
+        assertThat(this.depositaire.listeMesDemandes().get(0).getDate().compareTo(this.dateRepository.now()), is(0));
         assertThat(this.depositaire.trouveMaDemande(demande.getId()).isPresent(), is(true));
-        assertThat(this.depositaire.trouveMaDemande(demande.getId()).get(), equalTo(this.depositaire.listeSesDemandes().get(0)));
+        assertThat(this.depositaire.trouveMaDemande(demande.getId()).get(), equalTo(this.depositaire.listeMesDemandes().get(0)));
     }
 
 }

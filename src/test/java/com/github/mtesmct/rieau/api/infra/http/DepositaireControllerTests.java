@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import com.github.mtesmct.rieau.api.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.IdentiteRepository;
+import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,6 +48,10 @@ public class DepositaireControllerTests {
 
 	@Autowired
 	private Depositaire depositaire;
+	@Autowired
+    @Qualifier("dateTimeConverter")
+	private DateConverter dateConverter;
+
 
 	private Demande demande;
 
@@ -54,7 +60,7 @@ public class DepositaireControllerTests {
 		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
 		this.demande = new Demande("0", "dp", "instruction", this.dateRepository.now());
 		this.depositaire.depose(this.demande);
-		assertThat(this.depositaire.listeSesDemandes(), not(empty()));
+		assertThat(this.depositaire.listeMesDemandes(), not(empty()));
 	}
 
 	@Test
@@ -65,7 +71,7 @@ public class DepositaireControllerTests {
 				.andExpect(jsonPath("$[0].id", equalTo(this.demande.getId())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.demande.getType())))
 				.andExpect(jsonPath("$[0].etat", equalTo(this.demande.getEtat())))
-				.andExpect(jsonPath("$[0].date", equalTo(this.demande.getDate())));
+				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.demande.getDate())))));
 	}
 
 	@Test
@@ -87,7 +93,7 @@ public class DepositaireControllerTests {
 				.andExpect(jsonPath("$.id", equalTo(this.demande.getId())))
 				.andExpect(jsonPath("$.type", equalTo(this.demande.getType())))
 				.andExpect(jsonPath("$.etat", equalTo(this.demande.getEtat())))
-				.andExpect(jsonPath("$.date", equalTo(this.demande.getDate())));
+				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.demande.getDate()))));
 	}
 
 }

@@ -22,7 +22,7 @@ public class Depositaire implements Serializable {
         this.repository.save(demande);
     }
 
-    public List<Demande> listeSesDemandes() {
+    public List<Demande> listeMesDemandes() {
         return this.repository.findAll();
     }
 
