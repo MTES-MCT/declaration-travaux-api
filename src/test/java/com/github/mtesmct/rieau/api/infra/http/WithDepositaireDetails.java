@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.http;
+package com.github.mtesmct.rieau.api.depositaire.infra.http;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

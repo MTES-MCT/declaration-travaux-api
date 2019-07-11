@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.jpa.repositories;
+package com.github.mtesmct.rieau.api.depositaire.infra.jpa.repositories;
 
 import static org.junit.Assert.assertThat;
 
@@ -8,9 +8,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-import com.github.mtesmct.rieau.api.domain.entities.Identite;
-import com.github.mtesmct.rieau.api.domain.repositories.IdentiteRepository;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaIdentite;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Identite;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdentiteRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaIdentite;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

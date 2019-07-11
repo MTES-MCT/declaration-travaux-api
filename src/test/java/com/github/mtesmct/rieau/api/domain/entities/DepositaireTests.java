@@ -1,11 +1,11 @@
-package com.github.mtesmct.rieau.api.domain.entities;
+package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 
 import static org.junit.Assert.assertThat;
 
-import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.date.FakeDateRepository;
-import com.github.mtesmct.rieau.api.infra.http.WithDepositaireDetails;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DemandeRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.FakeDateRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.http.WithDepositaireDetails;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.jpa.repositories;
+package com.github.mtesmct.rieau.api.depositaire.infra.jpa.repositories;
 
 import static org.junit.Assert.assertThat;
 
@@ -13,10 +13,10 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsNot.not;
 
-import com.github.mtesmct.rieau.api.domain.entities.Demande;
-import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
-import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDemande;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DemandeRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaDemande;
 
 import org.junit.Before;
 import org.junit.Test;

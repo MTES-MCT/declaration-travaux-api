@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.http;
+package com.github.mtesmct.rieau.api.depositaire.infra.http;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +23,11 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.github.mtesmct.rieau.api.domain.entities.Demande;
-import com.github.mtesmct.rieau.api.domain.entities.Depositaire;
-import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
-import com.github.mtesmct.rieau.api.domain.repositories.IdentiteRepository;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdentiteRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
