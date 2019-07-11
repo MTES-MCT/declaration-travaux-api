@@ -5,8 +5,6 @@ import java.sql.Date;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaDemande;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component

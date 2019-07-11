@@ -4,9 +4,6 @@ import java.util.Date;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class FakeDateRepository implements DateRepository {
     private Date date;
     private DateConverter converter;

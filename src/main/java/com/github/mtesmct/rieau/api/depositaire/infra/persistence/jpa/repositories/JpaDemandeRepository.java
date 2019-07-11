@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.repositories;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +10,6 @@ import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.adapters.D
 import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaDemande;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -25,11 +23,11 @@ public class JpaDemandeRepository implements DemandeRepository {
     @Override
     public Optional<Demande> findById(String id) {
         Optional<JpaDemande> jpaEntity = this.jpaSpringRepository.findById(id);
-        Optional<Demande> identite = Optional.empty();
+        Optional<Demande> demande = Optional.empty();
         if (jpaEntity.isPresent()) {
-            identite = Optional.ofNullable(this.adapter.fromJpa(jpaEntity.get()));
+            demande = Optional.ofNullable(this.adapter.fromJpa(jpaEntity.get()));
         }
-        return identite;
+        return demande;
     }
 
     @Override

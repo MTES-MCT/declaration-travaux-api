@@ -33,7 +33,11 @@ public class DepositaireController {
 	@GetMapping("/{id}")
 	public Optional<JsonDemande> trouveMaDemande(@PathVariable String id) {
 		Optional<Demande> demande = this.depositaire.trouveMaDemande(id);
-		return Optional.ofNullable(this.adapter.toJson(demande.get()));
+		Optional<JsonDemande> jsonDemande = Optional.empty();
+        if (demande.isPresent()) {
+            jsonDemande = Optional.ofNullable(this.adapter.toJson(demande.get()));
+        }
+        return jsonDemande;
 	}
 
 	@GetMapping

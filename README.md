@@ -41,10 +41,32 @@ env = test, dev ou production
 ./mvnw test -Dspring.profiles.active=test
 ```
 
-* Lancez un seul test:
+* Lancez une seule classe de test:
 
 ```
 ./mvnw test -Dtest=<nomdelaclasse> -Dspring.profiles.active=test
+```
+
+* Lancez une seule méthode de test:
+
+```
+./mvnw test -Dtest=<nomdelaclasse>#<nomdelamethode> -Dspring.profiles.active=test
+```
+
+### Tests d'intégration
+
+Nécessitent une base de données PostgreSQL.
+
+* Lancez tous les tests:
+
+```
+./mvnw test -Dspring.profiles.active=test,integrationtest
+```
+
+### Vérification des vulnérabilités
+
+```
+./mvnw verify -Dspring.profiles.active=test
 ```
 
 ### Construction
@@ -52,5 +74,5 @@ env = test, dev ou production
 Pour la prod:
 
 ```
-./mvnw package
+./mvnw package -Dspring.profiles.active=production
 ```

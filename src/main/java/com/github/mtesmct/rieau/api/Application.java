@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.depositaire;
+package com.github.mtesmct.rieau.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
