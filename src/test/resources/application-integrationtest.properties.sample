@@ -1,0 +1,4 @@
+# Persistence
+spring.datasource.url=jdbc:postgresql://<hostname>:<port>/<dbname>
+spring.datasource.username=
+spring.datasource.password=

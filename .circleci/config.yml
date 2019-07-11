@@ -1,0 +1,134 @@
+version: 2
+executors:
+  jdk8:
+    docker:
+      - image: circleci/openjdk:8u212-jdk-stretch
+    working_directory: ~/rieau-api
+  jdk8integration:
+    docker:
+      - image: circleci/openjdk:8u212-jdk-stretch
+      - image: circleci/postgres:11.3-alpine-ram
+        environment:
+          POSTGRES_USER: rieau
+          POSTGRES_PASS: rieau
+          POSTGRES_DB: rieau
+    working_directory: ~/rieau-api
+
+jobs:
+  install-dependencies:
+    executor: jdk8
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - rieau-api-{{ checksum "pom.xml" }}
+      - run: ./mvnw dependency:go-offline
+      - run: cp src/main/resources/application.properties.sample src/main/resources/application.properties
+      - run: cp src/main/resources/application-integrationtest.properties.sample src/main/resources/application-integrationtest.properties
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: rieau-api-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          root: '~'
+          paths: 
+            - .m2
+            - rieau-api
+  check-dependencies:
+    executor: jdk8
+    steps:
+      - attach_workspace:
+          at: ~/rieau-api
+      - run: ./mvnw verify
+      - store_test_results:
+          path: target/site
+  unit-tests:
+    executor: jdk8
+    steps:
+      - attach_workspace:
+          at: ~/rieau-api
+      - run:
+          command: |
+            ./mvnw test -Dspring.profiles.active=test
+      - store_test_results:
+          path: target/surefire-reports
+  integration-tests:
+    executor: jdk8integration
+    steps:
+      - attach_workspace:
+          at: ~/rieau-api
+      - run:
+          name: Waiting for Postgres to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run:
+          command: |
+            ./mvnw test -Dspring.profiles.active=test
+      - store_test_results:
+          path: target/surefire-reports
+      
+  build:
+    executor: jdk8
+    steps:
+      - attach_workspace:
+          at: ~/rieau-api
+      - run:
+          command: |
+            ./mvnw package      
+      - store_artifacts:
+          path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
+      - persist_to_workspace:
+          root: '~'
+          paths:
+            - target
+
+  build-docker:
+    executor: jdk8    
+    steps:
+      - attach_workspace:
+          at: ~/rieau-api
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Login to DockerHub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Decrypt Secrets
+          command: openssl enc -d -aes-256-ecb -md md5 -in src/main/resources/application-prod.properties.secrets -out src/main/resources/application-prod.properties -k $SECRETS_KEY
+      - run: mvn clean compile jib:build -Dimage=tristanrobert/rieau-api:$CIRCLE_BUILD_NUM
+      - store_artifacts:
+          path: target/classes
+          destination: rieau-api
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - install-dependencies:
+          requires: []
+
+      - check-dependencies:
+          requires:
+            - install-dependencies
+      - unit-tests:
+          requires:
+            - install-dependencies
+      - integration-tests:
+          requires:
+            - install-dependencies
+
+      - build:
+          requires:
+            - check-dependencies
+            - unit-tests
+            - integration-tests
+
+      - build-docker:
+          requires:
+            - build

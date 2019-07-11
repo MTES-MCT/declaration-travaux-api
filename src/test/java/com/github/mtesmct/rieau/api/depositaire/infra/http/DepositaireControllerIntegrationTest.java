@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithDepositaireDetails
-public class DepositaireControllerTests {
+public class DepositaireControllerIntegrationTest {
 
 	@Autowired
 	private MockMvc mvc;

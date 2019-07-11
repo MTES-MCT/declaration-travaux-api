@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class JpaDemandeRepositoryTests {
+public class JpaDemandeRepositoryIntegrationTest {
 
     @Autowired
 	private TestEntityManager entityManager;

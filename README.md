@@ -11,8 +11,10 @@
 * Adaptez les variables à chaque environnement:
 
 ```
-cp src/main/resources/application-dev.properties.sample src/main/resources/application-dev.properties
+cp src/main/resources/application-{env}.properties.sample src/main/resources/application-{env}.properties
 ```
+
+env = test, dev ou production
 
 * Activez les environnements en ajoutant:
 
@@ -28,7 +30,7 @@ cp src/main/resources/application-dev.properties.sample src/main/resources/appli
 ### Lancement
 
 ```
-./mvnw spring-boot:run -Dspring.profiles.active=test
+./mvnw spring-boot:run
 ```
 
 ### Tests unitaires
@@ -42,11 +44,13 @@ cp src/main/resources/application-dev.properties.sample src/main/resources/appli
 * Lancez un seul test:
 
 ```
-./mvnw test -Dspring.profiles.active=test -Dtest=
+./mvnw test -Dtest=<nomdelaclasse> -Dspring.profiles.active=test
 ```
 
 ### Construction
 
+Pour la prod:
+
 ```
-./mvnw package -Dspring.profiles.active=test
+./mvnw package
 ```

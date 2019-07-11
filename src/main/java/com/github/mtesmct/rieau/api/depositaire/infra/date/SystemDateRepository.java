@@ -6,11 +6,9 @@ import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateReposito
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Profile("production")
 public class SystemDateRepository implements DateRepository {
 
     private Date date;
