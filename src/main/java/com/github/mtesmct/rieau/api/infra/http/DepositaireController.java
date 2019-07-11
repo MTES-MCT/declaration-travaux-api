@@ -28,7 +28,7 @@ public class DepositaireController {
 	private DateConverter dateTimeConverter;
 
 	@Autowired
-	private DemandeAdapter adapter;
+	private DemandeWebAdapter adapter;
 
 	@GetMapping("/{id}")
 	public Optional<JsonDemande> trouveMaDemande(@PathVariable String id) {

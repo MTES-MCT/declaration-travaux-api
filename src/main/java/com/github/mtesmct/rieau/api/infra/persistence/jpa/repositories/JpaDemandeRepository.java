@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.domain.repositories.DemandeRepository;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.adapters.DemandePersistenceAdapter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDemande;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,15 @@ public class JpaDemandeRepository implements DemandeRepository {
 
     @Autowired
     private JpaSpringDemandeRepository jpaSpringRepository;
+    @Autowired
+    private DemandePersistenceAdapter adapter;
 
     @Override
     public Optional<Demande> findById(String id) {
         Optional<JpaDemande> jpaEntity = this.jpaSpringRepository.findById(id);
         Optional<Demande> identite = Optional.empty();
         if (jpaEntity.isPresent()) {
-            identite = Optional.ofNullable(
-                    new Demande(jpaEntity.get().getId(), jpaEntity.get().getType(), jpaEntity.get().getEtat(), jpaEntity.get().getDate()));
+            identite = Optional.ofNullable(this.adapter.fromJpa(jpaEntity.get()));
         }
         return identite;
     }
@@ -33,13 +35,13 @@ public class JpaDemandeRepository implements DemandeRepository {
     @Override
     public List<Demande> findAll() {
         List<Demande> demandes = new ArrayList<Demande>();
-        this.jpaSpringRepository.findAll().forEach(jpaEntity -> demandes.add(new Demande(jpaEntity.getId(), jpaEntity.getType(), jpaEntity.getEtat(), jpaEntity.getDate())));
+        this.jpaSpringRepository.findAll().forEach(jpaEntity -> demandes.add(this.adapter.fromJpa(jpaEntity)));
         return demandes;
     }
 
     @Override
     public Demande save(Demande demande) {
-        JpaDemande jpaDemande = JpaDemande.builder().id(demande.getId()).type(demande.getType()).etat(demande.getEtat()).date(new Date(demande.getDate().getTime())).build();
+        JpaDemande jpaDemande = this.adapter.toJpa(demande);
         this.jpaSpringRepository.save(jpaDemande);
         demande.setId(jpaDemande.getId());
         return demande;
