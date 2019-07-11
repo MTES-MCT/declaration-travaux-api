@@ -1,21 +1,3 @@
-#Dates
-date.format=dd/MM/yyyy HH:mm:ss
-fake.date=01/01/2019 00:00:00
-spring.jackson.date-format=${date.format}
-
-#Logging
-logging.level.root = warn
-logging.level.com.github.mtesmct.rieau = debug
-
-# SSO
-keycloak.enabled = false
-keycloak.realm = 
-keycloak.auth-server-url = 
-keycloak.ssl-required = external
-keycloak.resource = 
-keycloak.credentials.secret = 
-keycloak.use-resource-role-mappings = true
-
 # Persistence
 spring.jpa.open-in-view=false
 spring.datasource.driver-class-name=org.h2.Driver
