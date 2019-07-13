@@ -9,6 +9,7 @@ import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.J
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class JpaIdentiteRepository implements IdentiteRepository {
@@ -29,6 +30,7 @@ public class JpaIdentiteRepository implements IdentiteRepository {
     }
 
     @Override
+    @Transactional
     public Identite save(Identite identite) {
         JpaIdentite jpaIdentite = this.adapter.toJpa(identite);
         this.jpaSpringRepository.save(jpaIdentite);

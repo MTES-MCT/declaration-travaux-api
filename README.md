@@ -19,7 +19,7 @@ env = test, dev ou production
 * Activez les environnements en ajoutant:
 
 ```
--Dspring.profiles.active=test
+-Dspring.profiles.active=<env>
 ```
 
 ### Dev
@@ -38,19 +38,19 @@ env = test, dev ou production
 * Lancez tous les tests:
 
 ```
-./mvnw test -Dspring.profiles.active=test
+./mvnw test
 ```
 
 * Lancez une seule classe de test:
 
 ```
-./mvnw test -Dtest=<nomdelaclasse> -Dspring.profiles.active=test
+./mvnw test -Dtest=<nomdelaclasse> 
 ```
 
 * Lancez une seule méthode de test:
 
 ```
-./mvnw test -Dtest=<nomdelaclasse>#<nomdelamethode> -Dspring.profiles.active=test
+./mvnw test -Dtest=<nomdelaclasse>#<nomdelamethode>
 ```
 
 ### Tests d'intégration
@@ -60,13 +60,13 @@ Nécessitent une base de données PostgreSQL.
 * Lancez tous les tests:
 
 ```
-./mvnw test -Dspring.profiles.active=test,integrationtest
+./mvnw test -Dspring.profiles.active=integrationtest
 ```
 
 ### Vérification des vulnérabilités
 
 ```
-./mvnw verify -Dspring.profiles.active=test
+./mvnw verify 
 ```
 
 ### Construction

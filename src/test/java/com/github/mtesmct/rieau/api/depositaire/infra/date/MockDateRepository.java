@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
 
-public class FakeDateRepository implements DateRepository {
+public class MockDateRepository implements DateRepository {
     private Date date;
     private DateConverter converter;
 
@@ -13,7 +13,7 @@ public class FakeDateRepository implements DateRepository {
         return this.date;
     }
 
-    public FakeDateRepository(DateConverter converter, String dateString) {
+    public MockDateRepository(DateConverter converter, String dateString) {
         this.converter = converter;
         this.date = this.converter.parse(dateString);
     }

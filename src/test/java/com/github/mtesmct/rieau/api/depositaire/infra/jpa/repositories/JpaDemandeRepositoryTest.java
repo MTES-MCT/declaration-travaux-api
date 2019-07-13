@@ -16,32 +16,40 @@ import static org.hamcrest.core.IsNot.not;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DemandeRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaDemande;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class JpaDemandeRepositoryIntegrationTest {
+public class JpaDemandeRepositoryTest {
 
     @Autowired
 	private TestEntityManager entityManager;
 
 	@Autowired
-    private DemandeRepository repository;
-	@Autowired
+	private DemandeRepository repository;
+	
+    @Autowired
+    @Qualifier("dateTimeConverter")
+	private DateConverter converter;
+
 	private DateRepository dateRepository;
 	
 	private Demande demande;
 
 	@Before
 	public void setUp(){
+		this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
 		this.demande = new Demande("0", "dp", "instruction", this.dateRepository.now());
 	}
 
@@ -60,7 +68,7 @@ public class JpaDemandeRepositoryIntegrationTest {
     @Test
 	public void findByIdTest() throws Exception {
 		JpaDemande jpaDemande = JpaDemande.builder().id("0").type("dp").etat("instruction").date(new Date(this.dateRepository.now().getTime())).build();
-		this.entityManager.persist(jpaDemande);
+		this.entityManager.persistAndFlush(jpaDemande);
 		Optional<Demande> demande = this.repository.findById(jpaDemande.getId());
 		assertThat(demande.isPresent(), is(true));
 		assertThat(demande.get().getId(), is(equalTo(jpaDemande.getId())));

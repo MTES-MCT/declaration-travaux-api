@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class JpaIdentiteRepositoryIntegrationTest {
+public class JpaIdentiteRepositoryTest {
 
     @Autowired
 	private TestEntityManager entityManager;
@@ -31,20 +31,20 @@ public class JpaIdentiteRepositoryIntegrationTest {
     
     @Test
 	public void saveTest() throws Exception {
-        this.repository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
-        JpaIdentite jpaIdentite = this.entityManager.find(JpaIdentite.class, "jean.martin");
+        this.repository.save(new Identite("test", "Martin", "Jean", "test@monfai.fr"));
+        JpaIdentite jpaIdentite = this.entityManager.find(JpaIdentite.class, "test");
 		assertThat(jpaIdentite, notNullValue());
-		assertThat(jpaIdentite.getId(), is(equalTo("jean.martin")));
-		assertThat(jpaIdentite.getEmail(), is(equalTo("jean.martin@monfai.fr")));
+		assertThat(jpaIdentite.getId(), is(equalTo("test")));
+		assertThat(jpaIdentite.getEmail(), is(equalTo("test@monfai.fr")));
     }
     
     @Test
 	public void findByIdTest() throws Exception {
-		this.entityManager.persist(JpaIdentite.builder().id("jean.martin").nom("Martin").prenom("Jean").email("jean.martin@monfai.fr").build());
-		Optional<Identite> identite = this.repository.findById("jean.martin");
+		this.entityManager.persistAndFlush(JpaIdentite.builder().id("test").nom("Martin").prenom("Jean").email("test@monfai.fr").build());
+		Optional<Identite> identite = this.repository.findById("test");
 		assertThat(identite.isPresent(), is(true));
-		assertThat(identite.get().getId(), is(equalTo("jean.martin")));
-		assertThat(identite.get().getEmail(), is(equalTo("jean.martin@monfai.fr")));
+		assertThat(identite.get().getId(), is(equalTo("test")));
+		assertThat(identite.get().getEmail(), is(equalTo("test@monfai.fr")));
 	}
 
     

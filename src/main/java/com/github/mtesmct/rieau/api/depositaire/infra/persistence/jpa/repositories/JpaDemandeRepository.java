@@ -11,6 +11,7 @@ import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.J
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class JpaDemandeRepository implements DemandeRepository {
@@ -38,6 +39,7 @@ public class JpaDemandeRepository implements DemandeRepository {
     }
 
     @Override
+    @Transactional
     public Demande save(Demande demande) {
         JpaDemande jpaDemande = this.adapter.toJpa(demande);
         this.jpaSpringRepository.save(jpaDemande);

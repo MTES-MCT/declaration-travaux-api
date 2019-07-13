@@ -4,7 +4,7 @@ import static org.junit.Assert.assertThat;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DemandeRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.depositaire.infra.date.FakeDateRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.http.WithDepositaireDetails;
 
 import org.junit.Before;
@@ -26,10 +26,10 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 @WithDepositaireDetails
 public class DepositaireTests {
 	@Autowired
-	private DemandeRepository depositaireRepository;
+	private DemandeRepository demandeRepository;
     
     private Depositaire depositaire;
-    private FakeDateRepository dateRepository;
+    private MockDateRepository dateRepository;
 
     @Autowired
     @Qualifier("dateTimeConverter")
@@ -37,8 +37,8 @@ public class DepositaireTests {
 
     @Before
     public void setUp() throws Exception {
-        this.dateRepository = new FakeDateRepository(this.converter,"01/01/2019 00:00:00");
-        this.depositaire = new Depositaire(this.depositaireRepository, dateRepository);
+        this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
+        this.depositaire = new Depositaire(this.demandeRepository, dateRepository);
     }
 
     @Test
