@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 executors:
   jdk8:
     docker:
@@ -9,9 +9,8 @@ executors:
       - image: circleci/openjdk:8u212-jdk-stretch
       - image: circleci/postgres:10-alpine-ram
         environment:
-          POSTGRES_USER: rieau
-          POSTGRES_PASS: rieau
-          POSTGRES_DB: rieau
+          POSTGRES_PASS: postgres
+          POSTGRES_DB: postgres
     working_directory: ~/rieau-api
 
 jobs:
@@ -67,6 +66,19 @@ jobs:
               sleep 1
             done
             echo Failed waiting for Postgres && exit 1
+      - run:
+          name: Install PgSQL CLI; Init database
+          environment:
+            POSTGRES_USER: postgres
+            POSTGRES_DB: postgres
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client-10
+            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+                CREATE USER rieau;
+                CREATE DATABASE rieau;
+                GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;
+              EOSQL
       - run:
           command: |
             ./mvnw test -Dspring.profiles.active=staging
