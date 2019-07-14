@@ -3,7 +3,7 @@ executors:
   jdk8:
     docker:
       - image: circleci/openjdk:8u212-jdk-stretch
-    working_directory: ~/rieau-api
+    working_directory: '~/rieau-api'
   jdk8integration:
     docker:
       - image: circleci/openjdk:8u212-jdk-stretch
@@ -11,33 +11,31 @@ executors:
         environment:
           POSTGRES_PASS: postgres
           POSTGRES_DB: postgres
-    working_directory: ~/rieau-api
+    working_directory: '~/rieau-api'
 
 jobs:
   install-dependencies:
     executor: jdk8
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - rieau-api-{{ checksum "pom.xml" }}
-      - run: mvn dependency:go-offline
       - run: cp src/main/resources/application.properties.sample src/main/resources/application.properties
       - run: cp src/test/resources/application-staging.properties.sample src/test/resources/application-staging.properties
+      - restore_cache:
+          key: rieau-api-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
       - save_cache:
           paths:
-            - ~/.m2
+            - '~/.m2'
           key: rieau-api-{{ checksum "pom.xml" }}
       - persist_to_workspace:
-          root: '~'
           paths: 
-            - .m2
-            - rieau-api
+            - '~/.m2'
+            - '~/rieau-api'
   check-dependencies:
     executor: jdk8
     steps:
       - attach_workspace:
-          at: ~/rieau-api
+          at: '~/'
       - run: mvn verify
       - store_test_results:
           path: target/site
@@ -45,7 +43,7 @@ jobs:
     executor: jdk8
     steps:
       - attach_workspace:
-          at: ~/rieau-api
+          at: '~/'
       - run:
           command: |
             mvn test
@@ -55,7 +53,7 @@ jobs:
     executor: jdk8integration
     steps:
       - attach_workspace:
-          at: ~/rieau-api
+          at: '~/'
       - run:
           name: Waiting for Postgres to be ready
           command: |
@@ -87,22 +85,21 @@ jobs:
     executor: jdk8
     steps:
       - attach_workspace:
-          at: ~/rieau-api
+          at: '~/'
       - run:
           command: |
             mvn package      
       - store_artifacts:
           path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
       - persist_to_workspace:
-          root: '~'
           paths:
-            - target
+            - '~/rieau-api/target'
 
   build-docker:
     executor: jdk8    
     steps:
       - attach_workspace:
-          at: ~/rieau-api
+          at: '~/'
       - setup_remote_docker:
           docker_layer_caching: true
       - run:

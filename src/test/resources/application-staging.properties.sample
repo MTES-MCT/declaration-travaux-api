@@ -1,8 +1,8 @@
 # Persistence
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=jdbc:postgresql://<hostname>:<port>/<dbname>
-spring.datasource.username=
-spring.datasource.password=
+spring.datasource.url=jdbc:postgresql://localhost:5432/rieau
+spring.datasource.username=rieau
+spring.datasource.password=rieau
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.generate-ddl=false
