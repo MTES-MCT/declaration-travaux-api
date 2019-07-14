@@ -74,11 +74,9 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y postgresql-client-10
-            psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-                CREATE USER rieau;
-                CREATE DATABASE rieau;
-                GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;
-              EOSQL
+            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "CREATE USER rieau;"
+            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "CREATE DATABASE rieau;"
+            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
           command: |
             ./mvnw test -Dspring.profiles.active=staging
