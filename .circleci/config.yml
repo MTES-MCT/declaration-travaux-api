@@ -37,9 +37,9 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
-      - run: mvn verify
+      - run: mvn verify -DskipTests
       - store_test_results:
-          path: target/site
+          path: target
   unit-tests:
     executor: jdk8
     steps:
@@ -71,9 +71,9 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y postgresql-client
-            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "CREATE USER rieau;"
-            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "CREATE DATABASE rieau;"
-            psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
+            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE USER rieau;"
+            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE DATABASE rieau;"
+            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
           command: |
             mvn test -Dspring.profiles.active=staging
@@ -87,7 +87,7 @@ jobs:
           at: '~/'
       - run:
           command: |
-            mvn package      
+            mvn package -DskipTests      
       - store_artifacts:
           path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
       - persist_to_workspace:
@@ -100,18 +100,19 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Login to DockerHub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run:
-          name: Decrypt Secrets
-          command: openssl enc -d -aes-256-ecb -md md5 -in src/main/resources/application-prod.properties.secrets -out src/main/resources/application-prod.properties -k $SECRETS_KEY
-      - run: mvn clean compile jib:build -Dimage=tristanrobert/rieau-api:$CIRCLE_BUILD_NUM
-      - store_artifacts:
-          path: target/classes
-          destination: rieau-api
+      - setup_remote_docker
+      - run: |
+          if [[ -z "$DOCKERHUB_USER" || -z "$DOCKERHUB_PASSWORD" ]]; then
+            echo "Missing DOCKERHUB_USER or DOCKERHUB_PASSWORD environment variables!"
+            exit 1
+          fi
+          docker build -t tristanrobert/rieau-api:$CIRCLE_SHA1 .
+          echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+          docker push tristanrobert/rieau-api:$CIRCLE_SHA1
+          if [[ "$CIRCLE_BRANCH" = "master" ]]; then
+            docker tag tristanrobert/rieau-api:$CIRCLE_SHA1 tristanrobert/rieau-api:latest
+            docker push tristanrobert/rieau-api:latest
+          fi
 
 workflows:
   version: 2
