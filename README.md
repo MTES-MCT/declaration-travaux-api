@@ -14,7 +14,7 @@
 cp src/main/resources/application-{env}.properties.sample src/main/resources/application-{env}.properties
 ```
 
-env = test, dev ou production
+env = test, dev, staging ou production
 
 * Activez les environnements en ajoutant:
 
@@ -55,12 +55,16 @@ env = test, dev ou production
 
 ### Tests d'intégration
 
-Nécessitent une base de données PostgreSQL.
+* Nécessitent une base de données PostgreSQL:
+
+```
+docker-compose -f src/main/docker/stack.yml up --build -d
+```
 
 * Lancez tous les tests:
 
 ```
-./mvnw test -Dspring.profiles.active=integrationtest
+./mvnw test -Dspring.profiles.active=staging
 ```
 
 ### Vérification des vulnérabilités

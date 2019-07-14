@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Identite;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DemandeRepository;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdentiteRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
@@ -56,15 +57,13 @@ public class DepositaireControllerIntegrationTest {
 
 
 	private Demande demande;
-    @Before
-    public void setUp() throws Exception {
-    }
 
 	@Before
 	public void setup() {
 		this.dateRepository = new MockDateRepository(this.dateConverter,"01/01/2019 00:00:00");
         this.depositaire = new Depositaire(this.demandeRepository, dateRepository);
-   		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
+		this.identiteRepository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
+		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
 		this.demande = new Demande("0", "dp", "instruction", this.dateRepository.now());
 		this.depositaire.depose(this.demande);
 		assertThat(this.depositaire.listeMesDemandes(), not(empty()));
