@@ -133,10 +133,23 @@ workflows:
 
       - build:
           requires:
-            - check-dependencies
             - unit-tests
             - integration-tests
 
       - build-docker:
           requires:
             - build
+  weekly-dependency-check:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 0" # every sunday midnight
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - install-dependencies:
+          requires: []
+      - check-dependencies:
+          requires:
+            - install-dependencies
