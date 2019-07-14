@@ -87,13 +87,13 @@ jobs:
           at: '~/'
       - run:
           command: |
-            mvn package -DskipTests      
+            mvn package -DskipTests -Dspring.profiles.active=staging  
       - store_artifacts:
           path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
       - persist_to_workspace:
           root: '~'
           paths:
-            - 'rieau-api/target'
+            - 'rieau-api'
 
   build-docker:
     executor: jdk8    
