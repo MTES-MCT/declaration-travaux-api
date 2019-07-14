@@ -21,7 +21,7 @@ jobs:
       - restore_cache:
           keys:
           - rieau-api-{{ checksum "pom.xml" }}
-      - run: ./mvnw dependency:go-offline
+      - run: mvn dependency:go-offline
       - run: cp src/main/resources/application.properties.sample src/main/resources/application.properties
       - run: cp src/test/resources/application-staging.properties.sample src/test/resources/application-staging.properties
       - save_cache:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/rieau-api
-      - run: ./mvnw verify
+      - run: mvn verify
       - store_test_results:
           path: target/site
   unit-tests:
@@ -48,7 +48,7 @@ jobs:
           at: ~/rieau-api
       - run:
           command: |
-            ./mvnw test
+            mvn test
       - store_test_results:
           path: target/surefire-reports
   integration-tests:
@@ -79,7 +79,7 @@ jobs:
             psql -h localhost -p 5432 -u $POSTGRES_USER -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
           command: |
-            ./mvnw test -Dspring.profiles.active=staging
+            mvn test -Dspring.profiles.active=staging
       - store_test_results:
           path: target/surefire-reports
       
@@ -90,7 +90,7 @@ jobs:
           at: ~/rieau-api
       - run:
           command: |
-            ./mvnw package      
+            mvn package      
       - store_artifacts:
           path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
       - persist_to_workspace:
