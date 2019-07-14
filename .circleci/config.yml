@@ -28,9 +28,10 @@ jobs:
             - '~/.m2'
           key: rieau-api-{{ checksum "pom.xml" }}
       - persist_to_workspace:
+          root: '~'
           paths: 
-            - '~/.m2'
-            - '~/rieau-api'
+            - '.m2'
+            - 'rieau-api'
   check-dependencies:
     executor: jdk8
     steps:
@@ -44,9 +45,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
-      - run:
-          command: |
-            mvn test
+      - run: mvn test
       - store_test_results:
           path: target/surefire-reports
   integration-tests:
@@ -92,8 +91,9 @@ jobs:
       - store_artifacts:
           path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
       - persist_to_workspace:
+          root: '~'
           paths:
-            - '~/rieau-api/target'
+            - 'rieau-api/target'
 
   build-docker:
     executor: jdk8    
