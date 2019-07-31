@@ -99,7 +99,7 @@ jobs:
     executor: jdk8    
     steps:
       - attach_workspace:
-          at: '~/rieau-api'
+          at: '~/'
       - setup_remote_docker
       - run: |
           if [[ -z "$DOCKERHUB_USER" || -z "$DOCKERHUB_PASSWORD" ]]; then
