@@ -12,9 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @TestConfiguration
 public class MockWebSecurityConfig implements WebMvcConfigurer {
 
-    // @Autowired
-    // private IdentiteRepository identiteRepository;
-
     @Bean
     public UserDetailsService userDetailsService() throws Exception {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
