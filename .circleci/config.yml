@@ -19,7 +19,7 @@ jobs:
     steps:
       - checkout
       - run: cp src/main/resources/application.properties.sample src/main/resources/application.properties
-      - run: cp src/test/resources/application-staging.properties.sample src/test/resources/application-staging.properties
+      - run: cp src/main/resources/application-staging.properties.sample src/main/resources/application-staging.properties
       - restore_cache:
           key: rieau-api-{{ checksum "pom.xml" }}
       - run: mvn dependency:go-offline
