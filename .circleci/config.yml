@@ -88,8 +88,9 @@ jobs:
       - run:
           command: |
             mvn package -DskipTests -Dspring.profiles.active=staging  
+            mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
       - store_artifacts:
-          path: target/rieau-api-$CIRCLE_BUILD_NUM.jar
+          path: target/dependency
       - persist_to_workspace:
           root: '~'
           paths:
