@@ -1,5 +1,7 @@
 # RIEAU API
 
+[![CircleCI](https://circleci.com/gh/MTES-MCT/rieau-api/tree/master.svg?style=svg)](https://circleci.com/gh/MTES-MCT/rieau-api/tree/master)
+
 > API backend de RIEAU
 
 ## Développement
