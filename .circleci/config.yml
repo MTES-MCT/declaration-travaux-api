@@ -114,6 +114,14 @@ jobs:
             docker tag tristanrobert/rieau-api:$CIRCLE_SHA1 tristanrobert/rieau-api:latest
             docker push tristanrobert/rieau-api:latest
           fi
+  
+  check-docker:
+    docker:
+      - image: knqyf263/trivy
+    steps:
+      - run:
+          name: Scan the image vulnerabilities
+          command: trivy --exit-code 0 --quiet --auto-refresh --clear-cache tristanrobert/rieau-api:latest
 
 workflows:
   version: 2
@@ -140,6 +148,11 @@ workflows:
       - build-docker:
           requires:
             - build
+
+      - check-docker:
+          requires:
+            - build-docker
+
   weekly-dependency-check:
     triggers:
       - schedule:
@@ -154,3 +167,5 @@ workflows:
       - check-dependencies:
           requires:
             - install-dependencies
+      - check-docker:
+          requires: []
