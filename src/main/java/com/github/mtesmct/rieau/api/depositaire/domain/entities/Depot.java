@@ -3,7 +3,7 @@ package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Demande implements Serializable {
+public class Depot implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
@@ -63,7 +63,7 @@ public class Demande implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Demande other = (Demande) obj;
+        Depot other = (Depot) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -74,10 +74,10 @@ public class Demande implements Serializable {
 
     @Override
     public String toString() {
-        return "Demande [date=" + date + ", etat=" + etat + ", id=" + id + ", type=" + type + "]";
+        return "Dépôt [date=" + date + ", etat=" + etat + ", id=" + id + ", type=" + type + "]";
     }
 
-    public Demande(String id, String type, String etat, Date date) {
+    public Depot(String id, String type, String etat, Date date) {
         this.id = id;
         this.type = type;
         this.etat = etat;

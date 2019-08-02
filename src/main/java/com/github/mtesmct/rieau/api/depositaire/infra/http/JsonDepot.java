@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class JsonDemande {
+public class JsonDepot {
     private String id;
     private String type;
     private String etat;

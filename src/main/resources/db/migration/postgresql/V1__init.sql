@@ -1,4 +1,4 @@
-CREATE TABLE demande (
+CREATE TABLE depot (
     id text NOT NULL,
     type text NOT NULL,
     etat text NOT NULL,

@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
-@Entity(name = "demande")
-@Table(name = "demande")
+@Entity(name = "depot")
+@Table(name = "depot")
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Setter(value = AccessLevel.PACKAGE)
 @Getter
-public class JpaDemande {
+public class JpaDepot {
     @Id
     private String id;
     @NonNull

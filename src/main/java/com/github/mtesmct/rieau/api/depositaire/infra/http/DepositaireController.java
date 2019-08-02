@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.mtesmct.rieau.api.depositaire.domain.entities.Demande;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/demandes")
+@RequestMapping("/depots")
 @Secured("ROLE_DEPOSITAIRE")
 public class DepositaireController {
 
@@ -28,23 +28,23 @@ public class DepositaireController {
 	private DateConverter dateTimeConverter;
 
 	@Autowired
-	private DemandeWebAdapter adapter;
+	private DepotWebAdapter adapter;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDemande> trouveMaDemande(@PathVariable String id) {
-		Optional<Demande> demande = this.depositaire.trouveMaDemande(id);
-		Optional<JsonDemande> jsonDemande = Optional.empty();
-        if (demande.isPresent()) {
-            jsonDemande = Optional.ofNullable(this.adapter.toJson(demande.get()));
+	public Optional<JsonDepot> trouveMaDepot(@PathVariable String id) {
+		Optional<Depot> depot = this.depositaire.trouveMonDepot(id);
+		Optional<JsonDepot> jsonDepot = Optional.empty();
+        if (depot.isPresent()) {
+            jsonDepot = Optional.ofNullable(this.adapter.toJson(depot.get()));
         }
-        return jsonDemande;
+        return jsonDepot;
 	}
 
 	@GetMapping
-	List<JsonDemande> listeMesDemandes() {
-		List<JsonDemande> demandes = new ArrayList<JsonDemande>();
-		this.depositaire.listeMesDemandes().forEach(demande -> demandes.add(this.adapter.toJson(demande)));
-		return demandes;
+	List<JsonDepot> listeMesDepots() {
+		List<JsonDepot> depots = new ArrayList<JsonDepot>();
+		this.depositaire.listeMesDepots().forEach(depot -> depots.add(this.adapter.toJson(depot)));
+		return depots;
 	}
 
 }
