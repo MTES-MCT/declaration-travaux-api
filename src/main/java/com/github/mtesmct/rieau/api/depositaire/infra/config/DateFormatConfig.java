@@ -16,18 +16,18 @@ import org.springframework.context.annotation.Configuration;
 public class DateFormatConfig {
 
     @Bean(name = "dateTimeConverter")
-    public DateConverter dateTimeConverter(@Value("${datetime.format}") String format){
+    public DateConverter dateTimeConverter(@Value("${app.datetime.format}") String format){
         return new DateConverter(format);
     }
 
     @Bean(name = "dateConverter")
-    public DateConverter dateConverter(@Value("${date.format}") String format){
+    public DateConverter dateConverter(@Value("${app.date.format}") String format){
         return new DateConverter(format);
     }
  
     @Bean
     @ConditionalOnProperty(value = "spring.jackson.date-format", matchIfMissing = true, havingValue = "none")
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer(@Value("${datetime.format}") String dateTimeFormat,@Value("${date.format}") String dateFormat) {
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer(@Value("${app.datetime.format}") String dateTimeFormat,@Value("${app.date.format}") String dateFormat) {
         return builder -> {
             builder.simpleDateFormat(dateTimeFormat);
             builder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)));

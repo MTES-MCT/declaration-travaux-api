@@ -1,8 +1,11 @@
 #Dates
-date.format=dd/MM/yyyy
-datetime.format=dd/MM/yyyy HH:mm:ss
-spring.jackson.date-format=${date.format}
+app.date.format=dd/MM/yyyy
+app.datetime.format=dd/MM/yyyy HH:mm:ss
+spring.jackson.date-format=${app.date.format}
 spring.jackson.time-zone=Europe/Paris
+
+#CORS Policy
+app.frontend.domain=http://localhost:3000
 
 #Logging
 logging.level.root = warn
