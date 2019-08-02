@@ -31,7 +31,7 @@ public class DepositaireController {
 	private DepotWebAdapter adapter;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDepot> trouveMaDepot(@PathVariable String id) {
+	public Optional<JsonDepot> trouveMonDepot(@PathVariable String id) {
 		Optional<Depot> depot = this.depositaire.trouveMonDepot(id);
 		Optional<JsonDepot> jsonDepot = Optional.empty();
         if (depot.isPresent()) {
