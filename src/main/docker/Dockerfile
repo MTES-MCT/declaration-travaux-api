@@ -1,4 +1,5 @@
 FROM openjdk:8-jdk-alpine
+RUN apk update && apk upgrade
 VOLUME /tmp
 ARG DEPENDENCY=target/dependency
 ARG MODE=staging
