@@ -82,3 +82,20 @@ Pour la prod:
 ```
 ./mvnw package -Dspring.profiles.active=production
 ```
+
+### Docker
+
+* Build:
+
+```
+mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
+```
+
+* Run:
+
+Il est possible de changer à l'exécution des variables d'environnement (cf. spring boot environment variables):
+
+```
+docker run -p 5000:5000 --name rieau-api -d -t tristanrobert/rieau-api
+```
