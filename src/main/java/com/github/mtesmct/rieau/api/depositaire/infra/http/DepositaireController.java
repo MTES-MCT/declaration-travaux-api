@@ -10,7 +10,6 @@ import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/depots")
-@Secured("ROLE_DEPOSITAIRE")
 public class DepositaireController {
 
 	@Autowired

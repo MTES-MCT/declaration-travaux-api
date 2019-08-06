@@ -32,13 +32,14 @@ import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithDepositaireDetails
-public class DepositaireControllerIntegrationTest {
+public class DepositaireControllerTests {
 
 	@Autowired
 	private MockMvc mvc;
@@ -89,11 +90,11 @@ public class DepositaireControllerIntegrationTest {
 	@Test
 	@WithAnonymousUser
 	public void listeMesDepotsNonAutoriseTest() throws Exception {
-		this.mvc.perform(get("/depots").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
+		this.mvc.perform(get("/depots").accept(MediaType.APPLICATION_JSON)).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sso/login"));
 	}
 
 	@Test
-	public void trouveMaDepotTest() throws Exception {
+	public void trouveMonDepotTest() throws Exception {
 		this.mvc.perform(get("/depots/0").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.depot.getId())))

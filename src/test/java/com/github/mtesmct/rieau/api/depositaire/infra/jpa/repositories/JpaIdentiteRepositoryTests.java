@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-public class JpaIdentiteRepositoryTest {
+public class JpaIdentiteRepositoryTests {
 
     @Autowired
 	private TestEntityManager entityManager;

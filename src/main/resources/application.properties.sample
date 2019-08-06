@@ -24,3 +24,12 @@ spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.show-sql=true
 spring.flyway.enabled=false
 
+#Security
+keycloak.enabled = true
+keycloak.principal-attribute=preferred_username
+keycloak.realm = rieau
+keycloak.auth-server-url = http://localhost:8080/auth
+keycloak.ssl-required = external
+keycloak.resource = rieau-api
+keycloak.credentials.secret = 
+keycloak.use-resource-role-mappings = true
