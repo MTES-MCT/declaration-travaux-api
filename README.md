@@ -87,6 +87,7 @@ Pour la prod:
 
 * Build:
 
+
 ```
 mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
@@ -94,8 +95,10 @@ docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 
 * Run:
 
-Il est possible de changer à l'exécution des variables d'environnement (cf. spring boot environment variables):
-
 ```
 docker run -p 5000:5000 --name rieau-api -d -t tristanrobert/rieau-api
 ```
+
+Il est possible de changer le port http du serveur à l'éxécution en ajoutant `-e SERVER_PORT=8080`. Par défaut, il est égal à `5000`.
+
+Il est possible de changer à l'exécution les variables d'environnement (cf. [rieau-infra](https://github.com/MTES-MCT/rieau-infra)).
