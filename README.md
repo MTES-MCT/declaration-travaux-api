@@ -77,10 +77,8 @@ docker-compose -f src/main/docker/stack.yml up --build -d
 
 ### Construction
 
-Pour la prod:
-
 ```
-./mvnw package -Dspring.profiles.active=production
+./mvnw clean package
 ```
 
 ### Docker
@@ -99,6 +97,6 @@ docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 docker run -p 5000:5000 --name rieau-api -d -t tristanrobert/rieau-api
 ```
 
-Il est possible de changer le port http du serveur à l'éxécution en ajoutant `-e SERVER_PORT=8080`. Par défaut, il est égal à `5000`.
+Il est possible de changer le port http du serveur à l'éxécution en ajoutant `-e SERVER_PORT=5000`. Par défaut, il est égal à `5000`.
 
 Il est possible de changer à l'exécution les variables d'environnement (cf. [rieau-infra](https://github.com/MTES-MCT/rieau-infra)).
