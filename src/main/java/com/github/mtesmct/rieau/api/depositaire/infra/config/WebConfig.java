@@ -17,7 +17,7 @@ public class WebConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins(frontendDomain);
+				registry.addMapping("/**").allowedOrigins(frontendDomain).allowCredentials(true).allowedMethods("*").allowedHeaders("*");
 			}
 		};
 	}
