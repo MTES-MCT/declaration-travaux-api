@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/depots")
+@RequestMapping(DepositaireController.ROOT_URL)
 public class DepositaireController {
+
+	public static final String ROOT_URL = "/depots";
 
 	@Autowired
 	private Depositaire depositaire;

@@ -59,8 +59,11 @@ public class DepositaireControllerTests {
 
 	private Depot depot;
 
+	private String uri;
+
 	@Before
 	public void setup() {
+		this.uri = DepositaireController.ROOT_URL;
 		this.dateRepository = new MockDateRepository(this.dateConverter,"01/01/2019 00:00:00");
         this.depositaire = new Depositaire(this.depotRepository, dateRepository);
 		this.identiteRepository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
@@ -72,7 +75,7 @@ public class DepositaireControllerTests {
 
 	@Test
 	public void listeMesDepotsTest() throws Exception {
-		this.mvc.perform(get("/depots").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.depot.getId())))
@@ -84,18 +87,18 @@ public class DepositaireControllerTests {
 	@Test
 	@WithMockUser
 	public void listeMesDepotsInterditTest() throws Exception {
-		this.mvc.perform(get("/depots").accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithAnonymousUser
 	public void listeMesDepotsNonAutoriseTest() throws Exception {
-		this.mvc.perform(get("/depots").accept(MediaType.APPLICATION_JSON)).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sso/login"));
+		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sso/login"));
 	}
 
 	@Test
 	public void trouveMonDepotTest() throws Exception {
-		this.mvc.perform(get("/depots/0").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mvc.perform(get(this.uri+"/0").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.depot.getId())))
 				.andExpect(jsonPath("$.type", equalTo(this.depot.getType())))

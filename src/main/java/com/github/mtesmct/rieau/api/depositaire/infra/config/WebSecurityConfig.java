@@ -1,5 +1,7 @@
 package com.github.mtesmct.rieau.api.depositaire.infra.config;
 
+import com.github.mtesmct.rieau.api.depositaire.infra.http.DepositaireController;
+
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -42,7 +44,7 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.authorizeRequests()
-            .antMatchers("/depots*")
+            .antMatchers(DepositaireController.ROOT_URL+"*")
             .hasRole("DEPOSITAIRE")
             .anyRequest()
             .permitAll();
