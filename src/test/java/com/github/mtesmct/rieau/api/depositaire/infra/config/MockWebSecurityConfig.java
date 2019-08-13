@@ -15,7 +15,7 @@ public class MockWebSecurityConfig {
     public UserDetailsService userDetailsService() throws Exception {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        manager.createUser(User.withUsername("jean.martin").password(encoder.encode("jean.martin")).roles("DEPOSITAIRE").build());
+        manager.createUser(User.withUsername("jean.martin").password(encoder.encode("jean.martin")).roles("depositaire").build());
         return manager;
     }
 

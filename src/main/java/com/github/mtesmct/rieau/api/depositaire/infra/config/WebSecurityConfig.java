@@ -45,7 +45,7 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         http.authorizeRequests()
             .antMatchers(DepositaireController.ROOT_URL+"*")
-            .hasRole("DEPOSITAIRE")
+            .hasRole("depositaire")
             .anyRequest()
             .permitAll();
     }
