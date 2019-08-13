@@ -1,4 +1,5 @@
 FROM adoptopenjdk/openjdk8:slim
+RUN apt update && apt upgrade -y
 VOLUME /tmp
 ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
