@@ -1,4 +1,6 @@
 #!/bin/bash
 
-keytool -noprompt -importcert -alias rieau -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -file $SERVER_CERT
-java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dserver.port=$SERVER_PORT -Djavax.net.debug=all -cp app:app/lib/* com.github.mtesmct.rieau.api.Application
+if [[ -z "$SERVER_CERT" ]]
+    keytool -noprompt -importcert -alias rieau -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -file $SERVER_CERT
+fi
+java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dserver.port=$SERVER_PORT -cp app:app/lib/* com.github.mtesmct.rieau.api.Application
