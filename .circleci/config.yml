@@ -97,7 +97,7 @@ jobs:
             - 'rieau-api'
 
   build-docker:
-    executor: jdk8    
+    executor: jdk    
     steps:
       - attach_workspace:
           at: '~/'
