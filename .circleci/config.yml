@@ -2,11 +2,11 @@ version: 2.1
 executors:
   jdk:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/openjdk:11.0.4-jdk-stretch
     working_directory: '~/rieau-api'
   jdkintegration:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/openjdk:11.0.4-jdk-stretch
       - image: circleci/postgres:10-alpine-ram
         environment:
           POSTGRES_PASS: postgres
