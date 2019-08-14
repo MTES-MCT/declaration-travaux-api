@@ -8,7 +8,7 @@
 
 ### Prérequis
 
-* Java 8, par exemple AdoptOpenJDK 8 installé depuis [sdkman](https://sdkman.io).
+* Java 11, par exemple AdoptOpenJDK 11 installé depuis [sdkman](https://sdkman.io).
 
 * Adaptez les variables à chaque environnement:
 
@@ -100,3 +100,10 @@ docker run -p 5000:5000 --name rieau-api -d -t tristanrobert/rieau-api
 Il est possible de changer le port http du serveur à l'éxécution en ajoutant `-e SERVER_PORT=5000`. Par défaut, il est égal à `5000`.
 
 Il est possible de changer à l'exécution les variables d'environnement (cf. [rieau-infra](https://github.com/MTES-MCT/rieau-infra)).
+
+* Scan des vulnérabilités:
+
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+-v $HOME/.trivy/caches:/root/.cache/ knqyf263/trivy tristanrobert/rieau-api:latest
+```

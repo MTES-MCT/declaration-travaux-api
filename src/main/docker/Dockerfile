@@ -1,5 +1,5 @@
-FROM adoptopenjdk/openjdk8:slim
-RUN apt update && apt upgrade -y
+FROM adoptopenjdk/openjdk11:alpine-slim
+RUN apk update && apk upgrade && apk add --no-cache bash
 VOLUME /tmp
 ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
