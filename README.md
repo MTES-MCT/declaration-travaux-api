@@ -12,7 +12,7 @@
 
 * Adaptez les variables à chaque environnement:
 
-```
+```shell
 cp src/main/resources/application-{env}.properties.sample src/main/resources/application-{env}.properties
 ```
 
@@ -20,7 +20,7 @@ env = test, dev, staging ou production
 
 * Activez les environnements en ajoutant:
 
-```
+```shell
 -Dspring.profiles.active=<env>
 ```
 
@@ -31,7 +31,7 @@ env = test, dev, staging ou production
 
 ### Lancement
 
-```
+```shell
 ./mvnw spring-boot:run
 ```
 
@@ -39,19 +39,19 @@ env = test, dev, staging ou production
 
 * Lancez tous les tests:
 
-```
+```shell
 ./mvnw test
 ```
 
 * Lancez une seule classe de test:
 
-```
+```shell
 ./mvnw test -Dtest=<nomdelaclasse> 
 ```
 
 * Lancez une seule méthode de test:
 
-```
+```shell
 ./mvnw test -Dtest=<nomdelaclasse>#<nomdelamethode>
 ```
 
@@ -59,25 +59,25 @@ env = test, dev, staging ou production
 
 * Nécessitent une base de données PostgreSQL:
 
-```
+```shell
 docker-compose -f src/main/docker/stack.yml up --build -d
 ```
 
 * Lancez tous les tests:
 
-```
+```shell
 ./mvnw test -Dspring.profiles.active=staging
 ```
 
 ### Vérification des vulnérabilités
 
-```
-./mvnw verify 
+```shell
+./mvnw verify
 ```
 
 ### Construction
 
-```
+```shell
 ./mvnw clean package
 ```
 
@@ -85,15 +85,14 @@ docker-compose -f src/main/docker/stack.yml up --build -d
 
 * Build:
 
-
-```
+```shell
 mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 ```
 
 * Run:
 
-```
+```shell
 docker run -p 5000:5000 --name rieau-api -d -t tristanrobert/rieau-api
 ```
 
@@ -103,7 +102,7 @@ Il est possible de changer à l'exécution les variables d'environnement (cf. [r
 
 * Scan des vulnérabilités:
 
-```
+```shell
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 -v $HOME/.trivy/caches:/root/.cache/ knqyf263/trivy tristanrobert/rieau-api:latest
 ```
