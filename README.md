@@ -46,7 +46,7 @@ env = test, dev, staging ou production
 * Lancez une seule classe de test:
 
 ```shell
-./mvnw test -Dtest=<nomdelaclasse> 
+./mvnw test -Dtest=<nomdelaclasse>
 ```
 
 * Lancez une seule méthode de test:
@@ -81,6 +81,26 @@ docker-compose -f src/main/docker/stack.yml up --build -d
 ./mvnw clean package
 ```
 
+### Gestion des versions
+
+Avec le plugin [maven-release](https://maven.apache.org/guides/mini/guide-releasing.html), par exemples:
+
+Tag git et pom puis update de la dev version dans pom:
+
+```shell
+mvn --batch-mode -Dtag=v1.0.0 release:prepare \
+    -DreleaseVersion=1.0.0 \
+    -DdevelopmentVersion=1.1.0-SNAPSHOT
+```
+
+Ajout de `-DdryRun=true` pour tester seulement, puis `mvn release:clean`.
+
+Update seulement de la dev version dans pom:
+
+```shell
+mvn --batch-mode release:update-versions -DdevelopmentVersion=1.1.0-SNAPSHOT
+```
+
 ### Docker
 
 * Build:
@@ -105,4 +125,13 @@ Il est possible de changer à l'exécution les variables d'environnement (cf. [r
 ```shell
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 -v $HOME/.trivy/caches:/root/.cache/ knqyf263/trivy tristanrobert/rieau-api:latest
+```
+
+* Publier:
+
+Tagger une version semver et pousser la sur le registry:
+
+```shell
+docker tag tristanrobert/rieau-api:[digestid] tristanrobert/rieau-api:[semver]
+docker push tristanrobert/rieau-api:[semver]
 ```

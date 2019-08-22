@@ -7,13 +7,37 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.1.7.RELEASE</version>
 		<relativePath />
-		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.github.mtesmct.rieau</groupId>
 	<artifactId>rieau-api</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<name>rieau</name>
 	<description>API Backend de RIEAU</description>
+	<url>https://rieau.cohesion-territoires.gouv.fr</url>
+	<organization>
+		<name>Ministère de la cohésion des territoires</name>
+		<url>http://cohesion-territoires.gouv.fr</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>tristanrobert</id>
+			<name>Tristan Robert</name>
+			<email>tristan.robert@developpement-durable.gouv.fr</email>
+			<url>https://github.com/tristanrobert</url>
+			<organization>MTES-MCT</organization>
+			<organizationUrl>http://cohesion-territoires.gouv.fr</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Paris</timezone>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:https://github.com/MTES-MCT/rieau-api</connection>
+		<developerConnection>scm:git:https://github.com/MTES-MCT/rieau-api</developerConnection>
+		<url>https://github.com/MTES-MCT/rieau-api</url>
+	</scm>
 
 	<properties>
 		<java.version>11</java.version>
@@ -129,6 +153,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
