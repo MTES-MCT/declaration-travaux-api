@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithUserDetails;
 
 @Retention(RetentionPolicy.RUNTIME)
-@WithUserDetails(value = "jean.martin", userDetailsServiceBeanName="userDetailsService")
-public @interface WithDepositaireDetails {
+@WithUserDetails(value = "jacques.dupont", userDetailsServiceBeanName="userDetailsService")
+public @interface WithInstructeurNonBetaDetails {
 }

@@ -12,3 +12,4 @@ CREATE TABLE identite (
     email text NOT NULL,
     PRIMARY KEY ("id")
 );
+CREATE SEQUENCE hibernate_sequence;

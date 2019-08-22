@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 
@@ -12,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(DepositaireController.ROOT_URL)
@@ -45,6 +49,12 @@ public class DepositaireController {
 		List<JsonDepot> depots = new ArrayList<JsonDepot>();
 		this.depositaire.listeMesDepots().forEach(depot -> depots.add(this.adapter.toJson(depot)));
 		return depots;
+	}
+
+	@PostMapping
+	public void ajouteDepot(@RequestParam("file") MultipartFile file) {
+		// TODO extraction des données depuis le file
+		this.depositaire.depose(Type.dp);
 	}
 
 }

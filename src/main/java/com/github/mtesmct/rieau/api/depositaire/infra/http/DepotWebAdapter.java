@@ -13,6 +13,6 @@ public class DepotWebAdapter {
     @Qualifier("dateTimeConverter")
     private DateConverter dateTimeConverter;
     public JsonDepot toJson(Depot depot){
-        return JsonDepot.builder().id(depot.getId()).type(depot.getType()).etat(depot.getEtat()).date(this.dateTimeConverter.format(depot.getDate())).build();
+        return JsonDepot.builder().id(depot.getId()).type(depot.getType().toString()).etat(depot.getEtat().toString()).date(this.dateTimeConverter.format(depot.getDate())).build();
     }
 }

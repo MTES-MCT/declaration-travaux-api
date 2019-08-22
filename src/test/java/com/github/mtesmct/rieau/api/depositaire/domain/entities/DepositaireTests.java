@@ -2,10 +2,14 @@ package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 
 import static org.junit.Assert.assertThat;
 
+import java.util.Optional;
+
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DepotRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdDepotRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
-import com.github.mtesmct.rieau.api.depositaire.infra.http.WithDepositaireDetails;
+import com.github.mtesmct.rieau.api.depositaire.infra.http.WithDepositaireAndBetaDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +27,12 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@WithDepositaireDetails
+@WithDepositaireAndBetaDetails
 public class DepositaireTests {
 	@Autowired
 	private DepotRepository depotRepository;
+	@Autowired
+	private IdDepotRepository idDepotRepository;
     
     private Depositaire depositaire;
     private MockDateRepository dateRepository;
@@ -38,14 +44,15 @@ public class DepositaireTests {
     @Before
     public void setUp() throws Exception {
         this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
-        this.depositaire = new Depositaire(this.depotRepository, dateRepository);
+        this.depositaire = new Depositaire(this.depotRepository, dateRepository, idDepotRepository);
     }
 
     @Test
-    @WithDepositaireDetails
+    @WithDepositaireAndBetaDetails
     public void depose() {
-        Depot depot = new Depot("0", "dp", "instruction", this.dateRepository.now());
-        this.depositaire.depose(depot);
+        Optional<Depot> optionalDepot = this.depositaire.depose(Type.dp);
+        assertThat(optionalDepot.isPresent(), is(true));
+        Depot depot = optionalDepot.get();
         assertThat(this.depositaire.listeMesDepots(), not(empty()));
         assertThat(this.depositaire.listeMesDepots().size(), is(1));
         assertThat(this.depositaire.listeMesDepots().get(0), notNullValue());

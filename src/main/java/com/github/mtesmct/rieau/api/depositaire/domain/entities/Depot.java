@@ -6,14 +6,17 @@ import java.util.Date;
 public class Depot implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public enum Etat { instruction, incomplet, consultations, complet, clos } 
+    public enum Type { dp, pcmi } 
     
     private String id;
 
-    private String type;
+    private Type type;
 
     private Date date;
 
-    private String etat;
+    private Etat etat;
 
     public String getId() {
         return id;
@@ -23,11 +26,11 @@ public class Depot implements Serializable {
         this.id = id;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
@@ -39,11 +42,11 @@ public class Depot implements Serializable {
         this.date = date;
     }
 
-    public String getEtat() {
+    public Etat getEtat() {
         return etat;
     }
 
-    public void setEtat(String etat) {
+    public void setEtat(Etat etat) {
         this.etat = etat;
     }
 
@@ -74,10 +77,17 @@ public class Depot implements Serializable {
 
     @Override
     public String toString() {
-        return "Dépôt [date=" + date + ", etat=" + etat + ", id=" + id + ", type=" + type + "]";
+        return "Dépôt [date=" + date + ", etat=" + etat.toString() + ", id=" + id + ", type=" + type.toString() + "]";
     }
 
-    public Depot(String id, String type, String etat, Date date) {
+    public Depot(String id, Type type, Date date) {
+        this.id = id;
+        this.type = type;
+        this.etat = Etat.instruction;
+        this.date = date;
+    }
+
+    public Depot(String id, Type type, Etat etat, Date date) {
         this.id = id;
         this.type = type;
         this.etat = etat;

@@ -23,7 +23,7 @@ public class JpaDepotRepository implements DepotRepository {
 
     @Override
     public Optional<Depot> findById(String id) {
-        Optional<JpaDepot> jpaEntity = this.jpaSpringRepository.findById(id);
+        Optional<JpaDepot> jpaEntity = this.jpaSpringRepository.findBySimpleNaturalId(id);
         Optional<Depot> depot = Optional.empty();
         if (jpaEntity.isPresent()) {
             depot = Optional.ofNullable(this.adapter.fromJpa(jpaEntity.get()));
@@ -43,7 +43,6 @@ public class JpaDepotRepository implements DepotRepository {
     public Depot save(Depot depot) {
         JpaDepot jpaDepot = this.adapter.toJpa(depot);
         this.jpaSpringRepository.save(jpaDepot);
-        depot.setId(jpaDepot.getId());
         return depot;
     }
     
