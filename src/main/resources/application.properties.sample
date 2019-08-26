@@ -4,6 +4,15 @@ app.datetime.format=dd/MM/yyyy HH:mm:ss
 spring.jackson.date-format=${app.date.format}
 spring.jackson.time-zone=Europe/Paris
 
+# File upload
+app.file.upload.dir=target/upload
+app.file.zip.dest.dir=target/zip
+app.file.buffer.size=1024
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.file-size-threshold=2KB
+spring.servlet.multipart.max-file-size=128KB
+spring.servlet.multipart.max-request-size=128KB
+
 #Logging
 spring.banner.location=classpath:banner.txt
 logging.level.root = warn

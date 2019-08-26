@@ -17,7 +17,7 @@ import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Etat;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DateRepository;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DepotRepository;
-import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdDepotRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.services.NoNationalService;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities.JpaDepot;
@@ -45,7 +45,7 @@ public class JpaDepotRepositoryTests {
 	@Autowired
 	private DepotRepository repository;
 	@Autowired
-	private IdDepotRepository idDepotRepository;
+	private NoNationalService noNationalService;
 	
     @Autowired
     @Qualifier("dateTimeConverter")
@@ -58,7 +58,7 @@ public class JpaDepotRepositoryTests {
 	@Before
 	public void setUp(){
 		this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
-		this.depot = new Depot(this.idDepotRepository.getNew(), Type.dp, this.dateRepository.now());
+		this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now());
 	}
 
     
@@ -70,7 +70,7 @@ public class JpaDepotRepositoryTests {
 		.loadOptional(this.depot.getId());
 		assertThat(optionalJpaDepot.isPresent(), is(true));
 		JpaDepot jpaDepot = optionalJpaDepot.get();
-		assertThat(jpaDepot.getIdDepot(), is(equalTo(this.depot.getId())));
+		assertThat(jpaDepot.getNoNational(), is(equalTo(this.depot.getId())));
 		assertThat(jpaDepot.getType(), is(equalTo(this.depot.getType())));
 		assertThat(jpaDepot.getEtat(), is(equalTo(this.depot.getEtat())));
 		assertThat(jpaDepot.getDate(), is(equalTo(this.depot.getDate())));
@@ -78,11 +78,11 @@ public class JpaDepotRepositoryTests {
     
     @Test
 	public void findByIdTest() throws Exception {
-		JpaDepot jpaDepot = JpaDepot.builder().idDepot(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
+		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
 		this.entityManager.persistAndFlush(jpaDepot);
-		Optional<Depot> depot = this.repository.findById(jpaDepot.getIdDepot());
+		Optional<Depot> depot = this.repository.findById(jpaDepot.getNoNational());
 		assertThat(depot.isPresent(), is(true));
-		assertThat(depot.get().getId(), is(equalTo(jpaDepot.getIdDepot())));
+		assertThat(depot.get().getId(), is(equalTo(jpaDepot.getNoNational())));
 		assertThat(depot.get().getType(), is(equalTo(jpaDepot.getType())));
 		assertThat(depot.get().getEtat(), is(equalTo(jpaDepot.getEtat())));
 		assertThat(depot.get().getDate(), is(equalTo(jpaDepot.getDate())));
@@ -91,12 +91,12 @@ public class JpaDepotRepositoryTests {
     
     @Test
 	public void findAllTest() throws Exception {
-		JpaDepot jpaDepot = JpaDepot.builder().idDepot(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
+		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
 		this.entityManager.persist(jpaDepot);
 		List<Depot> depots = this.repository.findAll();
 		assertThat(depots, not(empty()));
 		assertThat(depots, hasSize(1));
-		assertThat(depots.get(0).getId(), is(equalTo(jpaDepot.getIdDepot())));
+		assertThat(depots.get(0).getId(), is(equalTo(jpaDepot.getNoNational())));
 		assertThat(depots.get(0).getType(), is(equalTo(jpaDepot.getType())));
 		assertThat(depots.get(0).getEtat(), is(equalTo(jpaDepot.getEtat())));
 		assertThat(depots.get(0).getDate(), is(equalTo(jpaDepot.getDate())));

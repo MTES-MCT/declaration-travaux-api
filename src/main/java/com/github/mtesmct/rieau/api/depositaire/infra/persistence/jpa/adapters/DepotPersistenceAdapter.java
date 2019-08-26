@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DepotPersistenceAdapter {
     public JpaDepot toJpa(Depot depot){
-        return JpaDepot.builder().idDepot(depot.getId()).type(depot.getType()).etat(depot.getEtat()).date(new Date(depot.getDate().getTime())).build();
+        return JpaDepot.builder().noNational(depot.getId()).type(depot.getType()).etat(depot.getEtat()).date(new Date(depot.getDate().getTime())).build();
     }
     public Depot fromJpa(JpaDepot jpaDepot){
-        return new Depot(jpaDepot.getIdDepot(), jpaDepot.getType(), jpaDepot.getEtat(), new java.util.Date(jpaDepot.getDate().getTime()));
+        return new Depot(jpaDepot.getNoNational(), jpaDepot.getType(), jpaDepot.getEtat(), new java.util.Date(jpaDepot.getDate().getTime()));
     }
 }

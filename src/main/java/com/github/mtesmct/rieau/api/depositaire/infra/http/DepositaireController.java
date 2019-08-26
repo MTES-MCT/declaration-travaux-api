@@ -1,13 +1,16 @@
 package com.github.mtesmct.rieau.api.depositaire.infra.http;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
-import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
+import com.github.mtesmct.rieau.api.depositaire.infra.adau.ADAUFileDossierService;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.depositaire.infra.file.upload.FileUploadService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,6 +36,12 @@ public class DepositaireController {
 
 	@Autowired
 	private DepotWebAdapter adapter;
+	
+	@Autowired
+	private ADAUFileDossierService dossierService;
+	
+	@Autowired
+	private FileUploadService fileUploadService;
 
 	@GetMapping("/{id}")
 	public Optional<JsonDepot> trouveMonDepot(@PathVariable String id) {
@@ -52,10 +61,9 @@ public class DepositaireController {
 	}
 
 	@PostMapping
-	public void ajouteDepot(@RequestParam("file") MultipartFile file) {
-		// TODO extraction des données depuis le file
-		Optional<Depot> depot = this.depositaire.litDepot(file);
-		this.depositaire.ajouterDepot(depot.getType());
+	public void ajouteDepot(@RequestParam("file") MultipartFile file) throws IOException {
+		File uploadedFile = this.fileUploadService.store(file.getOriginalFilename(), file.getInputStream());
+		this.dossierService.importerDepot(uploadedFile);
 	}
 
 }

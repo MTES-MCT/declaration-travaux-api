@@ -3,11 +3,12 @@ package com.github.mtesmct.rieau.api.depositaire.infra.http;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -18,25 +19,26 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
+import java.io.File;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Identite;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DepotRepository;
-import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdDepotRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.services.NoNationalService;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdentiteRepository;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
+import com.github.mtesmct.rieau.api.depositaire.infra.file.upload.FileUploadService;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -57,8 +59,6 @@ public class DepositaireControllerTests {
 	private IdentiteRepository identiteRepository;
 	@Autowired
 	private DepotRepository depotRepository;
-	@Autowired
-	private IdDepotRepository idDepotRepository;
 	
 	private MockDateRepository dateRepository;
 
@@ -66,6 +66,10 @@ public class DepositaireControllerTests {
 	@Autowired
     @Qualifier("dateTimeConverter")
 	private DateConverter dateConverter;
+    @Autowired
+    private NoNationalService noNationalService;
+    @MockBean
+    private FileUploadService mockFileUploadService;
 
 
 	private Depot depot;
@@ -76,13 +80,11 @@ public class DepositaireControllerTests {
 	public void setup() {
 		this.uri = DepositaireController.ROOT_URL;
 		this.dateRepository = new MockDateRepository(this.dateConverter,"01/01/2019 00:00:00");
-        this.depositaire = new Depositaire(this.depotRepository, this.dateRepository, this.idDepotRepository);
+        this.depositaire = new Depositaire(this.depotRepository);
 		this.identiteRepository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
 		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
-		Optional<Depot> optionalDepot = this.depositaire.ajouterDepot(Type.dp);
-        assertThat(optionalDepot.isPresent(), is(true));
-        this.depot = optionalDepot.get();
-		assertThat(this.depositaire.listeMesDepots(), not(empty()));
+        this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now());
+        this.depotRepository.save(this.depot);
 	}
 
 	@Test
@@ -122,6 +124,7 @@ public class DepositaireControllerTests {
 	public void ajouteDepotAllowedTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.zip",
 		"application/zip", "Spring Framework".getBytes());
+		Mockito.when(this.mockFileUploadService.store(anyString(), any())).thenReturn(new File("src/test/fixtures/RitaGS.2019-04-03T16_26_40.674661355.A-9-X3UGO4V7-DAUA-2.ADER.ftp.zip"));
 		this.mvc.perform(multipart(this.uri).file(multipartFile).with(csrf().asHeader())).andExpect(status().isOk());
 		assertThat(this.depositaire.listeMesDepots().size(), equalTo(2));
 	}

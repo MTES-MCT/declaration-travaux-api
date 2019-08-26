@@ -42,7 +42,7 @@ public class JpaDepot {
     private Long id;
     @NaturalId
     @Column(nullable = false, unique = true)
-    private String idDepot;
+    private String noNational;
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(length = 8)
@@ -60,11 +60,11 @@ public class JpaDepot {
         if (o == null || getClass() != o.getClass())
             return false;
         JpaDepot jpaDepot = (JpaDepot) o;
-        return Objects.equals(idDepot, jpaDepot.idDepot);
+        return Objects.equals(noNational, jpaDepot.noNational);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idDepot);
+        return Objects.hash(noNational);
     }
 }

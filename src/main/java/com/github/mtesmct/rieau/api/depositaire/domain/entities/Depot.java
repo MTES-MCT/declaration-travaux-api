@@ -2,6 +2,7 @@ package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Depot implements Serializable {
 
@@ -17,6 +18,8 @@ public class Depot implements Serializable {
     private Date date;
 
     private Etat etat;
+
+    private List<PieceJointe> piecesJointes;
 
     public String getId() {
         return id;
@@ -92,6 +95,14 @@ public class Depot implements Serializable {
         this.type = type;
         this.etat = etat;
         this.date = date;
+    }
+
+    public List<PieceJointe> getPiecesJointes() {
+        return piecesJointes;
+    }
+
+    public void setPiecesJointes(List<PieceJointe> piecesJointes) {
+        this.piecesJointes = piecesJointes;
     }
     
 }
