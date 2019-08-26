@@ -1,6 +1,7 @@
 #Dates
 app.date.format=dd/MM/yyyy
 app.datetime.format=dd/MM/yyyy HH:mm:ss
+app.adau.datetime.format=yyyy-MM-dd'T'HH:mm:ss.SSS+02:00
 spring.jackson.date-format=${app.date.format}
 spring.jackson.time-zone=Europe/Paris
 

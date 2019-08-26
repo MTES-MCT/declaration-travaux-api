@@ -18,10 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import lombok.extern.java.Log;
-
 @Service
-@Log
 public class XPathXmlService implements XmlService {
 
     private NodeList compile(String messageFileName, String expression) throws XmlUnmarshallException {
@@ -57,19 +54,22 @@ public class XPathXmlService implements XmlService {
 
     private String toString(String messageFileName, String expression) throws XmlUnmarshallException {
         NodeList nodeList = this.compile(messageFileName, expression);
-        log.info("nodelist=" + nodeList.getLength());
-        if (nodeList == null || nodeList.getLength() != 1)
+        if (nodeList == null || nodeList.getLength() < 1)
             throw new XmlUnmarshallException(messageFileName + " impossible de trouver le code: " + expression);
-        return nodeList.item(0).toString();
+        return nodeList.item(0).getTextContent();
     }
 
     @Override
     public ADAUMessage unmarshall(String messageFileName) throws XmlUnmarshallException {
         ADAUMessage message = new ADAUMessage();
-        String code = this.toString(messageFileName, "//*/Document/Code");
+        String code = this.toString(messageFileName, "//*/Document/Code/text()");
         message.setCode(code);
-        String id = this.toString(messageFileName, "//*/Teledemarche/NumeroTeledemarche");
+        String cerfaFileName = this.toString(messageFileName, "//*/Document/FichierFormulaire/FichierDonnees/text()");
+        message.setCerfaFileName(cerfaFileName);
+        String id = this.toString(messageFileName, "//*/Teledemarche/NumeroTeledemarche/text()");
         message.setId(id);
+        String date = this.toString(messageFileName, "//*/Teledemarche/Date/text()");
+        message.setDate(date);
         return message;
     }
 

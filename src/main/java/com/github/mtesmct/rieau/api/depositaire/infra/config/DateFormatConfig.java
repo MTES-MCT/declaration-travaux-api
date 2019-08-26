@@ -15,6 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DateFormatConfig {
 
+    @Bean(name = "adauDateTimeConverter")
+    public DateConverter adauDateTimeConverter(@Value("${app.adau.datetime.format}") String format){
+        return new DateConverter(format);
+    }
+
     @Bean(name = "dateTimeConverter")
     public DateConverter dateTimeConverter(@Value("${app.datetime.format}") String format){
         return new DateConverter(format);

@@ -6,4 +6,6 @@ import lombok.Data;
 public class ADAUMessage{
     private String code;
     private String id;
+    private String cerfaFileName;
+    private String date;
 }

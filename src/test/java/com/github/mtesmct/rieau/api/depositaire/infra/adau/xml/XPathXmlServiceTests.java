@@ -28,5 +28,7 @@ public class XPathXmlServiceTests {
         assertThat(message, notNullValue());
         assertThat(message.getCode(), is("cerfa_13703_DPMI"));
         assertThat(message.getId(), is("A-9-X3UGO4V7"));
+        assertThat(message.getCerfaFileName(), is("A-9-X3UGO4V7-DAUA-doc-cerfa_13703_DPMI-1-2.pdf"));
+        assertThat(message.getDate(), is("2019-04-03T16:26:20.790+02:00"));
     }
 }
