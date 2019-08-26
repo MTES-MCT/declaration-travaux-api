@@ -79,7 +79,7 @@ public class DepositaireControllerTests {
         this.depositaire = new Depositaire(this.depotRepository, this.dateRepository, this.idDepotRepository);
 		this.identiteRepository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
 		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
-		Optional<Depot> optionalDepot = this.depositaire.depose(Type.dp);
+		Optional<Depot> optionalDepot = this.depositaire.ajouterDepot(Type.dp);
         assertThat(optionalDepot.isPresent(), is(true));
         this.depot = optionalDepot.get();
 		assertThat(this.depositaire.listeMesDepots(), not(empty()));

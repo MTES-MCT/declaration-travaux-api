@@ -12,6 +12,7 @@ import com.github.mtesmct.rieau.api.depositaire.domain.repositories.IdDepotRepos
 public class Depositaire implements Serializable {
     private static final long serialVersionUID = 1L;
     private DepotRepository repository;
+    private DemandeRepository demandeRepository;
     private DateRepository dateRepository;
     private IdDepotRepository idDepotRepository;
 
@@ -21,8 +22,8 @@ public class Depositaire implements Serializable {
         this.idDepotRepository = idDepotRepository;
     }
 
-    public Optional<Depot> depose(Type type) {
-        Depot depot = new Depot(this.idDepotRepository.getNew(), type, this.dateRepository.now());
+    public Optional<Depot> ajouterDepot() {
+        Depot depot = this.demandeRepository.lireDemande();
         return Optional.ofNullable(this.repository.save(depot));
     }
 

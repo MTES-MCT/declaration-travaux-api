@@ -50,7 +50,7 @@ public class DepositaireTests {
     @Test
     @WithDepositaireAndBetaDetails
     public void depose() {
-        Optional<Depot> optionalDepot = this.depositaire.depose(Type.dp);
+        Optional<Depot> optionalDepot = this.depositaire.ajouterDepot(Type.dp);
         assertThat(optionalDepot.isPresent(), is(true));
         Depot depot = optionalDepot.get();
         assertThat(this.depositaire.listeMesDepots(), not(empty()));

@@ -54,7 +54,8 @@ public class DepositaireController {
 	@PostMapping
 	public void ajouteDepot(@RequestParam("file") MultipartFile file) {
 		// TODO extraction des données depuis le file
-		this.depositaire.depose(Type.dp);
+		Optional<Depot> depot = this.depositaire.litDepot(file);
+		this.depositaire.ajouterDepot(depot.getType());
 	}
 
 }
