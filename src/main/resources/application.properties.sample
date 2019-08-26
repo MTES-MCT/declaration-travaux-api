@@ -5,6 +5,7 @@ spring.jackson.date-format=${app.date.format}
 spring.jackson.time-zone=Europe/Paris
 
 #Logging
+spring.banner.location=classpath:banner.txt
 logging.level.root = warn
 logging.level.com.github.mtesmct.rieau = debug
 # logging.level.org.hibernate.type=trace
