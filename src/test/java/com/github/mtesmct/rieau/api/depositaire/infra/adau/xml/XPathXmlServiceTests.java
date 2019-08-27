@@ -22,8 +22,6 @@ public class XPathXmlServiceTests {
 
     @Test
     public void unmarshallMessageTest() throws XmlUnmarshallException {
-        assertThat(this, notNullValue());
-        assertThat(this.xmlService, notNullValue());
         ADAUMessage message = this.xmlService.unmarshall("src/test/fixtures/message.xml");
         assertThat(message, notNullValue());
         assertThat(message.getCode(), is("cerfa_13703_DPMI"));

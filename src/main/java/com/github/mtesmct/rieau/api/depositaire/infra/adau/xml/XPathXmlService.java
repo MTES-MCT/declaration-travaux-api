@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 @Service
 public class XPathXmlService implements XmlService {
 
-    private NodeList compile(String messageFileName, String expression) throws XmlUnmarshallException {
+    private Document createDocument(String messageFileName) throws XmlUnmarshallException {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
@@ -42,7 +42,10 @@ public class XPathXmlService implements XmlService {
         } catch (SAXException | IOException e) {
             throw new XmlUnmarshallException(messageFileName + " impossible à unmarshaller", e);
         }
-        XPath xPath = XPathFactory.newInstance().newXPath();
+        return xmlDocument;
+    }
+
+    private NodeList compile(String messageFileName, String expression, XPath xPath, Document xmlDocument) throws XmlUnmarshallException {
         NodeList nodeList = null;
         try {
             nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
@@ -52,8 +55,8 @@ public class XPathXmlService implements XmlService {
         return nodeList;
     }
 
-    private String toString(String messageFileName, String expression) throws XmlUnmarshallException {
-        NodeList nodeList = this.compile(messageFileName, expression);
+    private String getContent(String messageFileName, String expression, XPath xPath, Document xmlDocument) throws XmlUnmarshallException {
+        NodeList nodeList = this.compile(messageFileName, expression, xPath, xmlDocument);
         if (nodeList == null || nodeList.getLength() < 1)
             throw new XmlUnmarshallException(messageFileName + " impossible de trouver le code: " + expression);
         return nodeList.item(0).getTextContent();
@@ -62,13 +65,15 @@ public class XPathXmlService implements XmlService {
     @Override
     public ADAUMessage unmarshall(String messageFileName) throws XmlUnmarshallException {
         ADAUMessage message = new ADAUMessage();
-        String code = this.toString(messageFileName, "//*/Document/Code/text()");
+        Document xmlDocument = this.createDocument(messageFileName);
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String code = this.getContent(messageFileName, "//*/Document/Code/text()", xPath, xmlDocument);
         message.setCode(code);
-        String cerfaFileName = this.toString(messageFileName, "//*/Document/FichierFormulaire/FichierDonnees/text()");
+        String cerfaFileName = this.getContent(messageFileName, "//*/Document/FichierFormulaire/FichierDonnees/text()", xPath, xmlDocument);
         message.setCerfaFileName(cerfaFileName);
-        String id = this.toString(messageFileName, "//*/Teledemarche/NumeroTeledemarche/text()");
+        String id = this.getContent(messageFileName, "//*/Teledemarche/NumeroTeledemarche/text()", xPath, xmlDocument);
         message.setId(id);
-        String date = this.toString(messageFileName, "//*/Teledemarche/Date/text()");
+        String date = this.getContent(messageFileName, "//*/Teledemarche/Date/text()", xPath, xmlDocument);
         message.setDate(date);
         return message;
     }
