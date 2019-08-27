@@ -17,8 +17,8 @@ public class CerfaAdapter {
 
     public Depot fromCerfa(Cerfa cerfa) throws CerfaAdapterException {
 		Map<String, Type> codesTypes = new HashMap<String, Type>();
-		codesTypes.put("13703", Type.dp);
-		codesTypes.put("13406", Type.pcmi);
+		codesTypes.put("N° 13703*06", Type.dp);
+		codesTypes.put("N° 13406*06", Type.pcmi);
         Type type = codesTypes.get(cerfa.getCode());
 		String acceptedCodes = codesTypes.keySet().stream().map(k -> k.toString())
 				.collect(Collectors.joining(", ", "[", "]"));

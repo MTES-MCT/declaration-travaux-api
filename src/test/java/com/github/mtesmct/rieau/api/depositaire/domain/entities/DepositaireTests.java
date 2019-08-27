@@ -2,8 +2,14 @@ package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.util.Optional;
+
+import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Etat;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.depositaire.domain.repositories.DepotRepository;
+import com.github.mtesmct.rieau.api.depositaire.domain.services.CerfaAdapter;
+import com.github.mtesmct.rieau.api.depositaire.domain.services.CerfaService;
 import com.github.mtesmct.rieau.api.depositaire.domain.services.NoNationalService;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.MockDateRepository;
@@ -32,8 +38,10 @@ public class DepositaireTests {
 	@Autowired
 	private DepotRepository depotRepository;
     
-	@Autowired
-    private Depositaire depositaire;
+	private Depositaire depositaire;
+    private CerfaAdapter cerfaAdapter;
+    @Autowired
+	private CerfaService cerfaService;
     private MockDateRepository dateRepository;
     @Autowired
     private NoNationalService noNationalService;
@@ -47,6 +55,8 @@ public class DepositaireTests {
     @Before
     public void setUp() throws Exception {
         this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
+        this.cerfaAdapter = new CerfaAdapter(this.dateRepository, this.noNationalService);
+        this.depositaire = new Depositaire(this.depotRepository, this.cerfaService, this.cerfaAdapter);
         this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now());
         this.depotRepository.save(this.depot);
     }
@@ -57,6 +67,8 @@ public class DepositaireTests {
         assertThat(this.depositaire.listeMesDepots(), not(empty()));
         assertThat(this.depositaire.listeMesDepots().size(), is(1));
         assertThat(this.depositaire.listeMesDepots().get(0), notNullValue());
+        assertThat(this.depositaire.listeMesDepots().get(0).getId(), is(this.depot.getId()));
+        assertThat(this.depositaire.listeMesDepots().get(0).getType(), is(this.depot.getType()));
         assertThat(this.depositaire.listeMesDepots().get(0).getEtat(), is(this.depot.getEtat()));
         assertThat(this.depositaire.listeMesDepots().get(0).getDate().compareTo(this.dateRepository.now()), is(0));
     }
@@ -66,6 +78,30 @@ public class DepositaireTests {
     public void trouveMonDepot() {
         assertThat(this.depositaire.trouveMonDepot(this.depot.getId()).isPresent(), is(true));
         assertThat(this.depositaire.trouveMonDepot(this.depot.getId()).get(), equalTo(this.depositaire.listeMesDepots().get(0)));
+    }
+
+    @Test
+    @WithDepositaireAndBetaDetails
+    public void importerDepotDP() {
+        File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
+        Optional<Depot> depot = this.depositaire.importerDepot(file);
+        assertThat(depot.isPresent(), is(true));
+        assertThat(depot.get().getType(), is(Type.dp));
+        assertThat(depot.get().getEtat(), is(Etat.instruction));
+        assertThat(depot.get().getDate(), is(this.dateRepository.now()));
+        assertThat(this.depositaire.trouveMonDepot(depot.get().getId()).get(), equalTo(depot.get()));
+    }
+
+    @Test
+    @WithDepositaireAndBetaDetails
+    public void importerDepotPCMI() {
+        File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
+        Optional<Depot> depot = this.depositaire.importerDepot(file);
+        assertThat(depot.isPresent(), is(true));
+        assertThat(depot.get().getType(), is(Type.pcmi));
+        assertThat(depot.get().getEtat(), is(Etat.instruction));
+        assertThat(depot.get().getDate(), is(this.dateRepository.now()));
+        assertThat(this.depositaire.trouveMonDepot(depot.get().getId()).get(), equalTo(depot.get()));
     }
 
 }

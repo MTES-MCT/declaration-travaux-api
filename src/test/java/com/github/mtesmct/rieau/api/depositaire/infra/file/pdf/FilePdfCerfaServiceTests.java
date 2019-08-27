@@ -26,13 +26,13 @@ public class FilePdfCerfaServiceTests {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         Cerfa cerfa = this.filePdfCerfaService.lireCerfa(file);
         assertThat(cerfa, notNullValue());
-        assertThat(cerfa.getCode(), is("13703"));
+        assertThat(cerfa.getCode(), is("N° 13703*06"));
     }
     @Test
     public void lireCerfaPCMITest() throws IOException {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
         Cerfa cerfa = this.filePdfCerfaService.lireCerfa(file);
         assertThat(cerfa, notNullValue());
-        assertThat(cerfa.getCode(), is("13406"));
+        assertThat(cerfa.getCode(), is("N° 13406*06"));
     }
 }

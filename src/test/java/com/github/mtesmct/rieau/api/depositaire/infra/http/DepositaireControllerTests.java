@@ -124,7 +124,7 @@ public class DepositaireControllerTests {
 	public void ajouteDepotAllowedTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.zip",
 		"application/zip", "Spring Framework".getBytes());
-		Mockito.when(this.mockFileUploadService.store(anyString(), any())).thenReturn(new File("src/test/fixtures/RitaGS.2019-04-03T16_26_40.674661355.A-9-X3UGO4V7-DAUA-2.ADER.ftp.zip"));
+		Mockito.when(this.mockFileUploadService.store(anyString(), any())).thenReturn(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
 		this.mvc.perform(multipart(this.uri).file(multipartFile).with(csrf().asHeader())).andExpect(status().isOk());
 		assertThat(this.depositaire.listeMesDepots().size(), equalTo(2));
 	}

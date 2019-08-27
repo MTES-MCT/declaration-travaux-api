@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Cerfa implements Serializable{
 
     private static final long serialVersionUID = 1L;
+    
     private String code;
 
     public String getCode() {
