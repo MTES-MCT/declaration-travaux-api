@@ -62,6 +62,7 @@ public class DepositaireControllerTests {
 	
 	private MockDateRepository dateRepository;
 
+	@Autowired
 	private Depositaire depositaire;
 	@Autowired
     @Qualifier("dateTimeConverter")
@@ -80,7 +81,6 @@ public class DepositaireControllerTests {
 	public void setup() {
 		this.uri = DepositaireController.ROOT_URL;
 		this.dateRepository = new MockDateRepository(this.dateConverter,"01/01/2019 00:00:00");
-        this.depositaire = new Depositaire(this.depotRepository);
 		this.identiteRepository.save(new Identite("jean.martin", "Martin", "Jean", "jean.martin@monfai.fr"));
 		assertThat(this.identiteRepository.findById("jean.martin").isPresent(), is(true));
         this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now());

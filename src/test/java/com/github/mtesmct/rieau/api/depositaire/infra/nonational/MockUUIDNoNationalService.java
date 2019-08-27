@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.depositaire.infra.adau;
+package com.github.mtesmct.rieau.api.depositaire.infra.nonational;
 
 import java.util.UUID;
 

@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depositaire;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot;
-import com.github.mtesmct.rieau.api.depositaire.infra.adau.ADAUFileDossierService;
 import com.github.mtesmct.rieau.api.depositaire.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.depositaire.infra.file.upload.FileUploadService;
 
@@ -38,9 +37,6 @@ public class DepositaireController {
 	private DepotWebAdapter adapter;
 	
 	@Autowired
-	private ADAUFileDossierService dossierService;
-	
-	@Autowired
 	private FileUploadService fileUploadService;
 
 	@GetMapping("/{id}")
@@ -63,7 +59,7 @@ public class DepositaireController {
 	@PostMapping
 	public void ajouteDepot(@RequestParam("file") MultipartFile file) throws IOException {
 		File uploadedFile = this.fileUploadService.store(file.getOriginalFilename(), file.getInputStream());
-		this.dossierService.importerDepot(uploadedFile);
+		this.depositaire.importerDepot(uploadedFile);
 	}
 
 }

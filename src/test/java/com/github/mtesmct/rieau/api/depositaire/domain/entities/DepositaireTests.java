@@ -32,6 +32,7 @@ public class DepositaireTests {
 	@Autowired
 	private DepotRepository depotRepository;
     
+	@Autowired
     private Depositaire depositaire;
     private MockDateRepository dateRepository;
     @Autowired
@@ -46,7 +47,6 @@ public class DepositaireTests {
     @Before
     public void setUp() throws Exception {
         this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
-        this.depositaire = new Depositaire(this.depotRepository);
         this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now());
         this.depotRepository.save(this.depot);
     }

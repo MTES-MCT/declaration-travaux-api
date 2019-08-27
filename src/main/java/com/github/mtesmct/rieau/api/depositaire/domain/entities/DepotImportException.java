@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.depositaire.domain.services;
+package com.github.mtesmct.rieau.api.depositaire.domain.entities;
 
 public class DepotImportException extends RuntimeException {
     private static final long serialVersionUID = 1L;
