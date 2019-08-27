@@ -13,7 +13,11 @@ public class DateConverter {
 
     public DateConverter(String format) {
         this.format = format;
-        this.dateFormat = new SimpleDateFormat(format);
+        try {
+            this.dateFormat = new SimpleDateFormat(format);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.error("Erreur de création de l'objet java.text.SimpleDateFormat. Format incorrect: " + this.format, e);
+        }
     }
 
     public String format(Date date) {

@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api.depositaire.infra.persistence.jpa.entities;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -10,6 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Etat;
 import com.github.mtesmct.rieau.api.depositaire.domain.entities.Depot.Type;
@@ -51,6 +53,7 @@ public class JpaDepot {
     @Enumerated(EnumType.STRING)
     @Column(length = 11)
     private Etat etat;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @Override
