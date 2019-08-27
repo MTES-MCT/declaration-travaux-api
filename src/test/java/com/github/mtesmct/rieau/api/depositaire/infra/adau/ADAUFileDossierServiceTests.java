@@ -18,10 +18,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ADAUFileDossierServiceTests {
     @Autowired
     private ADAUFileDossierService adauFileDossierService;
@@ -40,7 +42,7 @@ public class ADAUFileDossierServiceTests {
         assertThat(depots.size(), is(1));
         Depot depot = depots.get(0);
         assertThat(depot.getId(), is("A-9-X3UGO4V7"));
-        assertThat(depot.getType(), is(Type.pcmi));
+        assertThat(depot.getType(), is(Type.dp));
         assertThat(this.dateConverter.format(depot.getDate()), is("2019-04-03T16:26:20.790+02:00"));
     }
 }
