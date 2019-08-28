@@ -4,5 +4,5 @@ import com.github.mtesmct.rieau.api.domain.entities.Cerfa;
 import com.github.mtesmct.rieau.api.domain.entities.Depot;
 
 public interface CerfaAdapter {
-    public Depot fromCerfa(Cerfa cerfa) throws CerfaAdapterException;
+    public Depot fromCerfa(String depositaire, Cerfa cerfa) throws CerfaAdapterException;
 }

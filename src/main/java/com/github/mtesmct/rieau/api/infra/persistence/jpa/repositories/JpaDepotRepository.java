@@ -22,8 +22,8 @@ public class JpaDepotRepository implements DepotRepository {
     private JpaDepotAdapter adapter;
 
     @Override
-    public Optional<Depot> findById(String id) {
-        Optional<JpaDepot> jpaEntity = this.jpaSpringRepository.findBySimpleNaturalId(id);
+    public Optional<Depot> findByDepositaireAndId(String depositaire, String id) {
+        Optional<JpaDepot> jpaEntity = this.jpaSpringRepository.findOneByDepositaireAndNoNational(depositaire, id);
         Optional<Depot> depot = Optional.empty();
         if (jpaEntity.isPresent()) {
             depot = Optional.ofNullable(this.adapter.fromJpa(jpaEntity.get()));
@@ -32,9 +32,9 @@ public class JpaDepotRepository implements DepotRepository {
     }
 
     @Override
-    public List<Depot> findAll() {
+    public List<Depot> findByDepositaire(String depositaire) {
         List<Depot> depots = new ArrayList<Depot>();
-        this.jpaSpringRepository.findAll().forEach(jpaEntity -> depots.add(this.adapter.fromJpa(jpaEntity)));
+        this.jpaSpringRepository.findByDepositaire(depositaire).forEach(jpaEntity -> depots.add(this.adapter.fromJpa(jpaEntity)));
         return depots;
     }
 

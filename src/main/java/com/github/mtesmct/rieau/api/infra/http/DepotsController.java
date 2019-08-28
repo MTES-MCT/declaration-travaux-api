@@ -41,20 +41,20 @@ public class DepotsController {
 
 	@GetMapping("/{id}")
 	public Optional<JsonDepot> donne(Principal principal, @PathVariable String id) {
-        return this.adapter.toJson(this.depositaireService.donne(principal, id));
+        return this.adapter.toJson(this.depositaireService.donne(principal.getName(), id));
 	}
 
 	@GetMapping
 	List<JsonDepot> liste(Principal principal) {
 		List<JsonDepot> depots = new ArrayList<JsonDepot>();
-		this.depositaireService.liste(principal).forEach(depot -> depots.add(this.adapter.toJson(Optional.ofNullable(depot)).get()));
+		this.depositaireService.liste(principal.getName()).forEach(depot -> depots.add(this.adapter.toJson(Optional.ofNullable(depot)).get()));
 		return depots;
 	}
 
 	@PostMapping
 	public void ajoute(Principal principal, @RequestParam("file") MultipartFile file) throws IOException {
 		File uploadedFile = this.fileUploadService.store(file.getOriginalFilename(), file.getInputStream());
-		this.depositaireService.importe(principal, uploadedFile);
+		this.depositaireService.importe(principal.getName(), uploadedFile);
 	}
 
 }

@@ -2,7 +2,6 @@ package com.github.mtesmct.rieau.api.application;
 
 import java.io.File;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,17 +22,17 @@ public class DepositaireService implements Serializable {
         this.cerfaAdapter = cerfaAdapter;
     }
 
-    public List<Depot> liste(Principal principal) {
-        return this.repository.findAll();
+    public List<Depot> liste(String depositaire) {
+        return this.repository.findByDepositaire(depositaire);
     }
 
-    public Optional<Depot> donne(Principal principal, String id) {
-        return this.repository.findById(id);
+    public Optional<Depot> donne(String depositaire, String id) {
+        return this.repository.findByDepositaireAndId(depositaire,id);
     }
 
-    public Optional<Depot> importe(Principal principal, File file) throws DepotImportException {
+    public Optional<Depot> importe(String depositaire, File file) throws DepotImportException {
         Cerfa cerfa  = this.cerfaService.lire(file);
-        Depot depot = this.cerfaAdapter.fromCerfa(cerfa);
+        Depot depot = this.cerfaAdapter.fromCerfa(depositaire, cerfa);
         return Optional.ofNullable(this.repository.save(depot));
     }
 

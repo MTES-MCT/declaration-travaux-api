@@ -55,6 +55,7 @@ public class JpaDepot {
     private Etat etat;
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
+    @NonNull
     private String depositaire;
 
     @Override

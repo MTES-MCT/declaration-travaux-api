@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JpaDepotAdapter {
     public JpaDepot toJpa(Depot depot){
-        return JpaDepot.builder().noNational(depot.getId()).type(depot.getType()).etat(depot.getEtat()).date(depot.getDate()).build();
+        return JpaDepot.builder().noNational(depot.getId()).type(depot.getType()).etat(depot.getEtat()).date(depot.getDate()).depositaire(depot.getDepositaire()).build();
     }
     public Depot fromJpa(JpaDepot jpaDepot){
         return new Depot(jpaDepot.getNoNational(), jpaDepot.getType(), jpaDepot.getEtat(), jpaDepot.getDate(), jpaDepot.getDepositaire());

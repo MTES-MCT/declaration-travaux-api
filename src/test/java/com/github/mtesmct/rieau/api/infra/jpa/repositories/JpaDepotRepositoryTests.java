@@ -55,10 +55,12 @@ public class JpaDepotRepositoryTests {
 	
 	private Depot depot;
 
+	private String depositaire = "jean.martin";
+
 	@Before
 	public void setUp(){
 		this.dateRepository = new MockDateRepository(this.converter,"01/01/2019 00:00:00");
-		this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now(), "jean.martin");
+		this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now(), this.depositaire);
 	}
 
     
@@ -77,10 +79,10 @@ public class JpaDepotRepositoryTests {
     }
     
     @Test
-	public void findByIdTest() throws Exception {
-		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
+	public void findByDepositaireAndByIdTest() throws Exception {
+		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).depositaire(this.depositaire).build();
 		this.entityManager.persistAndFlush(jpaDepot);
-		Optional<Depot> depot = this.repository.findById(jpaDepot.getNoNational());
+		Optional<Depot> depot = this.repository.findByDepositaireAndId(this.depositaire, jpaDepot.getNoNational());
 		assertThat(depot.isPresent(), is(true));
 		assertThat(depot.get().getId(), is(equalTo(jpaDepot.getNoNational())));
 		assertThat(depot.get().getType(), is(equalTo(jpaDepot.getType())));
@@ -90,10 +92,10 @@ public class JpaDepotRepositoryTests {
 
     
     @Test
-	public void findAllTest() throws Exception {
-		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).build();
+	public void findByDepositaireTest() throws Exception {
+		JpaDepot jpaDepot = JpaDepot.builder().noNational(this.depot.getId()).type(Type.dp).etat(Etat.instruction).date(new Date(this.dateRepository.now().getTime())).depositaire(this.depositaire).build();
 		this.entityManager.persist(jpaDepot);
-		List<Depot> depots = this.repository.findAll();
+		List<Depot> depots = this.repository.findByDepositaire(this.depositaire);
 		assertThat(depots, not(empty()));
 		assertThat(depots, hasSize(1));
 		assertThat(depots.get(0).getId(), is(equalTo(jpaDepot.getNoNational())));

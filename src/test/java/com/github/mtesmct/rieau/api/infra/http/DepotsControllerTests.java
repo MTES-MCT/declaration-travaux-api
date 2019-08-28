@@ -14,16 +14,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
-import java.security.Principal;
 
+import com.github.mtesmct.rieau.api.application.DepositaireService;
+import com.github.mtesmct.rieau.api.application.NoNationalService;
 import com.github.mtesmct.rieau.api.domain.entities.Depot;
 import com.github.mtesmct.rieau.api.domain.entities.Depot.Type;
 import com.github.mtesmct.rieau.api.domain.repositories.DepotRepository;
-import com.github.mtesmct.rieau.api.application.DepositaireService;
-import com.github.mtesmct.rieau.api.application.NoNationalService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.date.MockDateRepository;
 import com.github.mtesmct.rieau.api.infra.file.upload.FileUploadService;
+import com.github.mtesmct.rieau.api.infra.security.WithDepositaireAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.security.WithInstructeurNonBetaDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class DepotsControllerTests {
 	private MockDateRepository dateRepository;
 
 	@Autowired
-	private DepositaireService depositaire;
+	private DepositaireService depositaireService;
 	@Autowired
     @Qualifier("dateTimeConverter")
 	private DateConverter dateConverter;
@@ -70,13 +71,14 @@ public class DepotsControllerTests {
 	private Depot depot;
 
 	private String uri;
-    private Principal principal;
+    private String depositaire;
 
 	@Before
 	public void setup() {
 		this.uri = DepotsController.ROOT_URL;
+		this.depositaire = "jean.martin";
 		this.dateRepository = new MockDateRepository(this.dateConverter,"01/01/2019 00:00:00");
-        this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now(), principal.getName());
+        this.depot = new Depot(this.noNationalService.getNew(), Type.dp, this.dateRepository.now(), this.depositaire);
         this.depotRepository.save(this.depot);
 	}
 
@@ -119,7 +121,7 @@ public class DepotsControllerTests {
 		"application/zip", "Spring Framework".getBytes());
 		Mockito.when(this.mockFileUploadService.store(anyString(), any())).thenReturn(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
 		this.mvc.perform(multipart(this.uri).file(multipartFile).with(csrf().asHeader())).andExpect(status().isOk());
-		assertThat(this.depositaire.liste(principal).size(), equalTo(2));
+		assertThat(this.depositaireService.liste(this.depositaire).size(), equalTo(2));
 	}
 
 	@Test

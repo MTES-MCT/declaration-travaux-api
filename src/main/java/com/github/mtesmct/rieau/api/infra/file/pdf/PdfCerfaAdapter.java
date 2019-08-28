@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,9 +16,8 @@ public class PdfCerfaAdapter implements CerfaAdapter {
 
     private DateRepository dateRepository;
     private NoNationalService noNationalService;
-    private Principal principal;
 
-    public Depot fromCerfa(Cerfa cerfa) throws CerfaAdapterException {
+    public Depot fromCerfa(String depositaire, Cerfa cerfa) throws CerfaAdapterException {
 		Map<String, Type> codesTypes = new HashMap<String, Type>();
 		codesTypes.put("N° 13703*06", Type.dp);
 		codesTypes.put("N° 13406*06", Type.pcmi);
@@ -29,7 +27,7 @@ public class PdfCerfaAdapter implements CerfaAdapter {
 		if (type == null)
 			throw new CerfaAdapterException(
 					"Le code CERFA est inconnu: " + cerfa.getCode() + ". Les seuls codes reconnus sont: " + acceptedCodes);
-        Depot depot = new Depot(this.noNationalService.getNew(), type, this.dateRepository.now(), principal.getName());
+        Depot depot = new Depot(this.noNationalService.getNew(), type, this.dateRepository.now(), depositaire);
         return depot;
     }
 

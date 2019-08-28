@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.domain.entities.Depot;
 
 public interface DepotRepository {
-    public List<Depot> findAll();
-    public Optional<Depot> findById(String id);
+    public List<Depot> findByDepositaire(String depositaire);
     public Depot save(Depot depot);
+	public Optional<Depot> findByDepositaireAndId(String depositaire, String id);
 }
