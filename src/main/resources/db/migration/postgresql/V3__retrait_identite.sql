@@ -1,0 +1,1 @@
+DROP CASCADE TABLE identite;

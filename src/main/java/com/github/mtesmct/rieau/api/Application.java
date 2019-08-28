@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api;
 
-import com.github.mtesmct.rieau.api.depositaire.infra.PackageScan;
+import com.github.mtesmct.rieau.api.infra.PackageScan;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
