@@ -36,3 +36,7 @@ build/
 ### Properties ###
 src/main/resources/application*.properties
 src/test/resources/application*.properties
+
+### Releases files
+release.properties
+*.releaseBackup
