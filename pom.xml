@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.github.mtesmct.rieau</groupId>
 	<artifactId>rieau-api</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>rieau</name>
 	<description>API Backend de RIEAU</description>
 	<url>https://rieau.cohesion-territoires.gouv.fr</url>
