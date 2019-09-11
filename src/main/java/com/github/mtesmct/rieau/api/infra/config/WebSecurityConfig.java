@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
-import com.github.mtesmct.rieau.api.infra.http.DepotsController;
+import com.github.mtesmct.rieau.api.infra.http.DossiersController;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
@@ -45,9 +45,9 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.authorizeRequests()
-            .antMatchers(DepotsController.ROOT_URL+"*")
-            .hasRole("depositaire")
-            .antMatchers(HttpMethod.POST, DepotsController.ROOT_URL)
+            .antMatchers(DossiersController.ROOT_URL+"*")
+            .hasRole("demandeur")
+            .antMatchers(HttpMethod.POST, DossiersController.ROOT_URL)
             .hasRole("beta")
             .anyRequest()
             .permitAll();

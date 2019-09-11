@@ -1,2 +1,2 @@
 DROP TABLE identite;
-ALTER TABLE depot ADD COLUMN depositaire VARCHAR(255) NOT NULL;
+ALTER TABLE dossier ADD COLUMN depositaire VARCHAR(255) NOT NULL;
