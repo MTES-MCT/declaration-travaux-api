@@ -43,11 +43,7 @@ public class Naissance implements ValueObject<Naissance> {
   }
 
   public Naissance(final Date date, final String commune) {
-    if (date == null)
-      throw new NullPointerException("Le date de naissance ne peut être nul");
     this.date = date;
-    if (commune == null || commune.isEmpty())
-      throw new NullPointerException("Le commune de naissance ne peut être nulle ou vide");
     this.commune = commune;
   }
 

@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.security;
 
-import com.github.mtesmct.rieau.api.application.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.Role;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,17 +16,20 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
 
     @Override
     public boolean isDemandeur() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().filter(a -> a.getAuthority().equals("ROLE_demandeur")).findAny().isPresent();
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Role.DEMANDEUR.toString())).findAny().isPresent();
     }
 
     @Override
     public boolean isInstructeur() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().filter(a -> a.getAuthority().equals("ROLE_instructeur")).findAny().isPresent();
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Role.INSTRUCTEUR.toString())).findAny().isPresent();
     }
 
     @Override
     public boolean isBeta() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().filter(a -> a.getAuthority().equals("ROLE_beta")).findAny().isPresent();
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Role.BETA.toString())).findAny().isPresent();
     }
 
     @Override

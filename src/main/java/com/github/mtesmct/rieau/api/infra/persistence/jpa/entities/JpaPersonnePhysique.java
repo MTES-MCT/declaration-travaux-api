@@ -6,12 +6,8 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,7 +45,7 @@ public class JpaPersonnePhysique {
     @Column(nullable = false, unique = true)
     private String personnePhysiqueId;
     @Email(regexp = PersonnePhysique.EMAIL_REGEXP)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String email;
     @Enumerated
     private Sexe sexe;

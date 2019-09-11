@@ -61,15 +61,17 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
-    public Dossier(DossierId id, PersonnePhysique demandeur) {
+    public Dossier(DossierId id, PersonnePhysique demandeur, Date dateDepot) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut être nul");
         this.id = id;
         if (demandeur == null)
-            throw new NullPointerException("Le demandeur ne peut être nul ou vide");
+            throw new NullPointerException("Le demandeur ne peut être nul");
         this.demandeur = demandeur;
         this.statut = StatutDossier.DEPOSE;
-        this.dateDepot = new Date();
+        if (dateDepot == null)
+            throw new NullPointerException("La date du dépôt ne peut être nulle");
+        this.dateDepot = dateDepot;
     }
 
     public PiecesJointesObligatoires piecesJointesObligatoires() {

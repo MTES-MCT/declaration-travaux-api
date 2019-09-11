@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.mtesmct.rieau.api.application.CerfaImportService;
-import com.github.mtesmct.rieau.api.application.DossierImportException;
+import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportService;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;

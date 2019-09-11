@@ -1,10 +1,11 @@
-package com.github.mtesmct.rieau.api.application;
+package com.github.mtesmct.rieau.api.application.dossiers;
 
 import java.io.File;
-import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.ApplicationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
@@ -12,15 +13,16 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.PersonnePhysiqueRepository;
 
-public class DemandeurService implements Serializable {
-    private static final long serialVersionUID = 1L;
+@ApplicationService
+public class ImporterCerfaService {
     private DossierRepository dossierRepository;
     private PersonnePhysiqueRepository personnePhysiqueRepository;
     private DossierFactory dossierFactory;
     private CerfaImportService cerfaImportService;
     private AuthenticationService authenticationService;
+    private AuthorizationService authorizationService;
 
-    public DemandeurService(AuthenticationService authenticationService, DossierFactory dossierFactory,
+    public ImporterCerfaService(AuthenticationService authenticationService, DossierFactory dossierFactory,
             DossierRepository dossierRepository, PersonnePhysiqueRepository personnePhysiqueRepository,
             CerfaImportService cerfaImportService) {
         if (authenticationService == null)
@@ -40,27 +42,8 @@ public class DemandeurService implements Serializable {
         this.cerfaImportService = cerfaImportService;
     }
 
-    private void checkAuthorization() {
-        if (!this.authenticationService.isAuthenticaed())
-            throw new IllegalAccessError("L'utilisateur doit être authentifié.");
-        if (!this.authenticationService.isDemandeur())
-            throw new IllegalAccessError("L'utilisateur doit avoir le rôle de demandeur.");
-        if (!this.authenticationService.isBeta())
-            throw new IllegalAccessError("L'utilisateur doit avoir le rôle de beta testeur.");
-    }
-
-    public List<Dossier> liste() {
-        this.checkAuthorization();
-        return this.dossierRepository.findByDemandeur(this.authenticationService.userId());
-    }
-
-    public Optional<Dossier> donne(String id) {
-        this.checkAuthorization();
-        return this.dossierRepository.findByDemandeurAndId(this.authenticationService.userId(), id);
-    }
-
-    public Optional<Dossier> importe(File file) throws DossierImportException {
-        this.checkAuthorization();
+    public Optional<Dossier> execute(File file) throws DossierImportException {
+        this.authorizationService.isDemandeurAndBetaAuthorized();
         PieceJointe cerfa = this.cerfaImportService.lire(this.authenticationService.userId(), file);
         Optional<PersonnePhysique> demandeur = this.personnePhysiqueRepository
                 .findByEmail(this.authenticationService.userId().toString());

@@ -1,5 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
+import com.github.mtesmct.rieau.api.application.auth.Role;
 import com.github.mtesmct.rieau.api.infra.http.DossiersController;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
@@ -46,9 +47,9 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         http.authorizeRequests()
             .antMatchers(DossiersController.ROOT_URL+"*")
-            .hasRole("demandeur")
+            .hasRole(Role.DEMANDEUR.toString())
             .antMatchers(HttpMethod.POST, DossiersController.ROOT_URL)
-            .hasRole("beta")
+            .hasRole(Role.BETA.toString())
             .anyRequest()
             .permitAll();
     }

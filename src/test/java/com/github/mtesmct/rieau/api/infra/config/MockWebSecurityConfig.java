@@ -1,9 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
-import com.github.mtesmct.rieau.api.domain.repositories.PersonnePhysiqueRepository;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories.JpaPersonnePhysiqueRepository;
+import com.github.mtesmct.rieau.api.application.auth.Role;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
@@ -19,8 +17,8 @@ public class MockWebSecurityConfig {
     public UserDetailsService userDetailsService() throws Exception {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        manager.createUser(User.withUsername("jean.martin").password(encoder.encode("jean.martin")).roles("demandeur","beta").build());
-        manager.createUser(User.withUsername("jacques.dupont").password(encoder.encode("jacques.dupont")).roles("instructeur").build());
+        manager.createUser(User.withUsername("jean.martin").password(encoder.encode("jean.martin")).roles(Role.DEMANDEUR.toString(), Role.BETA.toString()).build());
+        manager.createUser(User.withUsername("jacques.dupont").password(encoder.encode("jacques.dupont")).roles(Role.INSTRUCTEUR.toString()).build());
         return manager;
     }
 

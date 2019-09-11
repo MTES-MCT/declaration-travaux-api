@@ -2,14 +2,14 @@ package com.github.mtesmct.rieau.api.infra.date;
 
 import java.util.Date;
 
-import com.github.mtesmct.rieau.api.domain.repositories.DateRepository;
+import com.github.mtesmct.rieau.api.domain.services.DateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
-public class SystemDateRepository implements DateRepository {
+@Service
+public class SystemDateService implements DateService {
 
     private Date date;
     @Autowired
@@ -21,7 +21,7 @@ public class SystemDateRepository implements DateRepository {
         return this.date;
     }
 
-    public SystemDateRepository() {
+    public SystemDateService() {
         this.date = new Date();
     }
 

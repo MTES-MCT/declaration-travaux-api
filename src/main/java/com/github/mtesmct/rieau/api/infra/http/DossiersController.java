@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.mtesmct.rieau.api.application.DemandeurService;
+import com.github.mtesmct.rieau.api.application.dossiers.ConsulterMonDossierService;
+import com.github.mtesmct.rieau.api.application.dossiers.ImporterCerfaService;
+import com.github.mtesmct.rieau.api.application.dossiers.ListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.file.upload.FileUploadService;
 
@@ -27,7 +29,11 @@ public class DossiersController {
 	public static final String ROOT_URL = "/dossiers";
 
 	@Autowired
-	private DemandeurService depositaireService;
+	private ImporterCerfaService importerCerfaService;
+	@Autowired
+	private ListerMesDossiersService listerMesDossiersService;
+	@Autowired
+	private ConsulterMonDossierService consulterMonDossierService;
 	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;
@@ -40,20 +46,20 @@ public class DossiersController {
 
 	@GetMapping("/{id}")
 	public Optional<JsonDossier> donne(@PathVariable String id) {
-        return this.adapter.toJson(this.depositaireService.donne(id));
+        return this.adapter.toJson(this.consulterMonDossierService.execute(id));
 	}
 
 	@GetMapping
 	List<JsonDossier> liste() {
 		List<JsonDossier> dossiers = new ArrayList<JsonDossier>();
-		this.depositaireService.liste().forEach(dossier -> dossiers.add(this.adapter.toJson(Optional.ofNullable(dossier)).get()));
+		this.listerMesDossiersService.execute().forEach(dossier -> dossiers.add(this.adapter.toJson(Optional.ofNullable(dossier)).get()));
 		return dossiers;
 	}
 
 	@PostMapping
 	public void ajoute(@RequestParam("file") MultipartFile file) throws IOException {
 		File uploadedFile = this.fileUploadService.store(file.getOriginalFilename(), file.getInputStream());
-		this.depositaireService.importe(uploadedFile);
+		this.importerCerfaService.execute(uploadedFile);
 	}
 
 }
