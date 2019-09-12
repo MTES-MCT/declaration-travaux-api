@@ -6,6 +6,6 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 
 public interface JpaSpringDossierRepository extends NaturalRepository<JpaDossier, String>{
-    List<JpaDossier> findAllByDemandeurPersonnePhysiqueId(String demandeurId);
-    Optional<JpaDossier> findOptionalByDemandeurPersonnePhysiqueIdAndDossierId(String demandeurId, String id);
+    List<JpaDossier> findAllByDeposantPersonnePhysiqueId(String deposantId);
+    Optional<JpaDossier> findOptionalByDeposantPersonnePhysiqueIdAndDossierId(String deposantId, String id);
 }

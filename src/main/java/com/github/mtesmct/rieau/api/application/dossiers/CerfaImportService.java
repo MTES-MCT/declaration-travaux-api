@@ -5,5 +5,5 @@ import java.io.File;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 
 public interface CerfaImportService {
-    public PieceJointe lire(String demandeur, File file) throws DossierImportException;
+    public PieceJointe lire(String deposant, File file) throws DossierImportException;
 }

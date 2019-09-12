@@ -19,9 +19,9 @@ public class JpaPersonnePhysiqueRepository implements PersonnePhysiqueRepository
     private JpaPersonnePhysiqueFactory jpaPersonnePhysiqueAdapter;
 
     @Override
-    public Optional<PersonnePhysique> findByEmail(String email) {
+    public Optional<PersonnePhysique> findByPersonnePhysiqueId(String personnePhysiqueId) {
         Optional<JpaPersonnePhysique> jpaPersonnePhysique = this.jpaSpringPersonnePhysiqueRepository
-                .findBySimpleNaturalId(email);
+                .findBySimpleNaturalId(personnePhysiqueId);
         Optional<PersonnePhysique> personnePhysique = Optional.empty();
         if (jpaPersonnePhysique.isPresent())
             personnePhysique = Optional.ofNullable(this.jpaPersonnePhysiqueAdapter.fromJpa(jpaPersonnePhysique.get()));

@@ -55,16 +55,17 @@ public class JpaDossierRepositoryTests {
 	
 	private Dossier dossier;
 
-	private String demandeurId = "jean.martin";
+	private String deposantId = "jean.martin";
 
 	@Autowired
 	private JpaPersonnePhysiqueFactory jpaPersonnePhysiqueFactory;
 
 	@Before
 	public void setUp(){
-		JpaPersonnePhysique jpaPersonnePhysique = JpaPersonnePhysique.builder().personnePhysiqueId(this.demandeurId).email("jean.martin@monfai.fr").build();
+		JpaPersonnePhysique jpaPersonnePhysique = JpaPersonnePhysique.builder().personnePhysiqueId(this.deposantId).email("jean.martin@monfai.fr").build();
 		jpaPersonnePhysique = this.entityManager.persistAndFlush(jpaPersonnePhysique);
 		this.dossier = this.dossierFactory.creer(this.jpaPersonnePhysiqueFactory.fromJpa(jpaPersonnePhysique));
+		assertThat(this.dossier.deposant().identity().toString(), is(equalTo(this.deposantId)));
     }
 
     
@@ -82,10 +83,10 @@ public class JpaDossierRepositoryTests {
     }
     
     @Test
-	public void findByDemandeurAndByIdTest() throws Exception {
+	public void findByDeposantAndByIdTest() throws Exception {
 		JpaDossier jpaDossier = JpaDossier.builder().dossierId(this.dossier.identity().toString()).statut(StatutDossier.INSTRUCTION).date(new Date(this.dateService.now().getTime())).build();
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
-		Optional<Dossier> dossier = this.repository.findByDemandeurAndId(this.demandeurId, jpaDossier.getDossierId());
+		Optional<Dossier> dossier = this.repository.findByDeposantAndId(this.deposantId, jpaDossier.getDossierId());
 		assertThat(dossier.isPresent(), is(true));
 		assertThat(dossier.get().identity().toString(), is(equalTo(jpaDossier.getDossierId())));
 		assertThat(dossier.get().statut(), is(equalTo(jpaDossier.getStatut())));
@@ -94,10 +95,10 @@ public class JpaDossierRepositoryTests {
 
     
     @Test
-	public void findByDemandeurTest() throws Exception {
+	public void findByDeposantTest() throws Exception {
 		JpaDossier jpaDossier = JpaDossier.builder().dossierId(this.dossier.identity().toString()).statut(StatutDossier.INSTRUCTION).date(new Date(this.dateService.now().getTime())).build();
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
-		List<Dossier> dossiers = this.repository.findByDemandeur(this.demandeurId);
+		List<Dossier> dossiers = this.repository.findByDeposant(this.deposantId);
 		assertThat(dossiers, not(empty()));
 		assertThat(dossiers, hasSize(1));
 		assertThat(dossiers.get(0).identity(), is(equalTo(jpaDossier.getDossierId())));

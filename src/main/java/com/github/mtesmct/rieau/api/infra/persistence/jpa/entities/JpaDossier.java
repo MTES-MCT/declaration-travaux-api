@@ -9,6 +9,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -52,7 +53,8 @@ public class JpaDossier {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
     @ManyToOne
-    private JpaPersonnePhysique demandeur;
+    @JoinColumn(name = "deposant_id", referencedColumnName = "personne_physique_id", nullable = false)
+    private JpaPersonnePhysique deposant;
 
     @Override
     public boolean equals(Object o) {

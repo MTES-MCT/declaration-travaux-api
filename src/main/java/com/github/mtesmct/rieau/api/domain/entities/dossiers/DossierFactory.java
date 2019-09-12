@@ -13,11 +13,19 @@ public class DossierFactory {
         this.dateService = dateService;
     }
 
-    public Dossier creer(PersonnePhysique demandeur) {
+    public Dossier creer(PersonnePhysique deposant, PieceJointe cerfa) {
         if (dossierIdService == null)
             throw new NullPointerException("Le service des id des dossiers ne peut pas être nul.");
             if (dateService == null)
                 throw new NullPointerException("Le service des dates de depot des dossiers ne peut pas être nul.");
-        return new Dossier(this.dossierIdService.creer(), demandeur, this.dateService.now());
+        return new Dossier(this.dossierIdService.creer(), deposant, this.dateService.now(), cerfa);
+    }
+
+    public Dossier creer(PersonnePhysique deposant) {
+        if (dossierIdService == null)
+            throw new NullPointerException("Le service des id des dossiers ne peut pas être nul.");
+            if (dateService == null)
+                throw new NullPointerException("Le service des dates de depot des dossiers ne peut pas être nul.");
+        return new Dossier(this.dossierIdService.creer(), deposant, this.dateService.now());
     }
 }

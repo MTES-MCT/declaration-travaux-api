@@ -20,7 +20,7 @@ import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.date.MockDateService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonnePhysiqueFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories.JpaSpringPersonnePhysiqueRepository;
-import com.github.mtesmct.rieau.api.infra.security.WithDemandeurAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.security.WithDeposantAndBetaDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00"})
-@WithDemandeurAndBetaDetails
+@WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ListerMesDossiersServiceTests {
     @Autowired
@@ -63,14 +63,14 @@ public class ListerMesDossiersServiceTests {
     @Before
     public void setUp() throws Exception {
         this.listerMesDossiersService = new ListerMesDossiersService(this.authenticationService, this.authorizationService, this.dossierRepository);
-        PersonnePhysique demandeur = new PersonnePhysique(new PersonnePhysiqueId("insee_01"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
-		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(demandeur));
-		this.dossier = this.dossierFactory.creer(demandeur);
+        PersonnePhysique deposant = new PersonnePhysique(new PersonnePhysiqueId("insee_01"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
+		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(deposant));
+		this.dossier = this.dossierFactory.creer(deposant);
         this.dossierRepository.save(this.dossier);
     }
 
     @Test
-    @WithDemandeurAndBetaDetails
+    @WithDeposantAndBetaDetails
     public void listeTest() {
         assertThat(this.listerMesDossiersService.execute(), not(empty()));
         assertThat(this.listerMesDossiersService.execute().size(), is(1));

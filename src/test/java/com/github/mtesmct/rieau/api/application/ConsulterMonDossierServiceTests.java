@@ -16,7 +16,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonnePhysiqueFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories.JpaSpringPersonnePhysiqueRepository;
-import com.github.mtesmct.rieau.api.infra.security.WithDemandeurAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.security.WithDeposantAndBetaDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00"})
-@WithDemandeurAndBetaDetails
+@WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ConsulterMonDossierServiceTests {
     @Autowired
@@ -60,22 +60,22 @@ public class ConsulterMonDossierServiceTests {
     @Before
     public void setUp() throws Exception {
         this.consulterMonDossierService = new ConsulterMonDossierService(this.authenticationService, this.authorizationService, this.dossierRepository);
-        PersonnePhysique demandeur = new PersonnePhysique(new PersonnePhysiqueId("insee_01"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
-		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(demandeur));
-		this.dossier = this.dossierFactory.creer(demandeur);
+        PersonnePhysique deposant = new PersonnePhysique(new PersonnePhysiqueId("insee_01"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
+		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(deposant));
+		this.dossier = this.dossierFactory.creer(deposant);
         this.dossierRepository.save(this.dossier);
-        PersonnePhysique autreDemandeur = new PersonnePhysique(new PersonnePhysiqueId("insee_02"), "jacques.dupont@monfai.fr", "Dupont", "Jacques", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
-		this.otherDossier = this.dossierFactory.creer(autreDemandeur);
+        PersonnePhysique autreDeposant = new PersonnePhysique(new PersonnePhysiqueId("insee_02"), "jacques.dupont@monfai.fr", "Dupont", "Jacques", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
+		this.otherDossier = this.dossierFactory.creer(autreDeposant);
         this.dossierRepository.save(this.otherDossier);
     }
 
     @Test
-    @WithDemandeurAndBetaDetails
+    @WithDeposantAndBetaDetails
     public void executeTest() {
         assertThat(this.consulterMonDossierService.execute(this.dossier.identity().toString()).isPresent(), is(true));
     }
     @Test
-    @WithDemandeurAndBetaDetails
+    @WithDeposantAndBetaDetails
     public void executeAutreDossierTest() {
         assertThat(this.consulterMonDossierService.execute(this.otherDossier.identity().toString()).isEmpty(), is(true));
      }

@@ -42,7 +42,7 @@ public class JpaPersonnePhysique {
     @GeneratedValue
     private Long id;
     @NaturalId
-    @Column(nullable = false, unique = true)
+    @Column(name= "personne_physique_id", nullable = false, unique = true)
     private String personnePhysiqueId;
     @Email(regexp = PersonnePhysique.EMAIL_REGEXP)
     @Column(nullable = false, unique = false)

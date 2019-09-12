@@ -16,11 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 
 import com.github.mtesmct.rieau.api.application.dossiers.ListerMesDossiersService;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Naissance;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysiqueId;
@@ -30,7 +27,7 @@ import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.file.upload.FileUploadService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonnePhysiqueFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories.JpaSpringPersonnePhysiqueRepository;
-import com.github.mtesmct.rieau.api.infra.security.WithDemandeurAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.security.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.security.WithInstructeurNonBetaDetails;
 
 import org.junit.Before;
@@ -53,7 +50,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00"})
 @AutoConfigureMockMvc
-@WithDemandeurAndBetaDetails
+@WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DossiersControllerTests {
 
@@ -85,10 +82,9 @@ public class DossiersControllerTests {
 	@Before
 	public void setup() {
 		this.uri = DossiersController.ROOT_URL;
-		PersonnePhysique demandeur = new PersonnePhysique(new PersonnePhysiqueId("insee_01"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
-		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(demandeur));
-		PieceJointe cerfa = new PieceJointe(new CodePieceJointe(TypePieceJointe.CERFA, null), new File("test"));
-		this.dossier = this.dossierFactory.creer(demandeur);
+		PersonnePhysique deposant = new PersonnePhysique(new PersonnePhysiqueId("jean.martin"), "jean.martin@monfai.fr", "Martin", "Jean", Sexe.HOMME, new Naissance(this.dateConverter.parse("01/01/1900 00:00:00"), "44000"));
+		this.jpaSpringPersonnePhysiqueRepository.save(this.jpaPersonnePhysiqueFactory.toJpa(deposant));
+		this.dossier = this.dossierFactory.creer(deposant);
         this.dossierRepository.save(this.dossier);
 	}
 

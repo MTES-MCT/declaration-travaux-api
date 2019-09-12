@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class PdfCerfaImportService implements CerfaImportService {
 
 	@Override
-	public PieceJointe lire(String demandeur, File file) throws DossierImportException {
+	public PieceJointe lire(String deposant, File file) throws DossierImportException {
 		PDDocument doc;
 		PieceJointe cerfa = null;
 		try {

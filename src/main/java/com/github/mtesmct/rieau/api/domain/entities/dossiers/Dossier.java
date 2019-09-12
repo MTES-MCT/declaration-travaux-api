@@ -9,7 +9,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
     public StatutDossier statut;
     private Date dateDepot;
-    private PersonnePhysique demandeur;
+    private PersonnePhysique deposant;
+    private Petitionnaires petitionnaires;
     private Projet projet;
     private PieceJointe cerfa;
     private PiecesJointesObligatoires piecesJointesObligatoires;
@@ -24,11 +25,22 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public StatutDossier statut(){
         return this.statut;
     }
-    public PersonnePhysique demandeur(){
-        return this.demandeur;
+    public Petitionnaires petitionnaires(){
+        return this.petitionnaires;
+    }
+    public PersonnePhysique deposant(){
+        return this.deposant;
     }
     public PieceJointe cerfa(){
         return this.cerfa;
+    }
+
+    public PiecesJointesObligatoires piecesJointesObligatoires() {
+        return this.piecesJointesObligatoires;
+    }
+
+    public PiecesJointesOptionnelles piecesJointesOptionnelles() {
+        return this.piecesJointesOptionnelles;
     }
 
     @Override
@@ -61,25 +73,33 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
-    public Dossier(DossierId id, PersonnePhysique demandeur, Date dateDepot) {
+    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut être nul");
         this.id = id;
-        if (demandeur == null)
-            throw new NullPointerException("Le demandeur ne peut être nul");
-        this.demandeur = demandeur;
+        if (deposant == null)
+            throw new NullPointerException("Le deposant ne peut être nul");
+        this.deposant = deposant;
         this.statut = StatutDossier.DEPOSE;
         if (dateDepot == null)
             throw new NullPointerException("La date du dépôt ne peut être nulle");
         this.dateDepot = dateDepot;
     }
 
-    public PiecesJointesObligatoires piecesJointesObligatoires() {
-        return this.piecesJointesObligatoires;
-    }
-
-    public PiecesJointesOptionnelles piecesJointesOptionnelles() {
-        return this.piecesJointesOptionnelles;
+    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot, PieceJointe cerfa) {
+        if (id == null)
+            throw new NullPointerException("L'id du dépôt ne peut être nul");
+        this.id = id;
+        if (deposant == null)
+            throw new NullPointerException("Le deposant ne peut être nul");
+        this.deposant = deposant;
+        this.statut = StatutDossier.DEPOSE;
+        if (dateDepot == null)
+            throw new NullPointerException("La date du dépôt ne peut être nulle");
+        this.dateDepot = dateDepot;
+        if (cerfa != null && !cerfa.isCerfa())
+            throw new IllegalArgumentException("La piece jointe n'est pas un CERFA valide");
+        this.cerfa = cerfa;
     }
 
 }

@@ -15,7 +15,7 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public boolean isDemandeur() {
+    public boolean isDeposant() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .filter(a -> a.getAuthority().equals("ROLE_" + Role.DEMANDEUR.toString())).findAny().isPresent();
     }

@@ -7,5 +7,5 @@ import org.springframework.security.test.context.support.WithUserDetails;
 
 @Retention(RetentionPolicy.RUNTIME)
 @WithUserDetails(value = "jean.martin", userDetailsServiceBeanName="userDetailsService")
-public @interface WithDemandeurAndBetaDetails {
+public @interface WithDeposantAndBetaDetails {
 }

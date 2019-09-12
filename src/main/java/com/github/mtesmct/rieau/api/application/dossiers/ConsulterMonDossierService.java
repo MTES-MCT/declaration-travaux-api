@@ -29,7 +29,7 @@ public class ConsulterMonDossierService {
     }
 
     public Optional<Dossier> execute(String id) {
-        this.authorizationService.isDemandeurAndBetaAuthorized();
-        return this.dossierRepository.findByDemandeurAndId(this.authenticationService.userId(), id);
+        this.authorizationService.isDeposantAndBetaAuthorized();
+        return this.dossierRepository.findByDeposantAndId(this.authenticationService.userId(), id);
     }
 }

@@ -37,10 +37,10 @@ public class JpaPersonnePhysiqueRepositoryTests {
 	private DateConverter dateConverter;
     
     @Test
-	public void findByEmailTest() throws Exception {
+	public void findByPersonnePhysiqueIdTest() throws Exception {
 		JpaPersonnePhysique jpaPersonnePhysique = JpaPersonnePhysique.builder().personnePhysiqueId("insee_01").email("email@email.fr").build();
 		this.entityManager.persistAndFlush(jpaPersonnePhysique);
-		Optional<PersonnePhysique> personnePhysique = this.personnePhysiqueRepository.findByEmail(jpaPersonnePhysique.getEmail());
+		Optional<PersonnePhysique> personnePhysique = this.personnePhysiqueRepository.findByPersonnePhysiqueId(jpaPersonnePhysique.getPersonnePhysiqueId());
 		assertThat(personnePhysique.isPresent(), is(true));
 		assertThat(personnePhysique.get().email(), is(equalTo(jpaPersonnePhysique.getEmail())));
 	}

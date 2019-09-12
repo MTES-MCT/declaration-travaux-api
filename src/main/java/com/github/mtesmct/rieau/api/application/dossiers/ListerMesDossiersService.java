@@ -29,7 +29,7 @@ public class ListerMesDossiersService {
     }
 
     public List<Dossier> execute() {
-        this.authorizationService.isDemandeurAndBetaAuthorized();
-        return this.dossierRepository.findByDemandeur(this.authenticationService.userId());
+        this.authorizationService.isDeposantAndBetaAuthorized();
+        return this.dossierRepository.findByDeposant(this.authenticationService.userId());
     }
 }

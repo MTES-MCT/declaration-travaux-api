@@ -30,7 +30,7 @@ public class PersonnePhysiqueId implements ValueObject<PersonnePhysiqueId> {
 
   @Override
   public String toString() {
-    return "PersonnePhysiqueId=[id=" + this.id.toString() + "]";
+    return this.id.toString();
   }
 
   public PersonnePhysiqueId(final String id) {
