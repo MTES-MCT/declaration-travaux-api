@@ -1,2 +1,0 @@
-DROP TABLE identite;
-ALTER TABLE dossier ADD COLUMN depositaire VARCHAR(255) NOT NULL;

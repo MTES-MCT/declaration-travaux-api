@@ -8,10 +8,8 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 
 @TestComponent
-@Profile("!staging")
 @Primary
 public class MockUserService implements UserService {
 

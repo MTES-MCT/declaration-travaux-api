@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
 import com.github.mtesmct.rieau.api.application.auth.Role;
+import com.github.mtesmct.rieau.api.application.auth.UserService;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
-import com.github.mtesmct.rieau.api.infra.application.auth.MockUserService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 
@@ -20,7 +20,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class MockWebSecurityConfig {
 
     @Autowired
-    private MockUserService userService;
+    private UserService userService;
 
     @Bean
     @Qualifier("deposantBeta")
