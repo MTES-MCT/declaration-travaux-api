@@ -1,13 +1,10 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.io.IOException;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +19,19 @@ public class PdfCerfaServiceTests {
     private PdfCerfaImportService filePdfCerfaService;
 
     @Test
-    public void lireCerfaDPMITest() throws IOException {
+    public void lireCerfaDPMITest() throws Exception {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-        PieceJointe cerfa = this.filePdfCerfaService.lire("jean.martin", file);
-        assertThat(cerfa, notNullValue());
-        assertThat(cerfa.code(), is("13703"));
+        assertThat(file.exists(), is(true));
+        Optional<String> code = this.filePdfCerfaService.lireCode(file);
+        assertThat(code.isPresent(), is(true));
+        assertThat(code.get(), is("13703"));
     }
     @Test
-    public void lireCerfaPCMITest() throws IOException {
+    public void lireCerfaPCMITest() throws Exception {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
-        PieceJointe cerfa = this.filePdfCerfaService.lire("jean.martin", file);
-        assertThat(cerfa, notNullValue());
-        assertThat(cerfa.code(), is("13406"));
+        assertThat(file.exists(), is(true));
+        Optional<String> code = this.filePdfCerfaService.lireCode(file);
+        assertThat(code.isPresent(), is(true));
+        assertThat(code.get(), is("13406"));
     }
 }

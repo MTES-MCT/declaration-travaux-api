@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00"})
 public class DateConverterTests {
     @Autowired
     @Qualifier("dateConverter")

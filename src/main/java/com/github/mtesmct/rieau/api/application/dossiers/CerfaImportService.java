@@ -1,9 +1,8 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
 import java.io.File;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import java.util.Optional;
 
 public interface CerfaImportService {
-    public PieceJointe lire(String deposant, File file) throws DossierImportException;
+    public Optional<String> lireCode(File file) throws DossierImportException;
 }

@@ -8,6 +8,7 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
     public StatutDossier statut;
+    public TypeDossier type;
     private Date dateDepot;
     private PersonnePhysique deposant;
     private Petitionnaires petitionnaires;
@@ -33,6 +34,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
     }
     public PieceJointe cerfa(){
         return this.cerfa;
+    }
+    public TypeDossier type(){
+        return this.type;
     }
 
     public PiecesJointesObligatoires piecesJointesObligatoires() {
@@ -73,20 +77,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
-    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot) {
-        if (id == null)
-            throw new NullPointerException("L'id du dépôt ne peut être nul");
-        this.id = id;
-        if (deposant == null)
-            throw new NullPointerException("Le deposant ne peut être nul");
-        this.deposant = deposant;
-        this.statut = StatutDossier.DEPOSE;
-        if (dateDepot == null)
-            throw new NullPointerException("La date du dépôt ne peut être nulle");
-        this.dateDepot = dateDepot;
-    }
-
-    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot, PieceJointe cerfa) {
+    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot, PieceJointe cerfa, TypeDossier type) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut être nul");
         this.id = id;
@@ -100,6 +91,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
         if (cerfa != null && !cerfa.isCerfa())
             throw new IllegalArgumentException("La piece jointe n'est pas un CERFA valide");
         this.cerfa = cerfa;
+        if (cerfa != null && type == null)
+            throw new NullPointerException("Le type de dossier ne peut pas être nul");
+        this.type = type;
     }
 
 }

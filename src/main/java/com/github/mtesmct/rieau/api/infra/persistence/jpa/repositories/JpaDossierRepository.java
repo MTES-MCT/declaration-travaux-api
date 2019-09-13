@@ -22,8 +22,8 @@ public class JpaDossierRepository implements DossierRepository {
     private JpaDossierFactory jpaDossierFactory;
 
     @Override
-    public Optional<Dossier> findByDeposantAndId(String deposantId, String id) {
-        Optional<JpaDossier> jpaEntity = this.jpaSpringRepository.findOptionalByDeposantPersonnePhysiqueIdAndDossierId(deposantId, id);
+    public Optional<Dossier> findByDeposantIdAndId(String deposantId, String id) {
+        Optional<JpaDossier> jpaEntity = this.jpaSpringRepository.findOptionalByDeposantIdAndDossierId(deposantId, id);
         Optional<Dossier> dossier = Optional.empty();
         if (jpaEntity.isPresent()) {
             dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaEntity.get()));
@@ -32,9 +32,9 @@ public class JpaDossierRepository implements DossierRepository {
     }
 
     @Override
-    public List<Dossier> findByDeposant(String deposantId) {
+    public List<Dossier> findByDeposantId(String deposantId) {
         List<Dossier> dossiers = new ArrayList<Dossier>();
-        this.jpaSpringRepository.findAllByDeposantPersonnePhysiqueId(deposantId).forEach(jpaEntity -> dossiers.add(this.jpaDossierFactory.fromJpa(jpaEntity)));
+        this.jpaSpringRepository.findAllByDeposantId(deposantId).forEach(jpaEntity -> dossiers.add(this.jpaDossierFactory.fromJpa(jpaEntity)));
         return dossiers;
     }
 

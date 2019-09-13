@@ -59,6 +59,17 @@ public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiq
         return this.hasSameIdentityAs(other);
     }
 
+    public PersonnePhysique(final String personnePhysiqueId, final String email){
+        if (personnePhysiqueId == null || personnePhysiqueId.isBlank())
+            throw new NullPointerException("L'id de la personne ne peut pas être nul ou vide");
+        this.id = new PersonnePhysiqueId(personnePhysiqueId);
+        if (email == null || email.isEmpty())
+            throw new NullPointerException("L'email de la personne ne peut être nul ou vide");
+        if (!Pattern.compile(EMAIL_REGEXP).matcher(email).matches())
+            throw new IllegalArgumentException("L'email de la personne est non conforme RFC 5322");
+        this.email = email;
+    }
+
     public PersonnePhysique(final PersonnePhysiqueId id, String email, String nom, String prenom, Sexe sexe, Naissance naissance) {
         if (id == null)
             throw new NullPointerException("L'id de la personne ne peut être nul");

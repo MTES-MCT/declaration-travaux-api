@@ -1,13 +1,21 @@
-package com.github.mtesmct.rieau.api.infra.security;
+package com.github.mtesmct.rieau.api.infra.application.auth;
+
+import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.Role;
+import com.github.mtesmct.rieau.api.application.auth.UserService;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SpringSecurityAuthenticationService implements AuthenticationService {
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean isAuthenticaed() {
@@ -33,8 +41,8 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public String userId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public Optional<PersonnePhysique> user() {
+        return this.userService.findUserById(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 }

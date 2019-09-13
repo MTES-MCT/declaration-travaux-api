@@ -6,7 +6,9 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 
 public interface DossierRepository {
-    public List<Dossier> findByDeposant(String deposantId);
+    public List<Dossier> findByDeposantId(String deposantId);
+
     public Dossier save(Dossier dossier);
-	public Optional<Dossier> findByDeposantAndId(String deposantId, String id);
+
+    public Optional<Dossier> findByDeposantIdAndId(String deposantId, String id);
 }

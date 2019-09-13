@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JpaPieceJointeFactory {
     public JpaPieceJointe toJpa(PieceJointe pieceJointe){
-        return JpaPieceJointe.builder().fileName(pieceJointe.file().getName()).fileType(pieceJointe.mimeType()).storageId("todo").build();
+        return JpaPieceJointe.builder().fileName(pieceJointe.file().getName()).fileType(pieceJointe.mimeType()).storageId("todo").type(pieceJointe.code().type()).build();
     }
     public PieceJointe fromJpa(JpaPieceJointe jpaPieceJointe){
         return new PieceJointe(new CodePieceJointe(jpaPieceJointe.getType(), jpaPieceJointe.getNumero()), new File("todo"));

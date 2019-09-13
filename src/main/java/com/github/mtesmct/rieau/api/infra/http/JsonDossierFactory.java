@@ -18,7 +18,7 @@ public class JsonDossierFactory {
 		Optional<JsonDossier> jsonDossier = Optional.empty();
         if (optionaldossier.isPresent()) {
             Dossier dossier = optionaldossier.get();
-            jsonDossier = Optional.ofNullable(JsonDossier.builder().id(dossier.identity().toString()).statut(dossier.statut().toString()).date(this.dateTimeConverter.format(dossier.dateDepot())).build());
+            jsonDossier = Optional.ofNullable(JsonDossier.builder().id(dossier.identity().toString()).statut(dossier.statut().toString()).date(this.dateTimeConverter.format(dossier.dateDepot())).type(dossier.type().toString()).build());
         }
         return jsonDossier;
     }

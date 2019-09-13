@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.security;
+package com.github.mtesmct.rieau.api.infra.application.auth;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithUserDetails;
 
 @Retention(RetentionPolicy.RUNTIME)
-@WithUserDetails(value = "jacques.dupont", userDetailsServiceBeanName="userDetailsService")
+@WithUserDetails(value = WithInstructeurNonBetaDetails.ID, userDetailsServiceBeanName="userDetailsService")
 public @interface WithInstructeurNonBetaDetails {
+    public final static String ID = "jacques.dupont";
 }

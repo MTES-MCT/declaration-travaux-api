@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Primary;
 
 @TestComponent
-@ConditionalOnProperty(value = "app.datetime.mock", matchIfMissing = true, havingValue = "none")
+@ConditionalOnProperty(value = "app.datetime.mock")
 @Primary
 public class MockDateService implements DateService {
     

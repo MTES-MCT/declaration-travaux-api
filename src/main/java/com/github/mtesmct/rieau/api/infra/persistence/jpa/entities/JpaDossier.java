@@ -9,13 +9,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -48,13 +49,18 @@ public class JpaDossier {
     private String dossierId;
     @NonNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 11)
+    @Column(nullable = false, length = 11)
     private StatutDossier statut;
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    @ManyToOne
-    @JoinColumn(name = "deposant_id", referencedColumnName = "personne_physique_id", nullable = false)
-    private JpaPersonnePhysique deposant;
+    @Column(nullable = false)
+    private String deposantId;
+    @Column(nullable = false)
+    @Email(regexp = PersonnePhysique.EMAIL_REGEXP)
+    private String deposantEmail;
+    @Column(nullable = false, length = 4)
+    @Enumerated(EnumType.STRING)
+    private TypeDossier type;
 
     @Override
     public boolean equals(Object o) {
