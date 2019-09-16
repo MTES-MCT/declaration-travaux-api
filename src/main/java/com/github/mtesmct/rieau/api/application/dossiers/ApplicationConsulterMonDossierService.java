@@ -15,27 +15,21 @@ public class ApplicationConsulterMonDossierService implements ConsulterMonDossie
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
 
-    private void validate(AuthenticationService authenticationService, AuthorizationService authorizationService,
-            DossierRepository dossierRepository) {
-        if (authenticationService == null)
-            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
-        if (authorizationService == null)
-            throw new IllegalArgumentException("Le service d'autorisation ne peut pas être nul.");
-        if (dossierRepository == null)
-            throw new IllegalArgumentException("Le repository des dossiers ne peut pas être nul.");
-    }
-
     public ApplicationConsulterMonDossierService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository) {
-        this.validate(authenticationService, authorizationService, dossierRepository);
+        if (authenticationService == null)
+            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
+        if (authorizationService == null)
+            throw new IllegalArgumentException("Le service d'autorisation ne peut pas être nul.");
         this.authorizationService = authorizationService;
+        if (dossierRepository == null)
+            throw new IllegalArgumentException("Le repository des dossiers ne peut pas être nul.");
         this.dossierRepository = dossierRepository;
     }
 
     @Override
     public Optional<Dossier> execute(String id) {
-        this.validate(this.authenticationService, this.authorizationService, this.dossierRepository);
         this.authorizationService.isDeposantAndBetaAuthorized();
         return this.dossierRepository
                 .findByDeposantIdAndId(this.authenticationService.user().get().identity().toString(), id);

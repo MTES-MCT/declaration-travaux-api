@@ -15,28 +15,21 @@ public class ApplicationListerMesDossiersService implements ListerMesDossiersSer
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
 
-    private void validate(AuthenticationService authenticationService, AuthorizationService authorizationService,
-            DossierRepository dossierRepository) {
-        if (authenticationService == null)
-            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
-        if (authorizationService == null)
-            throw new IllegalArgumentException("Le service d'autorisation ne peut pas être nul.");
-        if (dossierRepository == null)
-            throw new IllegalArgumentException("Le repository de dossier ne peut pas être nul.");
-
-    }
-
     public ApplicationListerMesDossiersService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository) {
-        this.validate(authenticationService, authorizationService, dossierRepository);
+        if (authenticationService == null)
+            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
+        if (authorizationService == null)
+            throw new IllegalArgumentException("Le service d'autorisation ne peut pas être nul.");
         this.authorizationService = authorizationService;
+        if (dossierRepository == null)
+            throw new IllegalArgumentException("Le repository de dossier ne peut pas être nul.");
         this.dossierRepository = dossierRepository;
     }
 
     @Override
     public List<Dossier> execute() {
-        this.validate(this.authenticationService, this.authorizationService, this.dossierRepository);
         this.authorizationService.isDeposantAndBetaAuthorized();
         if (this.authenticationService.user().isEmpty())
             throw new IllegalArgumentException("L'utilisateur connecté est vide");

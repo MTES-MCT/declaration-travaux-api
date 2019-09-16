@@ -25,41 +25,31 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
 
-    private void validate(AuthenticationService authenticationService, AuthorizationService authorizationService,
-            DossierFactory dossierFactory, DossierRepository dossierRepository, CerfaImportService cerfaImportService,
-            CerfaService cerfaService) {
-        if (authenticationService == null)
-            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
-        if (authorizationService == null)
-            throw new IllegalArgumentException("Le service d'authorisation ne peut pas être nul.");
-        if (dossierFactory == null)
-            throw new IllegalArgumentException("La factory de dossiers ne peut pas être nulle.");
-        if (dossierRepository == null)
-            throw new IllegalArgumentException("Le repository de dossier ne peut pas être nul.");
-        if (cerfaImportService == null)
-            throw new IllegalArgumentException("Le service d'import de CERFA ne peut pas être nul.");
-        if (cerfaService == null)
-            throw new IllegalArgumentException("Le service de CERFA ne peut pas être nul.");
-
-    }
-
     public ApplicationImporterCerfaService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierFactory dossierFactory,
             DossierRepository dossierRepository, CerfaImportService cerfaImportService, CerfaService cerfaService) {
-        this.validate(authenticationService, authorizationService, dossierFactory, dossierRepository,
-                cerfaImportService, cerfaService);
+        if (authenticationService == null)
+            throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
+        if (authorizationService == null)
+            throw new IllegalArgumentException("Le service d'authorisation ne peut pas être nul.");
         this.authorizationService = authorizationService;
+        if (dossierFactory == null)
+            throw new IllegalArgumentException("La factory de dossiers ne peut pas être nulle.");
         this.dossierFactory = dossierFactory;
+        if (dossierRepository == null)
+            throw new IllegalArgumentException("Le repository de dossier ne peut pas être nul.");
         this.dossierRepository = dossierRepository;
+        if (cerfaImportService == null)
+            throw new IllegalArgumentException("Le service d'import de CERFA ne peut pas être nul.");
         this.cerfaImportService = cerfaImportService;
+        if (cerfaService == null)
+            throw new IllegalArgumentException("Le service de CERFA ne peut pas être nul.");
         this.cerfaService = cerfaService;
     }
 
     @Override
     public Optional<Dossier> execute(File file) throws DossierImportException {
-        this.validate(this.authenticationService, this.authorizationService, this.dossierFactory,
-                this.dossierRepository, this.cerfaImportService, this.cerfaService);
         this.authorizationService.isDeposantAndBetaAuthorized();
         Optional<String> code = this.cerfaImportService.lireCode(file);
         if (code.isEmpty())
