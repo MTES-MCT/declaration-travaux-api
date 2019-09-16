@@ -3,14 +3,14 @@ package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 import java.util.Date;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
     public StatutDossier statut;
     public TypeDossier type;
     private Date dateDepot;
-    private PersonnePhysique deposant;
+    private Personne deposant;
     private Petitionnaires petitionnaires;
     private Projet projet;
     private PieceJointe cerfa;
@@ -29,7 +29,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public Petitionnaires petitionnaires(){
         return this.petitionnaires;
     }
-    public PersonnePhysique deposant(){
+    public Personne deposant(){
         return this.deposant;
     }
     public PieceJointe cerfa(){
@@ -77,7 +77,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
-    public Dossier(DossierId id, PersonnePhysique deposant, Date dateDepot, PieceJointe cerfa, TypeDossier type) {
+    public Dossier(DossierId id, Personne deposant, Date dateDepot, PieceJointe cerfa, TypeDossier type) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut être nul");
         this.id = id;

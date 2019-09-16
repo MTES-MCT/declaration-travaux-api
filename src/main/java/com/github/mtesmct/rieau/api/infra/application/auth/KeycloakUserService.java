@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.UserService;
 import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
@@ -17,7 +17,7 @@ public class KeycloakUserService implements UserService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<PersonnePhysique> findUserById(String id) throws UserServiceException {
+    public Optional<Personne> findUserById(String id) throws UserServiceException {
         if (!(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal))
             throw new UserServiceException("spring security principal is not instance of KeycloakPrincipal");
         KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>) SecurityContextHolder
@@ -30,8 +30,8 @@ public class KeycloakUserService implements UserService {
         AccessToken accessToken = session.getToken();
         if (accessToken == null)
             throw new UserServiceException("keycloak access token is null");
-        Optional<PersonnePhysique> user = Optional.empty();
-        user = Optional.ofNullable(new PersonnePhysique(id, accessToken.getEmail()));
+        Optional<Personne> user = Optional.empty();
+        user = Optional.ofNullable(new Personne(id, accessToken.getEmail()));
         return user;
     }
 

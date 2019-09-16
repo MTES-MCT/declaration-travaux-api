@@ -13,7 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 
 import org.hibernate.annotations.Cache;
@@ -28,8 +28,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "PersonnePhysique")
-@Table(name = "personnes_physiques")
+@Entity(name = "Personne")
+@Table(name = "personnes")
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -37,14 +37,14 @@ import lombok.Setter;
 @Getter
 @NaturalIdCache
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class JpaPersonnePhysique {
+public class JpaPersonne {
     @Id
     @GeneratedValue
     private Long id;
     @NaturalId
-    @Column(name= "personne_physique_id", nullable = false, unique = true)
-    private String personnePhysiqueId;
-    @Email(regexp = PersonnePhysique.EMAIL_REGEXP)
+    @Column(name= "personne_id", nullable = false, unique = true)
+    private String personneId;
+    @Email(regexp = Personne.EMAIL_REGEXP)
     @Column(nullable = false, unique = false)
     private String email;
     @Enumerated
@@ -65,12 +65,12 @@ public class JpaPersonnePhysique {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        JpaPersonnePhysique jpaPersonnePhysique = (JpaPersonnePhysique) o;
-        return Objects.equals(personnePhysiqueId, jpaPersonnePhysique.personnePhysiqueId);
+        JpaPersonne jpaPersonne = (JpaPersonne) o;
+        return Objects.equals(personneId, jpaPersonne.personneId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(personnePhysiqueId);
+        return Objects.hash(personneId);
     }
 }

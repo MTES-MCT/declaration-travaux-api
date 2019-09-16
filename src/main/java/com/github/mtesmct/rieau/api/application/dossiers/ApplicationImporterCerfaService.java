@@ -12,7 +12,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypePieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CerfaService;
 
@@ -58,7 +58,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
         Optional<TypeDossier> type = this.cerfaService.fromCodeCerfa(code.get());
         if (type.isEmpty())
             throw new DossierImportException("Type de dossier indéterminé");
-        PersonnePhysique deposant = this.authenticationService.user().get();
+        Personne deposant = this.authenticationService.user().get();
         Dossier dossier = this.dossierFactory.creer(deposant, cerfa, type.get());
         dossier = this.dossierRepository.save(dossier);
         return Optional.ofNullable(dossier);

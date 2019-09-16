@@ -5,13 +5,13 @@ import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Naissance;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysiqueId;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonneId;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 
 public class Petitionnaires implements ValueObject<Petitionnaires> {
 
-    private List<PersonnePhysique> personnes;
+    private List<Personne> personnes;
     private Dossier dossier;
 
     @Override
@@ -26,7 +26,7 @@ public class Petitionnaires implements ValueObject<Petitionnaires> {
     }
 
     void ajouter(final String personneId, String email, String nom, String prenom, Sexe sexe, Naissance naissance){
-        this.personnes.add(new PersonnePhysique(new PersonnePhysiqueId(personneId), email, nom, prenom, sexe, naissance));
+        this.personnes.add(new Personne(new PersonneId(personneId), email, nom, prenom, sexe, naissance));
     }
 
 

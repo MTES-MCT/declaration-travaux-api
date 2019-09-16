@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.Role;
 import com.github.mtesmct.rieau.api.application.auth.UserService;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +41,7 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public Optional<PersonnePhysique> user() {
+    public Optional<Personne> user() {
         return this.userService.findUserById(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 

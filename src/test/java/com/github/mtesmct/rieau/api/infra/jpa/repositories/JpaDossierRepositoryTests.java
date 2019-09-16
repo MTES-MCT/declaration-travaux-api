@@ -15,13 +15,13 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonnePhysique;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonnePhysiqueFactory;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonneFactory;
 
 import org.hibernate.Session;
 import org.junit.Before;
@@ -58,18 +58,18 @@ public class JpaDossierRepositoryTests {
 	private Dossier dossier;
     @Autowired
     @Qualifier("deposantBeta")
-    private PersonnePhysique deposantBeta;
+    private Personne deposantBeta;
 
 	@Autowired
-	private JpaPersonnePhysiqueFactory jpaPersonnePhysiqueFactory;
+	private JpaPersonneFactory jpaPersonneFactory;
 
 	@Before
 	public void setUp(){
-		JpaPersonnePhysique jpaPersonnePhysique = JpaPersonnePhysique.builder().personnePhysiqueId(this.deposantBeta.identity().toString()).email(this.deposantBeta.email()).build();
-		jpaPersonnePhysique = this.entityManager.persistAndFlush(jpaPersonnePhysique);
-		this.dossier = this.dossierFactory.creer(this.jpaPersonnePhysiqueFactory.fromJpa(jpaPersonnePhysique), null, TypeDossier.DP);
+		JpaPersonne jpaPersonne = JpaPersonne.builder().personneId(this.deposantBeta.identity().toString()).email(this.deposantBeta.email()).build();
+		jpaPersonne = this.entityManager.persistAndFlush(jpaPersonne);
+		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(jpaPersonne), null, TypeDossier.DP);
 		assertThat(this.dossier.deposant().identity().toString(), is(equalTo(this.deposantBeta.identity().toString())));
-		assertThat(this.dossier.deposant().email(), is(equalTo(jpaPersonnePhysique.getEmail())));
+		assertThat(this.dossier.deposant().email(), is(equalTo(jpaPersonne.getEmail())));
     }
     
 	@Test

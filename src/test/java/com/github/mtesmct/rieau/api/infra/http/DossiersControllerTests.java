@@ -23,7 +23,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypePieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -72,7 +72,7 @@ public class DossiersControllerTests {
 
 	@Autowired
 	@Qualifier("deposantBeta")
-	private PersonnePhysique deposantBeta;
+	private Personne deposantBeta;
 
 	@Before
 	public void setup() {

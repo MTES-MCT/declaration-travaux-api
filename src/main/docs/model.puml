@@ -1,5 +1,5 @@
 @startuml RIEAU
-class PersonnePhysique {
+class Personne {
     - nom
     - prenom
     - email
@@ -12,5 +12,5 @@ class PieceJointe {
     - version
 }
 Dossier *-- PieceJointe: joint * >
-Dossier <-- PersonnePhysique: depose <
+Dossier <-- Personne: depose <
 @enduml

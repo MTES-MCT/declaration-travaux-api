@@ -2,7 +2,7 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +15,6 @@ public class JpaDossierFactory {
     }
     public Dossier fromJpa(JpaDossier jpaDossier){
         // TODO cerfa piece jointe
-        return new Dossier(new DossierId(jpaDossier.getDossierId()), new PersonnePhysique(jpaDossier.getDeposantId(), jpaDossier.getDeposantEmail()), jpaDossier.getDate(), null, jpaDossier.getType());
+        return new Dossier(new DossierId(jpaDossier.getDossierId()), new Personne(jpaDossier.getDeposantId(), jpaDossier.getDeposantEmail()), jpaDossier.getDate(), null, jpaDossier.getType());
     }
 }

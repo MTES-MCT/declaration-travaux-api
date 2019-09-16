@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringImporterCerfaService;
@@ -40,7 +40,7 @@ public class ImporterCerfaServiceTests {
     private DateService dateService;
     @Autowired
     @Qualifier("deposantBeta")
-    private PersonnePhysique deposantBeta;
+    private Personne deposantBeta;
     
     @Test
     @WithDeposantAndBetaDetails

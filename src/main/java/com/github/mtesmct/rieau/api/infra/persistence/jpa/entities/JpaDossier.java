@@ -16,7 +16,7 @@ import javax.validation.constraints.Email;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -56,7 +56,7 @@ public class JpaDossier {
     @Column(nullable = false)
     private String deposantId;
     @Column(nullable = false)
-    @Email(regexp = PersonnePhysique.EMAIL_REGEXP)
+    @Email(regexp = Personne.EMAIL_REGEXP)
     private String deposantEmail;
     @Column(nullable = false, length = 4)
     @Enumerated(EnumType.STRING)

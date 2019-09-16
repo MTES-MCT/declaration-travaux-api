@@ -5,9 +5,9 @@ import java.util.regex.Pattern;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
 
-public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiqueId> {
+public class Personne implements Entity<Personne, PersonneId> {
     public static final String EMAIL_REGEXP = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-    private PersonnePhysiqueId id;
+    private PersonneId id;
     private String email;
     private Sexe sexe;
     private String nom;
@@ -45,7 +45,7 @@ public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiq
     }
 
     @Override
-    public boolean hasSameIdentityAs(PersonnePhysique other) {
+    public boolean hasSameIdentityAs(Personne other) {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
@@ -55,14 +55,14 @@ public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiq
             return true;
         if (object == null || getClass() != object.getClass())
             return false;
-        final PersonnePhysique other = (PersonnePhysique) object;
+        final Personne other = (Personne) object;
         return this.hasSameIdentityAs(other);
     }
 
-    public PersonnePhysique(final String personnePhysiqueId, final String email){
-        if (personnePhysiqueId == null || personnePhysiqueId.isBlank())
+    public Personne(final String personneId, final String email){
+        if (personneId == null || personneId.isBlank())
             throw new NullPointerException("L'id de la personne ne peut pas être nul ou vide");
-        this.id = new PersonnePhysiqueId(personnePhysiqueId);
+        this.id = new PersonneId(personneId);
         if (email == null || email.isEmpty())
             throw new NullPointerException("L'email de la personne ne peut être nul ou vide");
         if (!Pattern.compile(EMAIL_REGEXP).matcher(email).matches())
@@ -70,7 +70,7 @@ public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiq
         this.email = email;
     }
 
-    public PersonnePhysique(final PersonnePhysiqueId id, String email, String nom, String prenom, Sexe sexe, Naissance naissance) {
+    public Personne(final PersonneId id, String email, String nom, String prenom, Sexe sexe, Naissance naissance) {
         if (id == null)
             throw new NullPointerException("L'id de la personne ne peut être nul");
         this.id = id;
@@ -86,7 +86,7 @@ public class PersonnePhysique implements Entity<PersonnePhysique, PersonnePhysiq
     }
 
     @Override
-    public PersonnePhysiqueId identity() {
+    public PersonneId identity() {
         return this.id;
     }
 }

@@ -2,7 +2,7 @@ package com.github.mtesmct.rieau.api.infra.config;
 
 import com.github.mtesmct.rieau.api.application.auth.Role;
 import com.github.mtesmct.rieau.api.application.auth.UserService;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 
@@ -24,13 +24,13 @@ public class MockWebSecurityConfig {
 
     @Bean
     @Qualifier("deposantBeta")
-    public PersonnePhysique deposantBeta(){
+    public Personne deposantBeta(){
         return this.userService.findUserById((WithDeposantAndBetaDetails.ID)).get();
     }
 
     @Bean
     @Qualifier("instructeurNonBeta")
-    public PersonnePhysique instructeurNonBeta(){
+    public Personne instructeurNonBeta(){
         return this.userService.findUserById(WithInstructeurNonBetaDetails.ID).get();
     }
 

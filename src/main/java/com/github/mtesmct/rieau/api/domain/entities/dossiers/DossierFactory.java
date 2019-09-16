@@ -1,7 +1,7 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 
 @Factory
@@ -22,7 +22,7 @@ public class DossierFactory {
         this.dateService = dateService;
     }
 
-    public Dossier creer(PersonnePhysique deposant, PieceJointe cerfa, TypeDossier type) {
+    public Dossier creer(Personne deposant, PieceJointe cerfa, TypeDossier type) {
         this.validate(this.dossierIdService, this.dateService);
         return new Dossier(this.dossierIdService.creer(), deposant, this.dateService.now(), cerfa, type);
     }

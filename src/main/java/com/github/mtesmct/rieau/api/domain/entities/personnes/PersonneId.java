@@ -4,12 +4,12 @@ import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
-public class PersonnePhysiqueId implements ValueObject<PersonnePhysiqueId> {
+public class PersonneId implements ValueObject<PersonneId> {
 
   private String id;
 
   @Override
-  public boolean hasSameValuesAs(PersonnePhysiqueId other) {
+  public boolean hasSameValuesAs(PersonneId other) {
     return other != null && this.id.equals(other.id);
   }
 
@@ -24,7 +24,7 @@ public class PersonnePhysiqueId implements ValueObject<PersonnePhysiqueId> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    PersonnePhysiqueId other = (PersonnePhysiqueId) o;
+    PersonneId other = (PersonneId) o;
     return this.hasSameValuesAs(other);
   }
 
@@ -33,7 +33,7 @@ public class PersonnePhysiqueId implements ValueObject<PersonnePhysiqueId> {
     return this.id.toString();
   }
 
-  public PersonnePhysiqueId(final String id) {
+  public PersonneId(final String id) {
     if (id == null)
       throw new NullPointerException("L'id de la personne ne peut être nul");
     this.id = id;

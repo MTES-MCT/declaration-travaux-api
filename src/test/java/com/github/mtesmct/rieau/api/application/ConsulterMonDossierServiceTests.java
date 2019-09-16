@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonnePhysique;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringConsulterMonDossierService;
@@ -43,10 +43,10 @@ public class ConsulterMonDossierServiceTests {
     private Dossier otherDossier;
     @Autowired
     @Qualifier("deposantBeta")
-    private PersonnePhysique deposantBeta;
+    private Personne deposantBeta;
     @Autowired
     @Qualifier("instructeurNonBeta")
-    private PersonnePhysique instructeurNonBeta;
+    private Personne instructeurNonBeta;
 
     @Before
     public void setUp() throws Exception {
