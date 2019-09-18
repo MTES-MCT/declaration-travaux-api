@@ -1,23 +1,60 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
-public enum TypeDossier implements ValueObject<TypeDossier> {
-    DP("13406"), PCMI("13703");
+public class TypeDossier implements ValueObject<TypeDossier> {
+    private String code;
+    private int totalPiecesAJoindre;
+    private TypesDossier type;
 
-    private final String code;
-
-    private TypeDossier(String code){
+    public TypeDossier(TypesDossier type, String code, int totalPiecesAJoindre) {
+        this.type = type;
         this.code = code;
+        this.totalPiecesAJoindre = totalPiecesAJoindre;
     }
 
-    public String getCode(){
+    public List<CodePieceJointe> codesPiecesAJoindre() {
+        List<CodePieceJointe>  codesPiecesAJoindre = new ArrayList<CodePieceJointe>();
+        for (int i = 1; i <= this.totalPiecesAJoindre; i++){
+            codesPiecesAJoindre.add(new CodePieceJointe(this.type, Integer.toString(i)));
+        }
+        return codesPiecesAJoindre;
+    }
+
+    public TypesDossier type(){
+        return this.type;
+    }
+
+    public String code(){
         return this.code;
     }
 
     @Override
-    public boolean hasSameValuesAs(final TypeDossier other) {
-        return this.equals(other);
+    public boolean hasSameValuesAs(TypeDossier other) {
+        return other != null && this.type.equals(other.type) && this.code.equals(other.code) && this.totalPiecesAJoindre == other.totalPiecesAJoindre;
     }
     
+    @Override
+    public String toString() {
+        return this.type.toString() + this.totalPiecesAJoindre + "-" + this.code;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        final TypeDossier other = (TypeDossier) object;
+        return this.hasSameValuesAs(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.type,this.code,this.totalPiecesAJoindre);
+    }
 }

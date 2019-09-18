@@ -1,16 +1,17 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringConsulterMonDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.file.upload.FileUploadService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,8 @@ public class DossiersController {
 	@Autowired
 	private SpringImporterCerfaService importerCerfaService;
 	@Autowired
+	private SpringAjouterPieceJointeService ajouterPieceJointeService;
+	@Autowired
 	private SpringListerMesDossiersService listerMesDossiersService;
 	@Autowired
 	private SpringConsulterMonDossierService consulterMonDossierService;
@@ -41,9 +44,6 @@ public class DossiersController {
 	@Autowired
 	private JsonDossierFactory jsonDossierFactory;
 	
-	@Autowired
-	private FileUploadService fileUploadService;
-
 	@GetMapping("/{id}")
 	public Optional<JsonDossier> consulter(@PathVariable String id) {
         return this.jsonDossierFactory.toJson(this.consulterMonDossierService.execute(id));
@@ -57,9 +57,16 @@ public class DossiersController {
 	}
 
 	@PostMapping
-	public void ajouter(@RequestParam("file") MultipartFile file) throws IOException {
-		File uploadedFile = this.fileUploadService.store(file.getOriginalFilename(), file.getInputStream());
-		this.importerCerfaService.execute(uploadedFile);
+	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException {
+		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream());
+		this.importerCerfaService.execute(fichier);
+	}
+
+	@PostMapping("/{id}/piecesjointes/{numero}")
+	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero, @RequestParam("file") MultipartFile file) throws IOException {
+		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream());
+		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
+		this.ajouterPieceJointeService.execute(dossier.get(), numero, fichier);
 	}
 
 }

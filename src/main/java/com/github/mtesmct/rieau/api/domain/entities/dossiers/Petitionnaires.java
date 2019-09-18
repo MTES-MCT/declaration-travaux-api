@@ -1,12 +1,12 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Naissance;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonneId;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 
 public class Petitionnaires implements ValueObject<Petitionnaires> {
@@ -23,10 +23,11 @@ public class Petitionnaires implements ValueObject<Petitionnaires> {
         if (dossier == null)
           throw new NullPointerException("Le dossier à rattacher aux pétitionnaires ne peut pas être nul");
         this.dossier = dossier;
+        this.personnes = new ArrayList<Personne>();
     }
 
     void ajouter(final String personneId, String email, String nom, String prenom, Sexe sexe, Naissance naissance){
-        this.personnes.add(new Personne(new PersonneId(personneId), email, nom, prenom, sexe, naissance));
+        this.personnes.add(new Personne(personneId, email, nom, prenom, sexe, naissance));
     }
 
 

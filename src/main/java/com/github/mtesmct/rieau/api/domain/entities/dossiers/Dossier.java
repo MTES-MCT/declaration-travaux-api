@@ -1,6 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
@@ -14,37 +18,68 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private Petitionnaires petitionnaires;
     private Projet projet;
     private PieceJointe cerfa;
-    private PiecesJointesObligatoires piecesJointesObligatoires;
-    private PiecesJointesOptionnelles piecesJointesOptionnelles;
+    private List<PieceJointe> piecesJointes;
+    private PiecesAJoindre piecesAJoindre;
 
-    public Date dateDepot(){
+    public Date dateDepot() {
         return this.dateDepot;
     }
-    public Projet projet(){
+
+    public Projet projet() {
         return this.projet;
     }
-    public StatutDossier statut(){
+
+    public StatutDossier statut() {
         return this.statut;
     }
-    public Petitionnaires petitionnaires(){
+
+    public Petitionnaires petitionnaires() {
         return this.petitionnaires;
     }
-    public Personne deposant(){
+
+    public Personne deposant() {
         return this.deposant;
     }
-    public PieceJointe cerfa(){
+
+    public PieceJointe cerfa() {
         return this.cerfa;
     }
-    public TypeDossier type(){
+
+    public TypeDossier type() {
         return this.type;
     }
 
-    public PiecesJointesObligatoires piecesJointesObligatoires() {
-        return this.piecesJointesObligatoires;
+    public List<PieceJointe> pieceJointes() {
+        return this.piecesJointes;
     }
 
-    public PiecesJointesOptionnelles piecesJointesOptionnelles() {
-        return this.piecesJointesOptionnelles;
+    public PieceJointe ajouterCerfa(FichierId fichierId) throws PieceNonAJoindreException {
+        PieceJointe pieceJointe = new PieceJointe(this, new CodePieceJointe(this.type.type(), "0"), fichierId);
+        this.cerfa = pieceJointe;
+        return pieceJointe;
+    }
+
+    public Optional<PieceJointe> ajouter(String numero, FichierId fichierId) throws AjouterPieceJointeException {
+        Optional<PieceJointe> pieceJointe = Optional.empty();
+        try {
+            if (this.type == null)
+                throw new AjouterPieceJointeException(new NullPointerException("Le type du dossier est nul"));
+            if (numero.equals("0"))
+                throw new AjouterPieceJointeException(new NumeroPieceJointeException());
+            pieceJointe = Optional
+                    .ofNullable(new PieceJointe(this, new CodePieceJointe(this.type.type(), numero), fichierId));
+            if (!pieceJointe.orElseThrow().isAJoindre())
+                throw new AjouterPieceJointeException(new PieceNonAJoindreException(pieceJointe.orElseThrow().code()));
+            this.piecesJointes.add(pieceJointe.orElseThrow());
+        } catch (IllegalArgumentException | NullPointerException | UnsupportedOperationException | ClassCastException
+                | NoSuchElementException e) {
+            throw new AjouterPieceJointeException("Ajout de la pièce jointe impossible", e);
+        }
+        return pieceJointe;
+    }
+
+    public PiecesAJoindre piecesAJoindre() {
+        return this.piecesAJoindre;
     }
 
     @Override
@@ -64,7 +99,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     @Override
     public String toString() {
-        return this.id.toString();
+        return "Dossier={ id={" + this.id.toString() + "}, deposant={" + this.deposant.toString() + "}, statut={"
+                + this.statut.toString() + "}, dateDepot={" + this.dateDepot.toString() + "}, type={"
+                + this.type.toString() + "} }";
     }
 
     @Override
@@ -77,23 +114,24 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && this.id.hasSameValuesAs(other.id);
     }
 
-    public Dossier(DossierId id, Personne deposant, Date dateDepot, PieceJointe cerfa, TypeDossier type) {
+    public Dossier(DossierId id, Personne deposant, StatutDossier statut, Date dateDepot, TypeDossier type) {
         if (id == null)
-            throw new NullPointerException("L'id du dépôt ne peut être nul");
+            throw new NullPointerException("L'id du dépôt ne peut pas être nul");
         this.id = id;
         if (deposant == null)
-            throw new NullPointerException("Le deposant ne peut être nul");
+            throw new NullPointerException("Le deposant ne peut pas être nul");
         this.deposant = deposant;
-        this.statut = StatutDossier.DEPOSE;
+        if (statut == null)
+            throw new NullPointerException("Le statut du dossier ne peut pas être nul");
+        this.statut = statut;
         if (dateDepot == null)
-            throw new NullPointerException("La date du dépôt ne peut être nulle");
+            throw new NullPointerException("La date du dépôt ne peut pas être nulle");
         this.dateDepot = dateDepot;
-        if (cerfa != null && !cerfa.isCerfa())
-            throw new IllegalArgumentException("La piece jointe n'est pas un CERFA valide");
-        this.cerfa = cerfa;
-        if (cerfa != null && type == null)
-            throw new NullPointerException("Le type de dossier ne peut pas être nul");
+        if (type == null)
+            throw new NullPointerException("Le type du dossier ne peut pas être nul");
         this.type = type;
+        this.piecesAJoindre = new PiecesAJoindre(this);
+        this.piecesJointes = new ArrayList<PieceJointe>();
     }
 
 }

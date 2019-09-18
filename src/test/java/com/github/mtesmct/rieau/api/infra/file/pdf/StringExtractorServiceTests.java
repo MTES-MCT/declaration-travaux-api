@@ -1,19 +1,20 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class StringExtractorServiceTests {
     @Autowired
@@ -23,12 +24,12 @@ public class StringExtractorServiceTests {
     public void extractCodeCerfaOKTest() throws DossierImportException {
         String text = "pour une maison individuelle et / ou ses annexes N° 13406*06".trim();
         Optional<String> code = stringExtractService.extract("[\\d]{5}", text, 0);
-        assertThat(code.isPresent(), is(true));
-        assertThat(code.get(), is("13406"));
+        assertTrue(code.isPresent());
+        assertEquals(code.get(), "13406");
     }
     @Test
     public void extractCodeCerfaKOTest() throws DossierImportException {
         Optional<String> code = stringExtractService.extract("[\\d]{5}", "N° E*6 sdgfsdgdfg", 3);
-        assertThat(code.isPresent(), is(false));
+        assertFalse(code.isPresent());
     }
 }

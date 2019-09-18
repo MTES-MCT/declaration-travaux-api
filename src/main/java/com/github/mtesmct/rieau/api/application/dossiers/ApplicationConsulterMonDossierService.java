@@ -5,7 +5,9 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.ApplicationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 
 @ApplicationService
@@ -29,9 +31,16 @@ public class ApplicationConsulterMonDossierService implements ConsulterMonDossie
     }
 
     @Override
-    public Optional<Dossier> execute(String id) {
+    public Optional<Dossier> execute(String id) throws DeposantNonAutoriseException {
         this.authorizationService.isDeposantAndBetaAuthorized();
-        return this.dossierRepository
-                .findByDeposantIdAndId(this.authenticationService.user().get().identity().toString(), id);
+        Optional<Dossier> dossier = this.dossierRepository.findById(id);
+        if (!dossier.isEmpty() && dossier.get().deposant() == null)
+            throw new NullPointerException("Le déposant du dossier ne peut pas être nul");
+        Optional<Personne> user = this.authenticationService.user();
+        if (user.isEmpty())
+            throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
+        if (!dossier.isEmpty() && !dossier.get().deposant().equals(user.get()))
+            throw new DeposantNonAutoriseException(user.get());
+        return dossier;
     }
 }

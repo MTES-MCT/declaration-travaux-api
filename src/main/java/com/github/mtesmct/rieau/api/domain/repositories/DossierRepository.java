@@ -7,8 +7,6 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 
 public interface DossierRepository {
     public List<Dossier> findByDeposantId(String deposantId);
-
     public Dossier save(Dossier dossier);
-
-    public Optional<Dossier> findByDeposantIdAndId(String deposantId, String id);
+    public Optional<Dossier> findById(String id);
 }

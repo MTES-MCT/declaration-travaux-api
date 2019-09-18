@@ -20,7 +20,5 @@ public class SpringConsulterMonDossierService implements ConsulterMonDossierServ
     @Override
     public Optional<Dossier> execute(String id) {
         return this.applicationConsulterMonDossierService.execute(id);
-    }
-
-    
+    }    
 }

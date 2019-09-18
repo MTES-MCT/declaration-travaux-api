@@ -1,64 +1,69 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.io.File;
 import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class PieceJointe implements ValueObject<PieceJointe> {
     private CodePieceJointe code;
-    private Long version;
     private Dossier dossier;
-    private File file;
-    private String mimeType;
+    private FichierId fichierId;
 
-    public boolean isObligatoire(){
-        return this.code.isCerfa();
+    public FichierId fichierId() {
+        return this.fichierId;
     }
-    public File file(){
-        return this.file;
-    }
-    public String mimeType(){
-        return this.mimeType;
-    }
-    public Dossier dossier(){
+
+    public Dossier dossier() {
         return this.dossier;
     }
-    public CodePieceJointe code(){
+
+    public CodePieceJointe code() {
         return this.code;
     }
 
     @Override
     public String toString() {
-        return this.code.toString() + "-" + this.file.getName() + "-" + this.version.toString() + "-" + this.dossier.toString();
+        return "PieceJointe={" + this.code.toString() + ", fichierId={" + this.fichierId.toString() + "}, "
+                + this.dossier.toString() + "}";
     }
 
     @Override
     public boolean equals(final Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
         final PieceJointe other = (PieceJointe) object;
         return this.hasSameValuesAs(other);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.code,this.file.getName(),this.version, this.dossier.identity());
+        return Objects.hash(this.code, this.fichierId, this.dossier.identity());
     }
 
     @Override
     public boolean hasSameValuesAs(PieceJointe other) {
-        return other != null && this.code.hasSameValuesAs(other.code) && this.version.equals(other.version) && this.dossier.hasSameIdentityAs(other.dossier) && this.file.equals(other.file);
+        return other != null && this.code.equals(other.code) && this.dossier.equals(other.dossier) && this.fichierId.equals(other.fichierId);
     }
 
-    public PieceJointe(final CodePieceJointe code, final File file) {
+    public PieceJointe(final Dossier dossier, final CodePieceJointe code, final FichierId fichierId) {
+        if (dossier == null)
+            throw new NullPointerException("Le dossier de la pièce jointe ne peut pas être nul");
+        this.dossier = dossier;
         if (code == null)
-            throw new NullPointerException("Le code de la pièce jointe ne peut être nul");
+            throw new NullPointerException("Le code de la pièce jointe ne peut pas être nul");
         this.code = code;
-        this.file = file;
+        if (fichierId == null)
+            throw new NullPointerException("Le fichier id de la pièce jointe ne peut pas être nul");
+        this.fichierId = fichierId;
     }
 
-    public boolean isCerfa(){
+    public boolean isCerfa() {
         return this.code.isCerfa();
+    }
+
+    public boolean isAJoindre() {
+        return this.dossier.piecesAJoindre().contains(this);
     }
 }

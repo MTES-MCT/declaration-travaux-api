@@ -34,7 +34,7 @@ public class Naissance implements ValueObject<Naissance> {
 
   @Override
   public String toString() {
-    return "Naissance=[date=" + this.date.toString() + ", commune=" + this.commune + "]";
+    return "Naissance={ date={" + this.date != null ? this.date.toString() : "null" + "}, commune={" + this.commune + "} }";
   }
 
   @Override

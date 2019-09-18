@@ -5,11 +5,14 @@ import java.util.Objects;
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class CodePieceJointe implements ValueObject<CodePieceJointe> {
-    private TypePieceJointe type;
-    private Integer numero;
+    private TypesDossier type;
+    private String numero;
 
-    public TypePieceJointe type(){
+    public TypesDossier type(){
       return this.type;
+    }
+    public String numero(){
+      return this.numero;
     }
 
     @Override
@@ -18,7 +21,7 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
     }
 
     public boolean isCerfa() {
-        return this.type.equals(TypePieceJointe.CERFA);
+        return this.numero.equals("0");
     }
 
     @Override
@@ -36,15 +39,15 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
   
     @Override
     public String toString() {
-      return this.type.toString()+this.numero.toString();
+      return this.type.toString()+this.numero;
     }
 
-    public CodePieceJointe(final TypePieceJointe type, final Integer numero) {
+    public CodePieceJointe(final TypesDossier type, final String numero) {
         if (type == null)
-            throw new NullPointerException("Le type de pièce jointe ne peut être nul");
+            throw new NullPointerException("Le type de la pièce jointe ne peut pas être nul");
         this.type = type;
-        if (!type.equals(TypePieceJointe.CERFA) && numero == null)
-            throw new NullPointerException("Le numero de pièce jointe ne peut être nul");
+        if (numero == null || numero.isBlank())
+            throw new NullPointerException("Le numero de la pièce jointe ne peut pas être nul ou vide");
         this.numero = numero;
     }
     

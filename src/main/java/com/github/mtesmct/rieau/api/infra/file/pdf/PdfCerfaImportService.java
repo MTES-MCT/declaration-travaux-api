@@ -1,11 +1,11 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportService;
-import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -24,21 +24,24 @@ public class PdfCerfaImportService implements CerfaImportService {
 	private StringExtractService stringExtractService;
 
 	@Override
-	public Optional<String> lireCode(File file) throws DossierImportException {
+	public Optional<String> lireCode(Fichier fichier) throws CerfaImportException {
 		PDDocument doc = null;
 		Optional<String> code = Optional.empty();
+		String pdfMimeType = "application/pdf";
+		if (!fichier.mimeType().equals(pdfMimeType))
+			throw new CerfaImportException("Le type MIME du fichier n'est pas " + pdfMimeType);
 		try {
-			doc = PDDocument.load(file, MemoryUsageSetting.setupTempFileOnly());
+			doc = PDDocument.load(fichier.content(), MemoryUsageSetting.setupTempFileOnly());
 			if (doc.isEncrypted()) {
-				throw new DossierImportException("Le pdf est chiffré");
+				throw new CerfaImportException("Le pdf est chiffré");
 			}
 			AccessPermission ap = doc.getCurrentAccessPermission();
 			if (!ap.canExtractContent()) {
-				throw new DossierImportException("Pas de permission d'extraire du texte depuis le pdf");
+				throw new CerfaImportException("Pas de permission d'extraire du texte depuis le pdf");
 			}
 			log.debug("Le pdf contient " + doc.getNumberOfPages() + " pages");
 			if (doc.getNumberOfPages() < 2) {
-				throw new DossierImportException("Le pdf contient moins de 2 pages");
+				throw new CerfaImportException("Le pdf contient moins de 2 pages");
 			}
 			PDFTextStripper stripper = new PDFTextStripper();
 			stripper.setStartPage(2);
@@ -47,14 +50,15 @@ public class PdfCerfaImportService implements CerfaImportService {
 			stripper.setLineSeparator("\n");
 			String[] lines = stripper.getText(doc).split(stripper.getLineSeparator());
 			log.debug("{} lignes de texte", lines.length);
-			for (String line : lines){
+			for (String line : lines) {
 				log.debug("line={}", line);
 				Optional<String> lCode = this.stringExtractService.extract("[\\d]{5}", line, 0);
-				if (lCode.isPresent()) code = lCode;
+				if (lCode.isPresent())
+					code = lCode;
 			}
 			doc.close();
 		} catch (IOException e) {
-			throw new DossierImportException("Erreur de chargement du pdf: " + file.getPath(), e);
+			throw new CerfaImportException("Erreur de chargement du pdf: " + fichier.nom(), e);
 		}
 		return code;
 	}

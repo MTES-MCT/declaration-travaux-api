@@ -1,33 +1,38 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.io.File;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.ApplicationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierFactory;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.CerfaService;
+import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.FichierService;
+import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 
 @ApplicationService
 public class ApplicationImporterCerfaService implements ImporterCerfaService {
     private DossierRepository dossierRepository;
     private DossierFactory dossierFactory;
     private CerfaImportService cerfaImportService;
-    private CerfaService cerfaService;
+    private TypeDossierRepository typeDossierRepository;
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
+    private FichierService fichierService;
+    private FichierIdService fichierIdService;
 
     public ApplicationImporterCerfaService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierFactory dossierFactory,
-            DossierRepository dossierRepository, CerfaImportService cerfaImportService, CerfaService cerfaService) {
+            DossierRepository dossierRepository, CerfaImportService cerfaImportService,
+            TypeDossierRepository typeDossierRepository, FichierIdService fichierIdService,
+            FichierService fichierService) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
@@ -43,24 +48,37 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
         if (cerfaImportService == null)
             throw new IllegalArgumentException("Le service d'import de CERFA ne peut pas être nul.");
         this.cerfaImportService = cerfaImportService;
-        if (cerfaService == null)
-            throw new IllegalArgumentException("Le service de CERFA ne peut pas être nul.");
-        this.cerfaService = cerfaService;
+        if (typeDossierRepository == null)
+            throw new IllegalArgumentException("Le repository des types de dossier ne peut pas être nul.");
+        this.typeDossierRepository = typeDossierRepository;
+        if (fichierIdService == null)
+            throw new IllegalArgumentException("Le service d'id des fichiers ne peut pas être nul.");
+        this.fichierIdService = fichierIdService;
+        if (fichierService == null)
+            throw new IllegalArgumentException("Le service des fichiers ne peut pas être nul.");
+        this.fichierService = fichierService;
     }
 
     @Override
-    public Optional<Dossier> execute(File file) throws DossierImportException {
-        this.authorizationService.isDeposantAndBetaAuthorized();
-        Optional<String> code = this.cerfaImportService.lireCode(file);
-        if (code.isEmpty())
-            throw new DossierImportException("Pas de code CERFA reconnu dans le texte du pdf");
-        PieceJointe cerfa = new PieceJointe(new CodePieceJointe(TypePieceJointe.CERFA, null), file);
-        Optional<TypeDossier> type = this.cerfaService.fromCodeCerfa(code.get());
-        if (type.isEmpty())
-            throw new DossierImportException("Type de dossier indéterminé");
-        Personne deposant = this.authenticationService.user().get();
-        Dossier dossier = this.dossierFactory.creer(deposant, cerfa, type.get());
-        dossier = this.dossierRepository.save(dossier);
+    public Optional<Dossier> execute(Fichier fichier) throws DossierImportException {
+        Dossier dossier;
+        try {
+            this.authorizationService.isDeposantAndBetaAuthorized();
+            FichierId fichierId = this.fichierIdService.creer();
+            this.fichierService.save(fichierId, fichier);
+            Optional<String> code = this.cerfaImportService.lireCode(fichier);
+            if (code.isEmpty())
+                throw new DossierImportException("Code CERFA non reconnu dans le fichier pdf");
+            Optional<TypeDossier> type = this.typeDossierRepository.findByCode(code.get());
+            if (type.isEmpty())
+                throw new DossierImportException("Type de dossier non reconnu dans le fichier pdf");
+            Personne deposant = this.authenticationService.user().get();
+            dossier = this.dossierFactory.creer(deposant, type.get().type());
+            dossier.ajouterCerfa(fichierId);
+            dossier = this.dossierRepository.save(dossier);
+        } catch (FichierServiceException | CerfaImportException e){
+            throw new DossierImportException(e);
+        }
         return Optional.ofNullable(dossier);
     }
 

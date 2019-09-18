@@ -10,7 +10,7 @@ public class PersonneId implements ValueObject<PersonneId> {
 
   @Override
   public boolean hasSameValuesAs(PersonneId other) {
-    return other != null && this.id.equals(other.id);
+    return other != null && this.id != null && this.id.equals(other.id);
   }
 
   @Override
@@ -35,7 +35,7 @@ public class PersonneId implements ValueObject<PersonneId> {
 
   public PersonneId(final String id) {
     if (id == null)
-      throw new NullPointerException("L'id de la personne ne peut être nul");
+      throw new NullPointerException("L'id de la personne ne peut pas être nul");
     this.id = id;
   }
 

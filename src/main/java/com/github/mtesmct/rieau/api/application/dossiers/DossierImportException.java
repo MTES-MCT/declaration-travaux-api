@@ -10,4 +10,8 @@ public class DossierImportException extends RuntimeException {
     public DossierImportException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public DossierImportException(Throwable cause) {
+        super(cause);
+    }
 }
