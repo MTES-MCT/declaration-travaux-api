@@ -36,14 +36,17 @@ public class Personne implements Entity<Personne, PersonneId> {
 
     @Override
     public String toString() {
-        return "Personne={ id={" + this.id.toString() + "}, prenom={" + this.prenom + "}, nom={" + this.nom
-                + "}, sexe={" + this.sexe != null ? this.sexe.toString() : "null" + "}, email={" + this.email + "}, naissance={"
-                + this.naissance != null ? this.naissance.toString() : "null" + "} }";
+        return "Personne={ id={" + this.id != null ? this.id.toString() : "" + "}, prenom={" + this.prenom + "}, nom={" + this.nom
+                + "}, sexe={" + this.sexe != null
+                        ? this.sexe.toString()
+                        : "" + "}, email={" + this.email + "}, naissance={" + this.naissance != null
+                                ? this.naissance.toString()
+                                : "" + "} }";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.id);
     }
 
     @Override

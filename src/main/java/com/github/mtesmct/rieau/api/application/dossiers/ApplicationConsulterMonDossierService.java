@@ -34,11 +34,11 @@ public class ApplicationConsulterMonDossierService implements ConsulterMonDossie
     public Optional<Dossier> execute(String id) throws DeposantNonAutoriseException {
         this.authorizationService.isDeposantAndBetaAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id);
-        if (!dossier.isEmpty() && dossier.get().deposant() == null)
-            throw new NullPointerException("Le déposant du dossier ne peut pas être nul");
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
+        if (!dossier.isEmpty() && dossier.get().deposant() == null)
+            throw new NullPointerException("Le déposant du dossier ne peut pas être nul");
         if (!dossier.isEmpty() && !dossier.get().deposant().equals(user.get()))
             throw new DeposantNonAutoriseException(user.get());
         return dossier;
