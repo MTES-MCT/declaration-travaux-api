@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class SpringAjouterPieceJointeService implements AjouterPieceJointeService {
+public class TxAjouterPieceJointeService implements AjouterPieceJointeService {
 
     @Autowired
     private ApplicationAJouterPieceJointeService applicationAjouterPieceJointeService;

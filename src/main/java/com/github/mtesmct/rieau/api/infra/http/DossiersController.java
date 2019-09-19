@@ -7,10 +7,10 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringAjouterPieceJointeService;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringConsulterMonDossierService;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringImporterCerfaService;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringListerMesDossiersService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterMonDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +30,13 @@ public class DossiersController {
 	public static final String ROOT_URL = "/dossiers";
 
 	@Autowired
-	private SpringImporterCerfaService importerCerfaService;
+	private TxImporterCerfaService importerCerfaService;
 	@Autowired
-	private SpringAjouterPieceJointeService ajouterPieceJointeService;
+	private TxAjouterPieceJointeService ajouterPieceJointeService;
 	@Autowired
-	private SpringListerMesDossiersService listerMesDossiersService;
+	private TxListerMesDossiersService listerMesDossiersService;
 	@Autowired
-	private SpringConsulterMonDossierService consulterMonDossierService;
+	private TxConsulterMonDossierService consulterMonDossierService;
 	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;

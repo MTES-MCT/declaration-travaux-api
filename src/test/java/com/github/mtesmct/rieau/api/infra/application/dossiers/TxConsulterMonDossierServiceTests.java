@@ -28,12 +28,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SpringConsulterMonDossierServiceTests {
+public class TxConsulterMonDossierServiceTests {
     @Autowired
     private DossierRepository dossierRepository;
 
     @Autowired
-    private SpringConsulterMonDossierService consulterMonDossierService;
+    private TxConsulterMonDossierService consulterMonDossierService;
     @Autowired
     private DossierFactory dossierFactory;
 

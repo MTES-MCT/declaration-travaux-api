@@ -11,7 +11,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringListerMesDossiersService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +27,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SpringListerMesDossiersServiceTests {
+public class TxListerMesDossiersServiceTests {
     @Autowired
     private DossierRepository dossierRepository;
 
     @Autowired
-    private SpringListerMesDossiersService listerMesDossiersService;
+    private TxListerMesDossiersService listerMesDossiersService;
     @Autowired
     private DateService dateService;
     @Autowired

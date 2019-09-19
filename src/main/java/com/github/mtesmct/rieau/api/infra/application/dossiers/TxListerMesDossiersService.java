@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class SpringListerMesDossiersService implements ListerMesDossiersService {
+public class TxListerMesDossiersService implements ListerMesDossiersService {
 
     @Autowired
     private ApplicationListerMesDossiersService applicationListerMesDossiersService;

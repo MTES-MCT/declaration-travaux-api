@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class SpringImporterCerfaService implements ImporterCerfaService {
+public class TxImporterCerfaService implements ImporterCerfaService {
 
     @Autowired
     private ApplicationImporterCerfaService applicationImporterCerfaService;

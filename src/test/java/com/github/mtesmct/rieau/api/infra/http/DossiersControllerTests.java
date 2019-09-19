@@ -29,7 +29,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.SpringImporterCerfaService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ public class DossiersControllerTests {
 	@Autowired
 	private FichierService fichierService;
 	@MockBean
-	private SpringImporterCerfaService mockImporterCerfaService;
+	private TxImporterCerfaService mockImporterCerfaService;
 	@Autowired
 	private FichierIdService fichierIdService;
 

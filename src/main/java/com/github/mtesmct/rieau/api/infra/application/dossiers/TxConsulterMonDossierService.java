@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class SpringConsulterMonDossierService implements ConsulterMonDossierService {
+public class TxConsulterMonDossierService implements ConsulterMonDossierService {
 
     @Autowired
     private ApplicationConsulterMonDossierService applicationConsulterMonDossierService;

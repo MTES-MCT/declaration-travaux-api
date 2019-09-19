@@ -33,9 +33,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @WithDeposantAndBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SpringAjouterPieceJointeServiceTests {
+public class TxAjouterPieceJointeServiceTests {
     @Autowired
-    private SpringAjouterPieceJointeService ajouterPieceJointe;
+    private TxAjouterPieceJointeService ajouterPieceJointe;
 
     @Autowired
     @Qualifier("deposantBeta")
