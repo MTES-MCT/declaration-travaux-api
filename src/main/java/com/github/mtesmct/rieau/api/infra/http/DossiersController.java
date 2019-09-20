@@ -28,11 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping(DossiersController.ROOT_URL)
-@Slf4j
 public class DossiersController {
 
 	public static final String ROOT_URL = "/dossiers";
@@ -75,8 +72,6 @@ public class DossiersController {
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
 			AuthRequiredException, UserForbiddenException, UserServiceException {
 		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(), file.getSize());
-		log.info("ajouterCerfa");
-		log.info("fichier: {}", fichier);
 		this.importerCerfaService.execute(fichier);
 	}
 
