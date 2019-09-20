@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
@@ -16,7 +16,6 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.NumeroPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
@@ -24,6 +23,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -55,8 +55,9 @@ public class DossierTests {
     private FichierId cerfaId;
 
     @BeforeEach
-    public void setUp() throws FileNotFoundException {
-        this.cerfa= new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf")));
+    public void setUp() throws IOException {
+        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf"));
+        this.cerfa = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, fis.available());
         this.cerfaId = this.fichierIdService.creer();
         this.fichierService.save(this.cerfaId, this.cerfa);
         this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
@@ -66,9 +67,12 @@ public class DossierTests {
         assertEquals(this.dossier.piecesAJoindre().codesPiecesAJoindre().size(), 1);
         assertTrue(this.dossier.piecesAJoindre().codesPiecesAJoindre().contains(new CodePieceJointe(TypesDossier.DP, "1")));
         this.dossier.ajouterCerfa(this.cerfaId);
-        this.dp1= new Fichier("dummy.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/dummy.pdf")));
+        fis.close();
+        fis = new FileInputStream(new File("src/test/fixtures/dummy.pdf"));
+        this.dp1 = new Fichier("dummy.pdf", "application/pdf", fis, fis.available());
         this.dp1Id = this.fichierIdService.creer();
-        this.fichierService.save(this.dp1Id, this.dp1);      
+        this.fichierService.save(this.dp1Id, this.dp1);        
+        fis.close();      
     }
 
     @Test

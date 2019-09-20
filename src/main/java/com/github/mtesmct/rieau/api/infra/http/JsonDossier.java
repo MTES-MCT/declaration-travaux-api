@@ -1,14 +1,19 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@Builder
+@Getter
 public class JsonDossier {
     private String id;
     private String type;
     private String statut;
     private String date;
+
+    public JsonDossier(String id, String type, String statut, String date) {
+        this.id = id;
+        this.type = type;
+        this.statut = statut;
+        this.date = date;
+    }
 
 }

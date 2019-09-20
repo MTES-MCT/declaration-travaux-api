@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api.application.auth;
 
-public class UserServiceException extends RuntimeException {
+public class UserServiceException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public UserServiceException(String message) {

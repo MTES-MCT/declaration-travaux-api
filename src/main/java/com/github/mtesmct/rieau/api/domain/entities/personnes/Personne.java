@@ -36,12 +36,9 @@ public class Personne implements Entity<Personne, PersonneId> {
 
     @Override
     public String toString() {
-        return "Personne={ id={" + this.id != null ? this.id.toString() : "" + "}, prenom={" + this.prenom + "}, nom={" + this.nom
-                + "}, sexe={" + this.sexe != null
-                        ? this.sexe.toString()
-                        : "" + "}, email={" + this.email + "}, naissance={" + this.naissance != null
-                                ? this.naissance.toString()
-                                : "" + "} }";
+        return "Personne={ id={" + Objects.toString(this.id) + "}, prenom={" + this.prenom + "}, nom={" + this.nom
+                + "}, sexe={" + Objects.toString(this.sexe) + "}, email={" + this.email + "}, naissance={"
+                + Objects.toString(this.naissance) + "} }";
     }
 
     @Override

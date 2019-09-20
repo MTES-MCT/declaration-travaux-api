@@ -2,8 +2,12 @@ package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.ApplicationConsulterMonDossierService;
 import com.github.mtesmct.rieau.api.application.dossiers.ConsulterMonDossierService;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +22,8 @@ public class TxConsulterMonDossierService implements ConsulterMonDossierService 
     private ApplicationConsulterMonDossierService applicationConsulterMonDossierService;
 
     @Override
-    public Optional<Dossier> execute(String id) {
+    public Optional<Dossier> execute(String id)
+            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserServiceException {
         return this.applicationConsulterMonDossierService.execute(id);
     }    
 }

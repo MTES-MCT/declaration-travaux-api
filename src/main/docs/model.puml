@@ -12,5 +12,6 @@ class PieceJointe {
     - version
 }
 Dossier *-- PieceJointe: joint * >
+Dossier <-- PieceJointe: joint ? > "cerfa"
 Dossier <-- Personne: depose <
 @enduml

@@ -1,23 +1,23 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
-import java.util.Optional;
-
-import com.github.mtesmct.rieau.api.application.auth.UserService;
 import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class KeycloakUserService implements UserService {
+@Profile("staging")
+@Primary
+public class KeycloakUserEmailService implements UserEmailService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Personne> findUserById(String id) throws UserServiceException {
+    public String email() throws UserServiceException {
         if (!(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal))
             throw new UserServiceException("spring security principal is not instance of KeycloakPrincipal");
         KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>) SecurityContextHolder
@@ -30,9 +30,7 @@ public class KeycloakUserService implements UserService {
         AccessToken accessToken = session.getToken();
         if (accessToken == null)
             throw new UserServiceException("keycloak access token is null");
-        Optional<Personne> user = Optional.empty();
-        user = Optional.ofNullable(new Personne(id, accessToken.getEmail()));
-        return user;
+        return accessToken.getEmail();
     }
 
 }

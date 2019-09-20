@@ -3,17 +3,20 @@ package com.github.mtesmct.rieau.api.application.dossiers;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.ApplicationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 
@@ -60,7 +63,8 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
     }
 
     @Override
-    public Optional<Dossier> execute(Fichier fichier) throws DossierImportException {
+    public Optional<Dossier> execute(Fichier fichier)
+            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserServiceException {
         Dossier dossier;
         try {
             this.authorizationService.isDeposantAndBetaAuthorized();

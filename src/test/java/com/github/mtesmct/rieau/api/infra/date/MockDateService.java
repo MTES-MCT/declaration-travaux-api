@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.context.annotation.Primary;
 
 @TestComponent
 @ConditionalOnProperty(value = "app.datetime.mock")
-@Primary
 public class MockDateService implements DateService {
     
     @Autowired

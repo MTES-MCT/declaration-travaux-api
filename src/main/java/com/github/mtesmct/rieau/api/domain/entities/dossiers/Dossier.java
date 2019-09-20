@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
@@ -84,7 +85,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hash(this.id);
     }
 
     @Override
@@ -99,9 +100,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     @Override
     public String toString() {
-        return "Dossier={ id={" + this.id.toString() + "}, deposant={" + this.deposant.toString() + "}, statut={"
-                + this.statut.toString() + "}, dateDepot={" + this.dateDepot.toString() + "}, type={"
-                + this.type.toString() + "} }";
+        return "Dossier={ id={" + Objects.toString(this.id) + "}, deposant={" + Objects.toString(this.deposant) + "}, statut={"
+                + Objects.toString(this.statut) + "}, dateDepot={" + Objects.toString(this.dateDepot) + "}, type={"
+                + Objects.toString(this.type) + "} }";
     }
 
     @Override
@@ -111,7 +112,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     @Override
     public boolean hasSameIdentityAs(Dossier other) {
-        return other != null && this.id.hasSameValuesAs(other.id);
+        return other != null && Objects.equals(this.id, other.id);
     }
 
     public Dossier(DossierId id, Personne deposant, StatutDossier statut, Date dateDepot, TypeDossier type) {

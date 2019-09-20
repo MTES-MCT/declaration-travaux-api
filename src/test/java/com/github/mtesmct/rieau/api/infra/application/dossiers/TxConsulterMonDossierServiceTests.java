@@ -10,7 +10,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
@@ -30,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @WithDeposantAndBetaDetails
@@ -79,7 +83,8 @@ public class TxConsulterMonDossierServiceTests {
 
     @Test
     @WithDeposantAndBetaDetails
-    public void executeTest() {
+    public void executeTest()
+            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserServiceException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierTrouve = this.consulterMonDossierService.execute(this.dossier.identity().toString());
         assertTrue(dossierTrouve.isPresent());

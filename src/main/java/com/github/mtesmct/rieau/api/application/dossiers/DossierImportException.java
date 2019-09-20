@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-public class DossierImportException extends RuntimeException {
+public class DossierImportException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public DossierImportException(String message) {

@@ -1,11 +1,16 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.ApplicationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 
 @ApplicationService
@@ -29,9 +34,10 @@ public class ApplicationListerMesDossiersService implements ListerMesDossiersSer
     }
 
     @Override
-    public List<Dossier> execute() {
+    public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserServiceException {
         this.authorizationService.isDeposantAndBetaAuthorized();
-        if (this.authenticationService.user().isEmpty())
+        Optional<Personne> user = this.authenticationService.user();
+        if (user.isEmpty())
             throw new IllegalArgumentException("L'utilisateur connecté est vide");
         return this.dossierRepository.findByDeposantId(this.authenticationService.user().get().identity().toString());
     }

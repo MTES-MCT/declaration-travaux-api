@@ -4,13 +4,13 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierIdService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
+import com.github.mtesmct.rieau.api.domain.services.DossierIdService;
 
 @Factory
 public class DossierFactory {

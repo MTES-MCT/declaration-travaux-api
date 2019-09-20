@@ -2,6 +2,9 @@ package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.AjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.application.dossiers.ApplicationAJouterPieceJointeService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
@@ -22,7 +25,7 @@ public class TxAjouterPieceJointeService implements AjouterPieceJointeService {
 
     @Override
     public Optional<PieceJointe> execute(Dossier dossier, String numero, Fichier fichier)
-            throws AjouterPieceJointeException {
+            throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException, UserServiceException {
         return this.applicationAjouterPieceJointeService.execute(dossier, numero, fichier);
     }
 

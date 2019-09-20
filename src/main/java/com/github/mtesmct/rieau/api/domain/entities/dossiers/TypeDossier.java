@@ -35,12 +35,12 @@ public class TypeDossier implements ValueObject<TypeDossier> {
 
     @Override
     public boolean hasSameValuesAs(TypeDossier other) {
-        return other != null && this.type.equals(other.type) && this.code.equals(other.code) && this.totalPiecesAJoindre == other.totalPiecesAJoindre;
+        return other != null && Objects.equals(this.type, other.type) && Objects.equals(this.code, other.code) && this.totalPiecesAJoindre == other.totalPiecesAJoindre;
     }
     
     @Override
     public String toString() {
-        return this.type.toString() + this.totalPiecesAJoindre + "-" + this.code;
+        return "TypeDossier={ type={" + Objects.toString(this.type) + "}, totalPiecesAJoindre={" + this.totalPiecesAJoindre + "}, code={" + this.code + "} }";
     }
 
     @Override

@@ -15,17 +15,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -81,17 +81,22 @@ public class DossiersControllerTests {
 	private Personne deposantBeta;
 
 	@BeforeEach
-	public void setup() throws FileNotFoundException {
+	public void setup() throws IOException {
 		this.uri = DossiersController.ROOT_URL;
-        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf")));
+        File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
+		FileInputStream fis = new FileInputStream(file);
+        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, file.length());
         FichierId fichierId = this.fichierIdService.creer();
         this.fichierService.save(fichierId, fichier);
 		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         dossier.ajouterCerfa(fichierId);
         this.dossier = this.dossierRepository.save(this.dossier);
+		assertNotNull(this.dossier);
 		assertNotNull(this.dossier.identity());
 		assertNotNull(this.dossier.deposant());
+		assertNotNull(this.dossier.type());
 		assertEquals(this.dossier.deposant().identity(), this.deposantBeta.identity());
+        fis.close();
 	}
 
 	@Test

@@ -57,10 +57,10 @@ env = test, dev, staging ou production
 
 ### Tests d'intégration
 
-* Nécessitent une base de données PostgreSQL:
+* Nécessitent une base de données PostgreSQL, un serveur Keycloak et Minio:
 
 ```shell
-docker-compose -f src/main/docker/stack.yml up --build -d
+docker-compose -f src/main/docker/docker-compose.yml up --build -d
 ```
 
 * Lancez tous les tests:

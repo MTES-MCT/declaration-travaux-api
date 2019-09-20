@@ -3,7 +3,7 @@ package com.github.mtesmct.rieau.api.infra.uuid;
 import java.util.UUID;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 
 import org.springframework.stereotype.Service;
 

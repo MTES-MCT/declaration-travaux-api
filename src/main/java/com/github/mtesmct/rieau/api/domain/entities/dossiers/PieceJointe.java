@@ -23,8 +23,8 @@ public class PieceJointe implements ValueObject<PieceJointe> {
 
     @Override
     public String toString() {
-        return "PieceJointe={" + this.code.toString() + ", fichierId={" + this.fichierId.toString() + "}, "
-                + this.dossier.toString() + "}";
+        return "PieceJointe={" + Objects.toString(this.code) + ", fichierId={" + Objects.toString(this.fichierId) + "}, "
+                + Objects.toString(this.dossier) + "}";
     }
 
     @Override
@@ -39,7 +39,7 @@ public class PieceJointe implements ValueObject<PieceJointe> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.code, this.fichierId, this.dossier.identity());
+        return Objects.hash(this.code, this.fichierId, this.dossier);
     }
 
     @Override
@@ -60,10 +60,10 @@ public class PieceJointe implements ValueObject<PieceJointe> {
     }
 
     public boolean isCerfa() {
-        return this.code.isCerfa();
+        return this.code != null && this.code.isCerfa();
     }
 
     public boolean isAJoindre() {
-        return this.dossier.piecesAJoindre().contains(this);
+        return this.dossier != null && this.dossier.piecesAJoindre() != null && this.dossier.piecesAJoindre().contains(this);
     }
 }

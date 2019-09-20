@@ -9,6 +9,7 @@ public class Fichier implements ValueObject<Fichier> {
 
   private String nom;
   private String mimeType;
+  private long size;
   private InputStream content;
 
   public String nom() {
@@ -17,6 +18,9 @@ public class Fichier implements ValueObject<Fichier> {
   public InputStream content() {
     return this.content;
   }
+  public long size() {
+    return this.size;
+  }
 
   public String mimeType() {
     return this.mimeType;
@@ -24,12 +28,12 @@ public class Fichier implements ValueObject<Fichier> {
 
   @Override
   public boolean hasSameValuesAs(Fichier other) {
-    return other != null && this.nom.equals(other.nom) && this.content.equals(other.content) && this.mimeType.equals(other.mimeType);
+    return other != null && Objects.equals(this.nom, other.nom) && Objects.equals(this.content, other.content) && Objects.equals(this.mimeType, other.mimeType) && this.size == other.size;
   }
 
-  public Fichier(final String nom, final String mimeType, final InputStream content) {
-    if (nom == null || nom.isBlank())
-      throw new NullPointerException("Le nom du fichier ne peut être nul ou blanc");
+  public Fichier(final String nom, final String mimeType, final InputStream content, final long size) {
+    if (Objects.toString(nom).equals("null"))
+      throw new NullPointerException("Le nom du fichier ne peut pas être nul");
     this.nom = nom;
     if (mimeType == null || mimeType.isBlank())
       throw new NullPointerException("Le type MIME du fichier ne peut être nul ou blanc");
@@ -37,6 +41,9 @@ public class Fichier implements ValueObject<Fichier> {
     if (content == null)
       throw new NullPointerException("Le contenu binaire du fichier ne peut être nul");
     this.content = content;
+    if (size < 1)
+      throw new IllegalArgumentException("La taille du fichier doit être strictement supérieure à 0");
+    this.size = size;
   }
 
   @Override
@@ -56,7 +63,7 @@ public class Fichier implements ValueObject<Fichier> {
 
   @Override
   public String toString() {
-    return this.nom;
+    return "Fichier={ nom={" + this.nom + "}, mimeType={" + this.mimeType + "}, size={" + this.size + "} }";
   }
 
 }

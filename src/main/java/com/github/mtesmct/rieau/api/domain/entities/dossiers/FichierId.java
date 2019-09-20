@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
@@ -11,7 +12,7 @@ public class FichierId implements ValueObject<FichierId>, Serializable {
 
   @Override
   public boolean hasSameValuesAs(FichierId other) {
-    return other != null && this.id.equals(other.id);
+    return other != null && Objects.equals(this.id, other.id);
   }
 
   public FichierId(final String id) {
@@ -32,7 +33,7 @@ public class FichierId implements ValueObject<FichierId>, Serializable {
 
   @Override
   public int hashCode() {
-    return id.hashCode();
+    return Objects.hash(this.id);
   }
 
   @Override

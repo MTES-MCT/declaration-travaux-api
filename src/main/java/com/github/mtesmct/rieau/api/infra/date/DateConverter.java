@@ -16,7 +16,7 @@ public class DateConverter {
         try {
             this.dateFormat = new SimpleDateFormat(format);
         } catch (NullPointerException | IllegalArgumentException e) {
-            log.error("Erreur de création de l'objet java.text.SimpleDateFormat. Format incorrect: " + this.format, e);
+            log.error("Erreur de création de l'objet java.text.SimpleDateFormat. Format incorrect: {}. Exception= {}",this.format, e);
         }
     }
 
@@ -29,7 +29,7 @@ public class DateConverter {
         try {
             result = this.dateFormat.parse(date);
         } catch (ParseException e) {
-            log.error("Erreur de conversion de " + date + " en java.util.Date. Format attendu: " + this.format, e);
+            log.error("Erreur de conversion de {} en java.util.Date. Format attendu: {}. Exception= {}", date, this.format, e);
         }
         return result;
     }

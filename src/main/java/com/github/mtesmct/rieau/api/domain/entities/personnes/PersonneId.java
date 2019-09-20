@@ -10,7 +10,7 @@ public class PersonneId implements ValueObject<PersonneId> {
 
   @Override
   public boolean hasSameValuesAs(PersonneId other) {
-    return other != null && this.id != null && this.id.equals(other.id);
+    return other != null && Objects.equals(this.id, other.id);
   }
 
   @Override
@@ -30,7 +30,7 @@ public class PersonneId implements ValueObject<PersonneId> {
 
   @Override
   public String toString() {
-    return this.id.toString();
+    return Objects.toString(this.id);
   }
 
   public PersonneId(final String id) {

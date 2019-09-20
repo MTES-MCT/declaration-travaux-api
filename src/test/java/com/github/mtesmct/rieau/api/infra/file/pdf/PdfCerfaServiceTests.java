@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierIdService;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 import org.junit.jupiter.api.Test;
@@ -30,20 +30,24 @@ public class PdfCerfaServiceTests {
 
     @Test
     public void lireCerfaDPMITest() throws Exception {
-        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf")));
+        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf"));
+        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, fis.available());
         FichierId fichierId = this.fichierIdService.creer();
         this.fichierService.save(fichierId, fichier);
         Optional<String> code = this.filePdfCerfaService.lireCode(fichier);
         assertTrue(code.isPresent());
         assertEquals(code.get(), "13703");
+        fis.close();
     }
     @Test
     public void lireCerfaPCMITest() throws Exception {
-        Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf")));
+        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
+        Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", fis, fis.available());
         FichierId fichierId = this.fichierIdService.creer();
         this.fichierService.save(fichierId, fichier);
         Optional<String> code = this.filePdfCerfaService.lireCode(fichier);
         assertTrue(code.isPresent());
         assertEquals(code.get(), "13406");
+        fis.close();
     }
 }

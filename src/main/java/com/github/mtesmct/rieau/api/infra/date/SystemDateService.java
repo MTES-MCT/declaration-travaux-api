@@ -6,9 +6,11 @@ import com.github.mtesmct.rieau.api.domain.services.DateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
+@Primary
 public class SystemDateService implements DateService {
 
     private Date date;

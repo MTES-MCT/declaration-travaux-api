@@ -19,7 +19,7 @@ public class Naissance implements ValueObject<Naissance> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(date, commune);
+    return Objects.hash(this.date, this.commune);
   }
 
   @Override
@@ -34,12 +34,12 @@ public class Naissance implements ValueObject<Naissance> {
 
   @Override
   public String toString() {
-    return "Naissance={ date={" + this.date != null ? this.date.toString() : "" + "}, commune={" + this.commune + "} }";
+    return "Naissance={ date={" + Objects.toString(this.date) + "}, commune={" + this.commune + "} }";
   }
 
   @Override
   public boolean hasSameValuesAs(Naissance other) {
-    return other != null && this.date.equals(other.date) && this.commune.equals(other.commune);
+    return other != null && Objects.equals(this.date, other.date) && Objects.equals(this.commune, other.commune);
   }
 
   public Naissance(final Date date, final String commune) {

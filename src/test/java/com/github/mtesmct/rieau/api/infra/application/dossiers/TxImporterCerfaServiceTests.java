@@ -6,9 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
@@ -47,8 +51,10 @@ public class TxImporterCerfaServiceTests {
 
     @Test
     @WithDeposantAndBetaDetails
-    public void executeDPTest() throws FileNotFoundException {
-        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf")));
+    public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
+            UserForbiddenException, UserServiceException {
+        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf"));
+        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, fis.available());
         Optional<Dossier> dossier = this.importerCerfaService.execute(fichier);
         assertTrue(dossier.isPresent());
         assertEquals(dossier.get().type().type(), TypesDossier.DP);
@@ -59,12 +65,15 @@ public class TxImporterCerfaServiceTests {
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
         assertEquals(new CodePieceJointe(TypesDossier.DP, "0"), dossier.get().cerfa().code());
+        fis.close();
     }
 
     @Test
     @WithDeposantAndBetaDetails
-    public void executePCMITest() throws FileNotFoundException {
-        Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf")));
+    public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
+            UserForbiddenException, UserServiceException {
+        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
+        Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", fis, fis.available());
         Optional<Dossier> dossier = this.importerCerfaService.execute(fichier);
         assertTrue(dossier.isPresent());
         assertEquals(dossier.get().type().type(), TypesDossier.PCMI);
@@ -75,5 +84,6 @@ public class TxImporterCerfaServiceTests {
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
         assertEquals(new CodePieceJointe(TypesDossier.PCMI, "0"), dossier.get().cerfa().code());
+        fis.close();
     }
 }

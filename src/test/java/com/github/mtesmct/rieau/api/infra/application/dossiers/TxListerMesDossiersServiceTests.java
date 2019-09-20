@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
@@ -55,7 +58,7 @@ public class TxListerMesDossiersServiceTests {
 
     @Test
     @WithDeposantAndBetaDetails
-    public void executeTest() {
+    public void executeTest() throws AuthRequiredException, UserForbiddenException, UserServiceException {
         assertNotNull(this.listerMesDossiersService);
         assertFalse(this.listerMesDossiersService.execute().isEmpty());
         assertEquals(this.listerMesDossiersService.execute().size(), 1);

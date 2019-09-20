@@ -1,46 +1,32 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
 import com.github.mtesmct.rieau.api.application.auth.Role;
-import com.github.mtesmct.rieau.api.application.auth.UserService;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.http.DossiersController;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @TestConfiguration
-public class MockWebSecurityConfig {
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@ConditionalOnProperty(name = "keycloak.enabled", havingValue = "false")
+public class MockWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserService userService;
-
-    @Bean
-    @Qualifier("deposantBeta")
-    public Personne deposantBeta(){
-        return this.userService.findUserById((WithDeposantAndBetaDetails.ID)).get();
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        super.configure(http);
+        http.authorizeRequests()
+            .antMatchers(DossiersController.ROOT_URL+"*")
+            .hasRole(Role.DEPOSANT.toString())
+            .antMatchers(HttpMethod.POST, DossiersController.ROOT_URL)
+            .hasRole(Role.BETA.toString())
+            .anyRequest()
+            .permitAll();
     }
-
-    @Bean
-    @Qualifier("instructeurNonBeta")
-    public Personne instructeurNonBeta(){
-        return this.userService.findUserById(WithInstructeurNonBetaDetails.ID).get();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() throws Exception {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        manager.createUser(User.withUsername(WithDeposantAndBetaDetails.ID).password(encoder.encode(WithDeposantAndBetaDetails.ID)).roles(Role.DEMANDEUR.toString(), Role.BETA.toString()).build());
-        manager.createUser(User.withUsername(WithInstructeurNonBetaDetails.ID).password(encoder.encode(WithInstructeurNonBetaDetails.ID)).roles(Role.INSTRUCTEUR.toString()).build());
-        return manager;
-    }
-
 }

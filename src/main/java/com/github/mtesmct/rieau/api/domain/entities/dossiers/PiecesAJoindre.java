@@ -11,7 +11,7 @@ public class PiecesAJoindre implements ValueObject<PiecesAJoindre> {
 
     @Override
     public String toString() {
-        return this.dossier.toString();
+        return Objects.toString(this.dossier);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class PiecesAJoindre implements ValueObject<PiecesAJoindre> {
 
     @Override
     public boolean hasSameValuesAs(PiecesAJoindre other) {
-        return other != null && this.dossier.equals(other.dossier);
+        return other != null && Objects.equals(this.dossier, other.dossier);
     }
 
     public boolean contains(PieceJointe pieceJointe){

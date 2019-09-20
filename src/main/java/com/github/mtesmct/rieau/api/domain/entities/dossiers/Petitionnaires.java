@@ -16,7 +16,7 @@ public class Petitionnaires implements ValueObject<Petitionnaires> {
 
     @Override
     public boolean hasSameValuesAs(Petitionnaires other) {
-        return other != null && dossier.equals(other.dossier) && personnes.equals(other.personnes);
+        return other != null && Objects.equals(this.dossier, other.dossier) && Objects.equals(this.personnes, other.personnes);
     }
 
     public Petitionnaires(Dossier dossier){
@@ -43,12 +43,12 @@ public class Petitionnaires implements ValueObject<Petitionnaires> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(dossier,personnes);
+    return Objects.hash(this.dossier,this.personnes);
   }
 
   @Override
   public String toString() {
-    return "Petitionnaires=[dossier=" +this.dossier.toString() + ", personnes=" + this.personnes.toString() + "]";
+    return "Petitionnaires={ dossier={" +Objects.toString(this.dossier) + "}, personnes={" + Objects.toString(this.personnes) + "} }";
   }
 
 }

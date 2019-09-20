@@ -1,11 +1,10 @@
 #Dates
-app.date.format=dd/MM/yyyy
-app.datetime.format=dd/MM/yyyy HH:mm:ss
-spring.jackson.date-format=${app.date.format}
+app.date-format=dd/MM/yyyy
+app.datetime-format=dd/MM/yyyy HH:mm:ss
+spring.jackson.date-format=${app.date-format}
 spring.jackson.time-zone=Europe/Paris
 
 # File upload
-app.file.upload.dir=target/upload
 spring.servlet.multipart.enabled=true
 spring.servlet.multipart.file-size-threshold=2KB
 spring.servlet.multipart.max-file-size=128KB
@@ -30,19 +29,4 @@ spring.jpa.show-sql=true
 spring.flyway.enabled=false
 
 #Security
-keycloak.enabled = true
-keycloak.principal-attribute=preferred_username
-keycloak.realm = rieau
-keycloak.auth-server-url = http://localhost:8080/auth
-keycloak.ssl-required = external
-keycloak.resource = rieau-api
-keycloak.credentials.secret = 
-keycloak.use-resource-role-mappings = true
-
-# Minio
-minio.endpoint=http://localhost:9000
-minio.port=9000
-minio.access.key=
-minio.secret.key=
-minio.bucket=rieau
-minio.buffer=4096
+keycloak.enabled = false

@@ -13,12 +13,12 @@ public class AuthorizationService {
         this.authenticationService = authenticationService;
     }
 
-    public void isDeposantAndBetaAuthorized() {
+    public void isDeposantAndBetaAuthorized() throws AuthRequiredException, UserForbiddenException {
         if (!this.authenticationService.isAuthenticaed())
-            throw new IllegalAccessError("L'utilisateur doit être authentifié.");
+            throw new AuthRequiredException();
         if (!this.authenticationService.isDeposant())
-            throw new IllegalAccessError("L'utilisateur doit avoir le rôle de deposant.");
+            throw new UserForbiddenException(Role.DEPOSANT);
         if (!this.authenticationService.isBeta())
-            throw new IllegalAccessError("L'utilisateur doit avoir le rôle de beta testeur.");
+            throw new UserForbiddenException(Role.BETA);
     }
 }

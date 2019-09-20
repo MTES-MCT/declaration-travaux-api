@@ -10,4 +10,8 @@ public class FichierServiceException extends RuntimeException {
     public FichierServiceException(String message, Throwable cause) {
         super(message, cause);
     }
+    
+    public FichierServiceException(Throwable cause) {
+        super(cause);
+    }
 }

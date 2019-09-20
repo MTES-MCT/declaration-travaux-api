@@ -17,11 +17,11 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
 
     @Override
     public boolean hasSameValuesAs(final CodePieceJointe other) {
-        return other!= null && this.type.equals(other.type) && this.numero.equals(other.numero);
+        return other!= null && Objects.equals(this.type, other.type) && Objects.equals(this.numero, other.numero);
     }
 
     public boolean isCerfa() {
-        return this.numero.equals("0");
+        return Objects.equals(this.numero, "0");
     }
 
     @Override
@@ -34,12 +34,12 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
   
     @Override
     public int hashCode() {
-      return Objects.hash(type, numero);
+      return Objects.hash(this.type, this.numero);
     }
   
     @Override
     public String toString() {
-      return this.type.toString()+this.numero;
+      return "CodePieceJointe={ type={" + Objects.toString(this.type) + ", numero={"+this.numero + "} }";
     }
 
     public CodePieceJointe(final TypesDossier type, final String numero) {

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.Role;
-import com.github.mtesmct.rieau.api.application.auth.UserService;
+import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class SpringSecurityAuthenticationService implements AuthenticationService {
 
     @Autowired
-    private UserService userService;
+    private UserEmailService userEmailService;
 
     @Override
     public boolean isAuthenticaed() {
@@ -25,7 +25,7 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     @Override
     public boolean isDeposant() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Role.DEMANDEUR.toString())).findAny().isPresent();
+                .filter(a -> a.getAuthority().equals("ROLE_" + Role.DEPOSANT.toString())).findAny().isPresent();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public Optional<Personne> user() {
-        return this.userService.findUserById(SecurityContextHolder.getContext().getAuthentication().getName());
+    public Optional<Personne> user() throws UserServiceException{
+        return Optional.ofNullable(new Personne(SecurityContextHolder.getContext().getAuthentication().getName(), this.userEmailService.email()));
     }
 
 }
