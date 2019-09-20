@@ -7,7 +7,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -49,7 +49,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
 
     @Override
     public Optional<PieceJointe> execute(Dossier dossier, String numero, Fichier fichier)
-            throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException, UserServiceException {
+            throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         this.authorizationService.isDeposantAndBetaAuthorized();
         if (numero.equals("0"))
             throw new AjouterPieceJointeException(new NumeroPieceJointeException());

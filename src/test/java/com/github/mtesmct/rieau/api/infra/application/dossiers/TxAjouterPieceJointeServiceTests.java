@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
@@ -56,7 +56,7 @@ public class TxAjouterPieceJointeServiceTests {
     @Test
     @WithDeposantAndBetaDetails
     public void executeDP1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
-            UserForbiddenException, UserServiceException {
+            UserForbiddenException, UserInfoServiceException {
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         dp = this.dossierRepository.save(dp);
         assertEquals(dp.statut(), StatutDossier.DEPOSE);
@@ -73,7 +73,7 @@ public class TxAjouterPieceJointeServiceTests {
     @Test
     @WithDeposantAndBetaDetails
     public void executePCMI1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
-            UserForbiddenException, UserServiceException {
+            UserForbiddenException, UserInfoServiceException {
         Dossier pcmi = this.dossierFactory.creer(this.deposantBeta, TypesDossier.PCMI);
         pcmi = this.dossierRepository.save(pcmi);
         Optional<Dossier> optionalDossier = this.dossierRepository.findById(pcmi.identity().toString());

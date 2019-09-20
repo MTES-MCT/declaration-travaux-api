@@ -9,16 +9,6 @@ spring.jpa.generate-ddl=false
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:db/migration/{vendor}
 
-#Security
-keycloak.enabled = true
-keycloak.principal-attribute=preferred_username
-keycloak.realm = rieau
-keycloak.auth-server-url = http://localhost:8080/auth
-keycloak.ssl-required = external
-keycloak.resource = rieau-api
-keycloak.credentials.secret = 
-keycloak.use-resource-role-mappings = true
-
 # Minio
 minio.endpoint=http://localhost:9000
 minio.access-key=

@@ -13,7 +13,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
@@ -84,7 +84,7 @@ public class TxConsulterMonDossierServiceTests {
     @Test
     @WithDeposantAndBetaDetails
     public void executeTest()
-            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserServiceException {
+            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierTrouve = this.consulterMonDossierService.execute(this.dossier.identity().toString());
         assertTrue(dossierTrouve.isPresent());

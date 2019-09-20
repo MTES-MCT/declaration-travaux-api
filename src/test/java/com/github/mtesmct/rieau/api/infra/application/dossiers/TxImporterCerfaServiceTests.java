@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -52,7 +52,7 @@ public class TxImporterCerfaServiceTests {
     @Test
     @WithDeposantAndBetaDetails
     public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
-            UserForbiddenException, UserServiceException {
+            UserForbiddenException, UserInfoServiceException {
         FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf"));
         Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, fis.available());
         Optional<Dossier> dossier = this.importerCerfaService.execute(fichier);
@@ -71,7 +71,7 @@ public class TxImporterCerfaServiceTests {
     @Test
     @WithDeposantAndBetaDetails
     public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
-            UserForbiddenException, UserServiceException {
+            UserForbiddenException, UserInfoServiceException {
         FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
         Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", fis, fis.available());
         Optional<Dossier> dossier = this.importerCerfaService.execute(fichier);

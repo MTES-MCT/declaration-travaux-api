@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -51,12 +51,12 @@ public class DossiersController {
 
 	@GetMapping("/{id}")
 	public Optional<JsonDossier> consulter(@PathVariable String id)
-			throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserServiceException {
+			throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		return this.jsonDossierFactory.toJson(this.consulterMonDossierService.execute(id));
 	}
 
 	@GetMapping
-	List<JsonDossier> lister() throws AuthRequiredException, UserForbiddenException, UserServiceException {
+	List<JsonDossier> lister() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		List<JsonDossier> dossiers = new ArrayList<JsonDossier>();
 		this.listerMesDossiersService.execute().forEach(dossier -> this.addJsonDossier(dossiers, dossier));
 		return dossiers;
@@ -70,14 +70,14 @@ public class DossiersController {
 
 	@PostMapping
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
-			AuthRequiredException, UserForbiddenException, UserServiceException {
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(), file.getSize());
 		this.importerCerfaService.execute(fichier);
 	}
 
 	@PostMapping("/{id}/piecesjointes/{numero}")
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero, @RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
-			AuthRequiredException, UserForbiddenException, UserServiceException {
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(), file.getSize());
 		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
 		this.ajouterPieceJointeService.execute(dossier.get(), numero, fichier);

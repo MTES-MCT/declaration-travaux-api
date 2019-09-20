@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.ApplicationImporterCerfaService;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.ImporterCerfaService;
@@ -24,7 +24,7 @@ public class TxImporterCerfaService implements ImporterCerfaService {
 
     @Override
     public Optional<Dossier> execute(Fichier fichier)
-            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserServiceException {
+            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         return this.applicationImporterCerfaService.execute(fichier);
     }
 

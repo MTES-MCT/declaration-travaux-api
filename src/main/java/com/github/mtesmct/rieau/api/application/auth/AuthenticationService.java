@@ -9,5 +9,5 @@ public interface AuthenticationService {
     public boolean isDeposant();
     public boolean isInstructeur();
     public boolean isBeta();
-    public Optional<Personne> user() throws UserServiceException;
+    public Optional<Personne> user() throws UserInfoServiceException;
 }

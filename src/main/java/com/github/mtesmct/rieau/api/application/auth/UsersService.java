@@ -4,6 +4,6 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
-public interface UserService {
+public interface UsersService {
     public Optional<Personne> findUserById(String id);
 }

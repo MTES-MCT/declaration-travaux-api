@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.Role;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class SpringSecurityAuthenticationService implements AuthenticationService {
 
     @Autowired
-    private UserEmailService userEmailService;
+    private UserInfoService userInfoService;
 
     @Override
     public boolean isAuthenticaed() {
@@ -41,8 +41,8 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public Optional<Personne> user() throws UserServiceException{
-        return Optional.ofNullable(new Personne(SecurityContextHolder.getContext().getAuthentication().getName(), this.userEmailService.email()));
+    public Optional<Personne> user() throws UserInfoServiceException {
+        return Optional.ofNullable(this.userInfoService.user());
     }
 
 }

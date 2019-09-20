@@ -3,7 +3,7 @@ package com.github.mtesmct.rieau.api.infra.config;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.Role;
-import com.github.mtesmct.rieau.api.application.auth.UserService;
+import com.github.mtesmct.rieau.api.application.auth.UsersService;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -19,10 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @TestConfiguration
-public class MockSecurityConfig {
+public class MockUsersConfig {
 
     @Autowired
-    private UserService userService;
+    private UsersService userService;
 
     @Bean
     @Qualifier("deposantBeta")

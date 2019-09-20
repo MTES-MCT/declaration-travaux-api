@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.ApplicationListerMesDossiersService;
 import com.github.mtesmct.rieau.api.application.dossiers.ListerMesDossiersService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -21,7 +21,7 @@ public class TxListerMesDossiersService implements ListerMesDossiersService {
     private ApplicationListerMesDossiersService applicationListerMesDossiersService;
 
     @Override
-    public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserServiceException {
+    public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         return this.applicationListerMesDossiersService.execute();
     }
     

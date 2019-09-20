@@ -7,7 +7,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserServiceException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
@@ -64,7 +64,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
 
     @Override
     public Optional<Dossier> execute(Fichier fichier)
-            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserServiceException {
+            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         Dossier dossier;
         try {
             this.authorizationService.isDeposantAndBetaAuthorized();
