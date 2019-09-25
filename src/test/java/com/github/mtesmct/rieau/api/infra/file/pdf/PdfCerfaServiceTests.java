@@ -47,6 +47,7 @@ public class PdfCerfaServiceTests {
         this.fichierService.save(fichierId, fichier);
         Optional<String> code = this.filePdfCerfaService.lireCode(fichier);
         assertTrue(code.isPresent());
+        fis.close();
         assertEquals(code.get(), "13406");
         fis.close();
     }

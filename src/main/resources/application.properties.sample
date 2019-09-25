@@ -1,3 +1,7 @@
+# Profiles
+spring.profiles.active=@spring.profiles.active@
+spring-boot.run.profiles=@spring-boot.run.profiles@
+
 #Dates
 app.date-format=dd/MM/yyyy
 app.datetime-format=dd/MM/yyyy HH:mm:ss
@@ -6,27 +10,36 @@ spring.jackson.time-zone=Europe/Paris
 
 # File upload
 spring.servlet.multipart.enabled=true
-spring.servlet.multipart.file-size-threshold=2KB
-spring.servlet.multipart.max-file-size=128KB
-spring.servlet.multipart.max-request-size=128KB
+spring.servlet.multipart.file-size-threshold=4KB
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
 
 #Logging
-spring.banner.location=classpath:banner.txt
 logging.level.root = warn
-logging.level.com.github.mtesmct.rieau = debug
+logging.level.com.github.mtesmct.rieau = warn
+# logging.level.org.springframework.security = warn
 # logging.level.org.hibernate.type=trace
 
-#Persistence
+# Persistence
 spring.jpa.open-in-view=false
-spring.datasource.driver-class-name=org.h2.Driver
-spring.datasource.url=jdbc:h2:mem:db
-spring.datasource.username=sa
-spring.datasource.password=sa
-spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect
-spring.jpa.generate-ddl=true
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.flyway.enabled=false
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/rieau
+spring.datasource.username=rieau
+spring.datasource.password=rieau
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.generate-ddl=false
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration/{vendor}
+
+# Fichiers
+minio.enabled = true
+minio.endpoint=http://localhost:9000
+minio.access-key=minio
+minio.secret-key=minio123
+minio.bucket=rieau
+minio.buffer=4096
 
 #Security
 keycloak.enabled = true
@@ -37,3 +50,6 @@ keycloak.ssl-required = external
 keycloak.resource = rieau-api
 keycloak.credentials.secret = 
 keycloak.use-resource-role-mappings = true
+
+# HTTP server
+server.port=5000

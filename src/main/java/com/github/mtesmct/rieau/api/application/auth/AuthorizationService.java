@@ -17,8 +17,8 @@ public class AuthorizationService {
         if (!this.authenticationService.isAuthenticaed())
             throw new AuthRequiredException();
         if (!this.authenticationService.isDeposant())
-            throw new UserForbiddenException(Role.DEPOSANT);
+            throw new UserForbiddenException(Roles.DEPOSANT);
         if (!this.authenticationService.isBeta())
-            throw new UserForbiddenException(Role.BETA);
+            throw new UserForbiddenException(Roles.BETA);
     }
 }

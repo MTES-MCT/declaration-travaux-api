@@ -5,6 +5,7 @@ bin/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+!**/src/main/resources/realm-rieau-without-users.json
 
 ### STS ###
 .apt_generated
@@ -36,3 +37,4 @@ build/
 ### Properties ###
 src/main/resources/application*.properties
 src/test/resources/application*.properties
+src/main/resources/*.json

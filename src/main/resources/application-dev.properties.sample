@@ -1,0 +1,23 @@
+#Persistence
+spring.jpa.open-in-view=false
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:mem:db
+spring.datasource.username=sa
+spring.datasource.password=sa
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect
+spring.jpa.generate-ddl=true
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.flyway.enabled=false
+
+#Security
+keycloak.enabled = false
+
+# Fichiers
+minio.enabled = false
+
+#Logging
+logging.level.root = info
+logging.level.com.github.mtesmct.rieau = debug
+# logging.level.org.springframework.security = warn
+# logging.level.org.hibernate.type=trace

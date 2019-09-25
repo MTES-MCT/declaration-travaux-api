@@ -29,10 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping(DossiersController.ROOT_URL)
+@RequestMapping(DossiersController.ROOT_URI)
 public class DossiersController {
 
-	public static final String ROOT_URL = "/dossiers";
+	public static final String ROOT_URI = "/dossiers";
 
 	@Autowired
 	private TxImporterCerfaService importerCerfaService;
@@ -50,8 +50,8 @@ public class DossiersController {
 	private JsonDossierFactory jsonDossierFactory;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDossier> consulter(@PathVariable String id)
-			throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantNonAutoriseException,
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		return this.jsonDossierFactory.toJson(this.consulterMonDossierService.execute(id));
 	}
 
@@ -71,14 +71,17 @@ public class DossiersController {
 	@PostMapping
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(), file.getSize());
+		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(),
+				file.getSize());
 		this.importerCerfaService.execute(fichier);
 	}
 
 	@PostMapping("/{id}/piecesjointes/{numero}")
-	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero, @RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
+	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
+			@RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(), file.getSize());
+		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(),
+				file.getSize());
 		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
 		this.ajouterPieceJointeService.execute(dossier.get(), numero, fichier);
 	}

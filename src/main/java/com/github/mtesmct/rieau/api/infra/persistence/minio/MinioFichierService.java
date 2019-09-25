@@ -18,8 +18,7 @@ import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 import com.github.mtesmct.rieau.api.infra.config.MinioProperties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -38,9 +37,8 @@ import io.minio.errors.RegionConflictException;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Profile("staging")
 @Slf4j
-@Primary
+@ConditionalOnProperty(prefix = "minio", name = "enabled",  havingValue = "true")
 public class MinioFichierService implements FichierService {
 
     private final MinioProperties properties;

@@ -51,7 +51,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 			String[] lines = stripper.getText(doc).split(stripper.getLineSeparator());
 			log.debug("{} lignes de texte", lines.length);
 			for (String line : lines) {
-				log.debug("line={}", line);
+				log.trace("line={}", line);
 				Optional<String> lCode = this.stringExtractService.extract("[\\d]{5}", line, 0);
 				if (lCode.isPresent())
 					code = lCode;

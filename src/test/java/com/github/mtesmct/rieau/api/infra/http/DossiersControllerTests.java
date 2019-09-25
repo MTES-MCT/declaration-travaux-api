@@ -5,7 +5,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -82,7 +81,7 @@ public class DossiersControllerTests {
 
 	@BeforeEach
 	public void setup() throws IOException {
-		this.uri = DossiersController.ROOT_URL;
+		this.uri = DossiersController.ROOT_URI;
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		FileInputStream fis = new FileInputStream(file);
         Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, file.length());
@@ -112,15 +111,14 @@ public class DossiersControllerTests {
 
 	@Test
 	@WithMockUser
-	public void listerInterditTest() throws Exception {
+	public void listerUserInconnuInterditTest() throws Exception {
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithAnonymousUser
-	public void listerRedirigeConnexionTest() throws Exception {
-		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/sso/login"));
+	public void listerUserAnonymeInterditTest() throws Exception {
+		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
 	
 	@Test
@@ -142,18 +140,11 @@ public class DossiersControllerTests {
 	}
 
 	@Test
-	public void ajouterCerfaSansCsrfInterditTest() throws Exception {
-		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf",
-		"application/pdf", "Spring Framework".getBytes());
-		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isForbidden());
-	}
-
-	@Test
 	@WithInstructeurNonBetaDetails
 	public void ajouterCerfaInterditTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf",
 		"application/pdf", "Spring Framework".getBytes());
-		this.mvc.perform(multipart(this.uri).file(multipartFile).with(csrf().asHeader())).andExpect(status().isForbidden());
+		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isForbidden());
 	}
 
 

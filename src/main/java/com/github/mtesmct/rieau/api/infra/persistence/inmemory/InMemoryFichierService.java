@@ -9,10 +9,12 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
-@TestComponent
-public class MockFichierService implements FichierService {
+@Component
+@ConditionalOnProperty(prefix = "minio", name = "enabled",  havingValue = "false")
+public class InMemoryFichierService implements FichierService {
 
     Map<FichierId, Fichier> fichiers = new HashMap<FichierId, Fichier>();
 

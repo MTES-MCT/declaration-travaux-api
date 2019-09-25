@@ -5,10 +5,10 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.UsersService;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.stereotype.Component;
 
-@TestComponent
-public class MockUsersService implements UsersService {
+@Component
+public class BasicUsersService implements UsersService {
 
     public static final String EMAIL_DOMAIN = "@monfai.fr";
 

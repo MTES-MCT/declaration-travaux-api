@@ -66,7 +66,7 @@ public class Personne implements Entity<Personne, PersonneId> {
             throw new NullPointerException("L'id de la personne ne peut pas être nul ou vide");
         this.id = new PersonneId(personneId);
         if (email == null || email.isEmpty())
-            throw new NullPointerException("L'email de la personne ne peut être nul ou vide");
+            throw new NullPointerException("L'email de la personne ne peut pas être nul ou vide");
         if (!Pattern.compile(EMAIL_REGEXP).matcher(email).matches())
             throw new IllegalArgumentException("L'email de la personne est non conforme RFC 5322");
         this.email = email;
