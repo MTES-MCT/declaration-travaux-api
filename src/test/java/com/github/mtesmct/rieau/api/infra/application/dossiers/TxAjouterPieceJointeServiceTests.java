@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -14,14 +13,13 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 
@@ -51,7 +49,7 @@ public class TxAjouterPieceJointeServiceTests {
     @Autowired
     private FichierService fichierService;
     @Autowired
-    private FichierIdService fichierIdService;
+    private FichierFactory fichierFactory;
 
     @Test
     @WithDeposantAndBetaDetails
@@ -60,14 +58,13 @@ public class TxAjouterPieceJointeServiceTests {
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         dp = this.dossierRepository.save(dp);
         assertEquals(dp.statut(), StatutDossier.DEPOSE);
-        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/dummy.pdf"));
-        Fichier fichier = new Fichier("dummy.pdf", "application/pdf", fis, fis.available());
-        FichierId fichierId = this.fichierIdService.creer();
-        this.fichierService.save(fichierId, fichier);
-        Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(dp, "1", fichier);
+        File file = new File("src/test/fixtures/dummy.pdf");
+        Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+        this.fichierService.save(fichier);
+        Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(dp.identity(), "1", file, fichier.mimeType());
         assertTrue(pieceJointe.isPresent());
         assertEquals(pieceJointe.get().code().type(), TypesDossier.DP);
-        fis.close();
+        fichier.fermer();
     }
 
     @Test
@@ -80,13 +77,12 @@ public class TxAjouterPieceJointeServiceTests {
         assertTrue(optionalDossier.isPresent());
         pcmi = optionalDossier.get();
         assertEquals(pcmi.statut(), StatutDossier.DEPOSE);
-        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/dummy.pdf"));
-        Fichier fichier = new Fichier("dummy.pdf", "application/pdf", fis, fis.available());
-        FichierId fichierId = this.fichierIdService.creer();
-        this.fichierService.save(fichierId, fichier);
-        Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(pcmi, "1", fichier);
+        File file = new File("src/test/fixtures/dummy.pdf");
+        Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+        this.fichierService.save(fichier);
+        Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(pcmi.identity(), "1", file, fichier.mimeType());
         assertTrue(pieceJointe.isPresent());
         assertEquals(pieceJointe.get().code().type(), TypesDossier.PCMI);
-        fis.close();
+        fichier.fermer();
     }
 }

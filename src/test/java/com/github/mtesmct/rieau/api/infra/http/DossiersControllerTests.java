@@ -5,7 +5,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -13,18 +14,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -69,7 +68,7 @@ public class DossiersControllerTests {
 	@MockBean
 	private TxImporterCerfaService mockImporterCerfaService;
 	@Autowired
-	private FichierIdService fichierIdService;
+	private FichierFactory fichierFactory;
 
 	private Dossier dossier;
 
@@ -82,20 +81,17 @@ public class DossiersControllerTests {
 	@BeforeEach
 	public void setup() throws IOException {
 		this.uri = DossiersController.ROOT_URI;
-        File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-		FileInputStream fis = new FileInputStream(file);
-        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, file.length());
-        FichierId fichierId = this.fichierIdService.creer();
-        this.fichierService.save(fichierId, fichier);
+		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
+		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+		this.fichierService.save(fichier);
 		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
-        dossier.ajouterCerfa(fichierId);
-        this.dossier = this.dossierRepository.save(this.dossier);
+		dossier.ajouterCerfa(fichier.identity());
+		this.dossier = this.dossierRepository.save(this.dossier);
 		assertNotNull(this.dossier);
 		assertNotNull(this.dossier.identity());
 		assertNotNull(this.dossier.deposant());
 		assertNotNull(this.dossier.type());
 		assertEquals(this.dossier.deposant().identity(), this.deposantBeta.identity());
-        fis.close();
 	}
 
 	@Test
@@ -120,11 +116,12 @@ public class DossiersControllerTests {
 	public void listerUserAnonymeInterditTest() throws Exception {
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
-	
+
 	@Test
 	public void consulterTest() throws Exception {
-		this.mvc.perform(get(this.uri+"/"+this.dossier.identity().toString()).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
+		this.mvc.perform(get(this.uri + "/" + this.dossier.identity().toString()).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().toString())))
 				.andExpect(jsonPath("$.statut", equalTo(this.dossier.statut().toString())))
@@ -133,19 +130,19 @@ public class DossiersControllerTests {
 
 	@Test
 	public void ajouterCerfaAutoriseTest() throws Exception {
-		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf",
-		"application/pdf", "Spring Framework".getBytes());
-		Mockito.when(this.mockImporterCerfaService.execute(any())).thenReturn(Optional.ofNullable(this.dossier));
-		this.mvc.perform(multipart(this.uri).file(multipartFile).with(csrf().asHeader())).andExpect(status().isOk());
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
+		Mockito.when(this.mockImporterCerfaService.execute(any(), anyString(), anyString(), anyLong()))
+				.thenReturn(Optional.ofNullable(this.dossier));
+		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isOk());
 	}
 
 	@Test
 	@WithInstructeurNonBetaDetails
 	public void ajouterCerfaInterditTest() throws Exception {
-		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf",
-		"application/pdf", "Spring Framework".getBytes());
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
 		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isForbidden());
 	}
-
 
 }

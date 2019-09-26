@@ -15,9 +15,10 @@ keycloak.enabled = false
 
 # Fichiers
 minio.enabled = false
+app.fichiers-dir = target/fichiers
 
 #Logging
 logging.level.root = info
-logging.level.com.github.mtesmct.rieau = debug
+logging.level.com.github.mtesmct.rieau = info
 # logging.level.org.springframework.security = warn
 # logging.level.org.hibernate.type=trace

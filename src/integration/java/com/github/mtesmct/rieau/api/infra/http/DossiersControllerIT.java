@@ -11,12 +11,11 @@ import java.net.URISyntaxException;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -68,10 +67,10 @@ public class DossiersControllerIT {
 	private DossierFactory dossierFactory;
 	@Autowired
 	private FichierService fichierService;
+	@Autowired
+	private FichierFactory fichierFactory;
 	@MockBean
 	private TxImporterCerfaService mockImporterCerfaService;
-	@Autowired
-	private FichierIdService fichierIdService;
 
 	private Dossier dossier;
 
@@ -101,19 +100,17 @@ public class DossiersControllerIT {
 	@BeforeEach
 	public void initData() throws Exception {
 		file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-		FileInputStream fis = new FileInputStream(file);
-		fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, file.length());
-		FichierId fichierId = this.fichierIdService.creer();
-		fichierService.save(fichierId, fichier);
+		fichier = this.fichierFactory.creer(file, "application/pdf");
+		fichierService.save(fichier);
 		dossier = dossierFactory.creer(deposantBeta, TypesDossier.DP);
-		dossier.ajouterCerfa(fichierId);
+		dossier.ajouterCerfa(fichier.identity());
 		dossier = dossierRepository.save(dossier);
 		assertNotNull(dossier);
 		assertNotNull(dossier.identity());
 		assertNotNull(dossier.deposant());
 		assertNotNull(dossier.type());
 		assertEquals(dossier.deposant().identity(), deposantBeta.identity());
-		fis.close();
+		fichier.fermer();
 	}
 
 	@AfterAll
@@ -149,7 +146,7 @@ public class DossiersControllerIT {
 		return client.execute(request);
 	}
 
-	private HttpResponse postWithBearer(String uri, String name, String mimeType, File file, String userName,
+	private HttpResponse postWithBearer(String uri, File file, String mimeType, String userName,
 			String password, boolean sendRpt, String resourceId) throws IOException, URISyntaxException {
 		HttpClient client = HttpClientBuilder.create().build();
 		URI uriObj = new URIBuilder(rootUrl).build();
@@ -164,7 +161,7 @@ public class DossiersControllerIT {
 		request.addHeader("Authorization", "Bearer " + rpt);
 		log.debug("request={}", request);
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.addBinaryBody("file", file, ContentType.parse(mimeType), name);
+		builder.addBinaryBody("file", file, ContentType.parse(mimeType), file.getName());
 		HttpEntity multipart = builder.build();
 		request.setEntity(multipart);
 		return client.execute(request);
@@ -178,14 +175,14 @@ public class DossiersControllerIT {
 		return client.execute(request);
 	}
 
-	private HttpResponse postWithoutBearer(String uri, String name, String mimeType, File file)
+	private HttpResponse postWithoutBearer(String uri, File file, String mimeType)
 			throws IOException, URISyntaxException {
 		HttpClient client = HttpClientBuilder.create().build();
 		URI uriObj = new URIBuilder(rootUrl).build();
 		HttpPost request = new HttpPost(uriObj + uri);
 		log.debug("request={}", request);
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.addBinaryBody("file", file, ContentType.parse(mimeType), name);
+		builder.addBinaryBody("file", file, ContentType.parse(mimeType), file.getName());
 		HttpEntity multipart = builder.build();
 		request.setEntity(multipart);
 		return client.execute(request);
@@ -240,16 +237,18 @@ public class DossiersControllerIT {
 
 	@Test
 	public void ajouterCerfaTest() throws Exception {
-		HttpResponse response = postWithBearer(DossiersController.ROOT_URI, fichier.nom(), fichier.mimeType(), file,
+		FileInputStream fis = new FileInputStream(file);
+		HttpResponse response = postWithBearer(DossiersController.ROOT_URI, file, "application/pdf",
 				WithDeposantAndBetaDetails.ID, WithDeposantAndBetaDetails.ID, false, "Default Resource");
 		assertAccessGranted(response);
+		fis.close();
 	}
 
 	@Test
 	public void ajouterCerfaInterditTest() throws Exception {
-		HttpResponse response = postWithoutBearer(DossiersController.ROOT_URI, fichier.nom(), fichier.mimeType(), file);
+		HttpResponse response = postWithoutBearer(DossiersController.ROOT_URI, file, "application/pdf");
 		assertAccessDenied(response);
-		response = postWithBearer(DossiersController.ROOT_URI, fichier.nom(), fichier.mimeType(), file,
+		response = postWithBearer(DossiersController.ROOT_URI, file, "application/pdf",
 				WithInstructeurNonBetaDetails.ID, WithInstructeurNonBetaDetails.ID, false, "Default Resource");
 		assertAccessForbidden(response);
 	}

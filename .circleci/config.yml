@@ -20,6 +20,7 @@ executors:
         environment:
           MINIO_ACCESS_KEY: minio
           MINIO_SECRET_KEY: minio123
+        command: ["server", "/data"]
     working_directory: '~/rieau-api'
 
 jobs:
@@ -84,6 +85,26 @@ jobs:
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE DATABASE rieau;"
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
+          name: Waiting for Keycloak to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 8080 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Keycloak && exit 1
+      - run:
+          name: Waiting for Minio to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 9000 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Minio && exit 1
+      - run:
           command: |
             mvn integration-test
       - store_test_results:
@@ -96,7 +117,7 @@ jobs:
           at: '~/'
       - run:
           command: |
-            mvn package -DskipTests 
+            mvn package -DskipTests -DskipITs
             mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
       - store_artifacts:
           path: target/dependency

@@ -4,12 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 import org.junit.jupiter.api.Test;
@@ -26,29 +24,30 @@ public class PdfCerfaServiceTests {
     @Autowired
     private FichierService fichierService;
     @Autowired
-    private FichierIdService fichierIdService;
+    private FichierFactory fichierFactory;
 
     @Test
     public void lireCerfaDPMITest() throws Exception {
-        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13703_DPMI.pdf"));
-        Fichier fichier = new Fichier("cerfa_13703_DPMI.pdf", "application/pdf", fis, fis.available());
-        FichierId fichierId = this.fichierIdService.creer();
-        this.fichierService.save(fichierId, fichier);
-        Optional<String> code = this.filePdfCerfaService.lireCode(fichier);
+        File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
+        Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+        this.fichierService.save(fichier);
+        Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
+        assertTrue(fichierLu.isPresent());
+        Optional<String> code = this.filePdfCerfaService.lireCode(fichierLu.get());
         assertTrue(code.isPresent());
         assertEquals(code.get(), "13703");
-        fis.close();
+        fichierLu.get().fermer();
     }
     @Test
     public void lireCerfaPCMITest() throws Exception {
-        FileInputStream fis = new FileInputStream(new File("src/test/fixtures/cerfa_13406_PCMI.pdf"));
-        Fichier fichier = new Fichier("cerfa_13406_PCMI.pdf", "application/pdf", fis, fis.available());
-        FichierId fichierId = this.fichierIdService.creer();
-        this.fichierService.save(fichierId, fichier);
-        Optional<String> code = this.filePdfCerfaService.lireCode(fichier);
+        File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
+        Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+        this.fichierService.save(fichier);
+        Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
+        assertTrue(fichierLu.isPresent());
+        Optional<String> code = this.filePdfCerfaService.lireCode(fichierLu.get());
         assertTrue(code.isPresent());
-        fis.close();
         assertEquals(code.get(), "13406");
-        fis.close();
+        fichierLu.get().fermer();
     }
 }

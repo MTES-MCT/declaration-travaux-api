@@ -7,7 +7,6 @@ import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -31,7 +30,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 		if (!fichier.mimeType().equals(pdfMimeType))
 			throw new CerfaImportException("Le type MIME du fichier n'est pas " + pdfMimeType);
 		try {
-			doc = PDDocument.load(fichier.content(), MemoryUsageSetting.setupTempFileOnly());
+			doc = PDDocument.load(fichier.contenu());
 			if (doc.isEncrypted()) {
 				throw new CerfaImportException("Le pdf est chiffré");
 			}

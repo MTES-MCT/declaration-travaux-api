@@ -11,7 +11,7 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterMonDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
@@ -33,6 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class DossiersController {
 
 	public static final String ROOT_URI = "/dossiers";
+
+	// @Value("${spring.servlet.multipart.location}")
+	// private String uploadLocation;
 
 	@Autowired
 	private TxImporterCerfaService importerCerfaService;
@@ -71,19 +74,14 @@ public class DossiersController {
 	@PostMapping
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(),
-				file.getSize());
-		this.importerCerfaService.execute(fichier);
+		this.importerCerfaService.execute(file.getInputStream(), file.getOriginalFilename(), file.getContentType(), file.getSize());
 	}
 
 	@PostMapping("/{id}/piecesjointes/{numero}")
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
 			@RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		Fichier fichier = new Fichier(file.getOriginalFilename(), file.getContentType(), file.getInputStream(),
-				file.getSize());
-		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
-		this.ajouterPieceJointeService.execute(dossier.get(), numero, fichier);
+		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getResource().getFile(), file.getContentType());
 	}
 
 }

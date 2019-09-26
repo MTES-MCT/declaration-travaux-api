@@ -1,5 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
+import java.io.File;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -8,8 +9,7 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.AjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.application.dossiers.ApplicationAJouterPieceJointeService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,9 @@ public class TxAjouterPieceJointeService implements AjouterPieceJointeService {
     private ApplicationAJouterPieceJointeService applicationAjouterPieceJointeService;
 
     @Override
-    public Optional<PieceJointe> execute(Dossier dossier, String numero, Fichier fichier)
+    public Optional<PieceJointe> execute(DossierId id, String numero, File file, String mimeType)
             throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-        return this.applicationAjouterPieceJointeService.execute(dossier, numero, fichier);
+        return this.applicationAjouterPieceJointeService.execute(id, numero, file, mimeType);
     }
 
 }

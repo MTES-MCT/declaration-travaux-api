@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -38,11 +39,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix = "minio", name = "enabled",  havingValue = "true")
+@ConditionalOnProperty(prefix = "minio", name = "enabled", havingValue = "true")
 public class MinioFichierService implements FichierService {
 
     private final MinioProperties properties;
     private MinioClient minioClient;
+    private String fileNameHeader = "X-File-Name";
+    private String fileNameHttpHeader = "x-amz-meta-x-file-name";
+    private String fileSizeHttpHeader = "content-length";
 
     @Autowired
     public MinioFichierService(MinioProperties properties) {
@@ -66,7 +70,8 @@ public class MinioFichierService implements FichierService {
             }
         } catch (InvalidBucketNameException | RegionConflictException | NoSuchAlgorithmException | IOException
                 | InvalidKeyException | NoResponseException | XmlPullParserException | ErrorResponseException
-                | InternalException | InsufficientDataException | InvalidResponseException | InvalidPortException | InvalidEndpointException e) {
+                | InternalException | InsufficientDataException | InvalidResponseException | InvalidPortException
+                | InvalidEndpointException e) {
             log.error("Création du client minio impossible", e);
             throw new IllegalArgumentException("Minio client ne peut pas être nul", e);
         }
@@ -77,12 +82,17 @@ public class MinioFichierService implements FichierService {
         Optional<Fichier> fichier = Optional.empty();
         try {
             ObjectStat objectStat = minioClient.statObject(this.properties.getBucket(), fichierId.toString());
-            List<String> headers = objectStat.httpHeaders().get("X-File-Name");
-            if (headers.isEmpty())
-                throw new FichierServiceException("Impossible de récupérer le nom du fichier depuis Minio");
-            String fileName = headers.get(0);
+            Map<String, List<String>> headers = objectStat.httpHeaders();
+            if (headers == null || headers.isEmpty())
+                throw new FichierServiceException(
+                        "Impossible de récupérer le nom du fichier depuis Minio. Pas de headers associées à l'objet Minio");
+            String fileName = this.getHeader(headers, fileNameHttpHeader);
+            String fileSize = this.getHeader(headers, fileSizeHttpHeader);
+            log.debug("fileName={}", fileName);
+            log.debug("fileSize={}", fileSize);
             InputStream stream = minioClient.getObject(this.properties.getBucket(), fichierId.toString());
-            fichier = Optional.ofNullable(new Fichier(fileName, objectStat.contentType(), stream, stream.available()));
+            fichier = Optional.ofNullable(
+                    new Fichier(fichierId, fileName, objectStat.contentType(), stream, Long.valueOf(fileSize)));
         } catch (InvalidKeyException | InvalidBucketNameException | NoSuchAlgorithmException | InsufficientDataException
                 | NoResponseException | ErrorResponseException | InternalException | InvalidArgumentException
                 | InvalidResponseException | IOException | XmlPullParserException e) {
@@ -92,17 +102,27 @@ public class MinioFichierService implements FichierService {
 
     }
 
+    private String getHeader(Map<String, List<String>> headers, String headerName) {
+        List<String> fileNameHeaders = headers.get(headerName);
+        if (fileNameHeaders == null || fileNameHeaders.isEmpty())
+            throw new FichierServiceException("Impossible de récupérer le nom du fichier depuis Minio. Pas de header {"
+                    + headerName + "} associée à l'objet Minio");
+        String fileName = fileNameHeaders.get(0);
+        return fileName;
+    }
+
     @Override
-    public void save(FichierId fichierId, Fichier fichier) throws FichierServiceException {
+    public void save(Fichier fichier) throws FichierServiceException {
         try {
             Map<String, String> headerMap = new HashMap<String, String>();
             headerMap.put("Content-Type", fichier.mimeType());
-            headerMap.put("X-File-Name", fichier.nom());
-            minioClient.putObject(this.properties.getBucket(), fichierId.toString(), fichier.content(),
-            fichier.size(), headerMap, null, fichier.mimeType());
-            log.debug("fichierId={}", fichierId.toString());
-            log.debug("fichier.size={}", fichier.size());
-            log.debug("fichier.nom={}", fichier.nom());
+            headerMap.put(fileNameHeader, fichier.nom());
+            FichierId fichierId = fichier.identity();
+            minioClient.putObject(this.properties.getBucket(), fichierId.toString(), fichier.contenu(),
+                    fichier.taille(), headerMap, null, fichier.mimeType());
+            log.debug("fichierId={}", Objects.toString(fichierId));
+            log.debug("fichier={}", Objects.toString(fichier));
+            log.debug("fileNameHeader={}", Objects.toString(headerMap.get(fileNameHeader)));
         } catch (InvalidKeyException | InvalidBucketNameException | NoSuchAlgorithmException | InsufficientDataException
                 | NoResponseException | ErrorResponseException | InternalException | InvalidArgumentException
                 | InvalidResponseException | IOException | XmlPullParserException e) {
