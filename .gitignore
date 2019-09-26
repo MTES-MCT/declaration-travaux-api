@@ -5,7 +5,7 @@ bin/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-!**/src/main/resources/realm-rieau-test.json
+!**/src/main/resources/*.json
 
 ### STS ###
 .apt_generated
@@ -37,4 +37,3 @@ build/
 ### Properties ###
 src/main/resources/application*.properties
 src/test/resources/application*.properties
-src/main/resources/*.json
