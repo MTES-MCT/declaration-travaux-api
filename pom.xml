@@ -308,6 +308,11 @@
 									<sources>
 										<source>src/integration/java</source>
 									</sources>
+									<resources>
+										<resource>
+											<directory>src/integration/resources</directory>
+										</resource>
+									</resources>
 								</configuration>
 							</execution>
 						</executions>

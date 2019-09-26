@@ -92,7 +92,6 @@ public class DossiersControllerIT {
 		TestsHelper.baseUrl = rootUrl;
 		TestsHelper.keycloakBaseUrl = "http://localhost:8080/auth";
 		TestsHelper.testRealm = "rieau";
-		// TestsHelper.importTestRealm("admin","admin","/realm-rieau-with-users.json");
 		TestsHelper.importTestRealm("admin", "admin", "/realm-rieau-test.json");
 		TestsHelper.createDirectGrantClient();
 	}
