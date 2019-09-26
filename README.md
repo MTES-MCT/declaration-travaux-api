@@ -10,18 +10,24 @@
 
 * Java 11, par exemple AdoptOpenJDK 11 installé depuis [sdkman](https://sdkman.io).
 
-* Adaptez les variables à chaque environnement:
+* Adaptez les variables à l'environnement de `dev`:
 
 ```shell
 cp src/main/resources/application-{env}.properties.sample src/main/resources/application-{env}.properties
 ```
 
-env = test, dev, staging ou production
-
-* Activez les environnements en ajoutant:
+* Activez l'environnement de `dev` en ajoutant:
 
 ```shell
--Dspring.profiles.active=<env>
+-Pdev
+```
+
+Ce dernier bouchonne la persistence des fichiers en mémoire, des données en mémoire dans une base H2 et l'authentification est basique avec Spring security.
+
+Sinon, par défaut c'est l'environnement d'intégration qui est activé. Ce dernier intègre la persistence des fichiers avec un serveur Minio, des données avec une base PostgreSQL et l'authentification avec un serveur Oauth2/OIDC Keycloak. Ces derniers doivent être lancés en préalable avec une stack docker-compose en phase de développement:
+
+```shell
+docker-compose -f src/main/docker/docker-compose.yml up --build -d
 ```
 
 ### Dev
@@ -40,45 +46,74 @@ env = test, dev, staging ou production
 * Lancez tous les tests:
 
 ```shell
-./mvnw test
+./mvnw clean test -Pdev
 ```
 
 * Lancez une seule classe de test:
 
 ```shell
-./mvnw test -Dtest=<nomdelaclasse>
+./mvnw clean test -Pdev -Dtest=<nomdelaclasse>
 ```
 
 * Lancez une seule méthode de test:
 
 ```shell
-./mvnw test -Dtest=<nomdelaclasse>#<nomdelamethode>
+./mvnw clean test -Pdev -Dtest=<nomdelaclasse>#<nomdelamethode>
 ```
 
 ### Tests d'intégration
 
-* Nécessitent une base de données PostgreSQL:
-
-```shell
-docker-compose -f src/main/docker/stack.yml up --build -d
-```
+Prérequis: la stack lancée avec docker-compose.
 
 * Lancez tous les tests:
 
 ```shell
-./mvnw test -Dspring.profiles.active=staging
+./mvnw clean integration-test
+```
+
+* Lancez une seule classe de test:
+
+```shell
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>
+```
+
+* Lancez une seule méthode de test:
+
+```shell
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>#<nomdelamethode>
+```
+
+### Tests manuels
+
+Prérequis: la stack lancée avec docker-compose.
+
+```shell
+KC_REALM=rieau
+KC_USERNAME=jean.martin
+KC_PASSWORD=
+KC_CLIENT=rieau-api
+KC_CLIENT_SECRET=
+KC_URL="http://localhost:8080/auth"
+KC_RESPONSE=$( \
+   curl -k -v \
+        -d "username=$KC_USERNAME" \
+        -d "password=$KC_PASSWORD" \
+        -d 'grant_type=password' \
+        -d "client_id=$KC_CLIENT" \
+        -d "client_secret=$KC_CLIENT_SECRET" \
+        "$KC_URL/realms/$KC_REALM/protocol/openid-connect/token" \
+    | jq .
+)
+KC_ACCESS_TOKEN=$(echo $KC_RESPONSE| jq -r .access_token)
+KC_ID_TOKEN=$(echo $KC_RESPONSE| jq -r .id_token)
+KC_REFRESH_TOKEN=$(echo $KC_RESPONSE| jq -r .refresh_token)
+curl -k -H "Authorization: Bearer $KC_ACCESS_TOKEN" -v http://localhost:5000/dossiers
 ```
 
 ### Vérification des vulnérabilités
 
 ```shell
-./mvnw verify
-```
-
-### Construction
-
-```shell
-./mvnw clean package
+./mvnw clean verify -Pdev
 ```
 
 ### Gestion des versions
@@ -101,11 +136,12 @@ Update seulement de la dev version dans pom:
 mvn --batch-mode release:update-versions -DdevelopmentVersion=1.1.0-SNAPSHOT
 ```
 
-### Docker
+### Construction de l'image Docker
 
 * Build:
 
 ```shell
+./mvnw clean package
 mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 ```

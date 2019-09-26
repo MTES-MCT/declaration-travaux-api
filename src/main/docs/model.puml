@@ -1,0 +1,17 @@
+@startuml RIEAU
+class Personne {
+    - nom
+    - prenom
+    - email
+}
+class Dossier {
+    - dateDepot
+}
+class PieceJointe {
+    - file
+    - version
+}
+Dossier *-- PieceJointe: joint * >
+Dossier <-- PieceJointe: joint ? > "cerfa"
+Dossier <-- Personne: depose <
+@enduml

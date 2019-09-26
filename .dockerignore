@@ -4,3 +4,4 @@ target/
 .git/
 .circleci/
 .vscode/
+*.json

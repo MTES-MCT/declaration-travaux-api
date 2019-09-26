@@ -11,6 +11,16 @@ executors:
         environment:
           POSTGRES_PASS: postgres
           POSTGRES_DB: postgres
+      - image: jboss/keycloak:7.0.0
+        environment:
+          DB_VENDOR: H2
+          KEYCLOAK_USER: admin
+          KEYCLOAK_PASSWORD: admin
+      - image: minio/minio:RELEASE.2019-09-18T21-55-05Z
+        environment:
+          MINIO_ACCESS_KEY: minio
+          MINIO_SECRET_KEY: minio123
+        command: ["server", "/data"]
     working_directory: '~/rieau-api'
 
 jobs:
@@ -19,7 +29,7 @@ jobs:
     steps:
       - checkout
       - run: cp src/main/resources/application.properties.sample src/main/resources/application.properties
-      - run: cp src/main/resources/application-staging.properties.sample src/main/resources/application-staging.properties
+      - run: cp src/main/resources/application-dev.properties.sample src/main/resources/application-dev.properties
       - restore_cache:
           key: rieau-api-{{ checksum "pom.xml" }}
       - run: mvn dependency:go-offline
@@ -37,7 +47,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
-      - run: mvn verify -DskipTests
+      - run: mvn verify -Pdev -DskipTests
       - store_test_results:
           path: target
   unit-tests:
@@ -45,7 +55,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
-      - run: mvn test
+      - run: mvn test -Pdev
       - store_test_results:
           path: target/surefire-reports
   integration-tests:
@@ -75,10 +85,30 @@ jobs:
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE DATABASE rieau;"
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
+          name: Waiting for Keycloak to be ready
           command: |
-            mvn test -Dspring.profiles.active=staging
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 8080 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Keycloak && exit 1
+      - run:
+          name: Waiting for Minio to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 9000 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Minio && exit 1
+      - run:
+          command: |
+            mvn integration-test
       - store_test_results:
-          path: target/surefire-reports
+          path: target/failsafe-reports
       
   build:
     executor: jdk
@@ -87,7 +117,7 @@ jobs:
           at: '~/'
       - run:
           command: |
-            mvn package -DskipTests -Dspring.profiles.active=staging  
+            mvn package -DskipTests -DskipITs
             mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
       - store_artifacts:
           path: target/dependency
