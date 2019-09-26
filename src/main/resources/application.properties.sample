@@ -23,7 +23,7 @@ spring.jpa.open-in-view=false
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.url=jdbc:postgresql://localhost:5432/rieau
 spring.datasource.username=rieau
-spring.datasource.password=
+spring.datasource.password=rieau
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 spring.jpa.hibernate.ddl-auto=validate
@@ -35,7 +35,7 @@ spring.flyway.locations=classpath:db/migration/{vendor}
 minio.enabled = true
 minio.endpoint=http://localhost:9000
 minio.access-key=minio
-minio.secret-key=
+minio.secret-key=minio123
 minio.bucket=rieau
 minio.buffer=4096
 
@@ -46,7 +46,7 @@ keycloak.realm = rieau
 keycloak.auth-server-url = http://localhost:8080/auth
 keycloak.ssl-required = external
 keycloak.resource = rieau-api
-keycloak.credentials.secret = 
+keycloak.credentials.secret = secret
 keycloak.use-resource-role-mappings = true
 
 # HTTP server
