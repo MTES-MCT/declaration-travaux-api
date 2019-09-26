@@ -18,16 +18,12 @@ import lombok.Setter;
 @Validated
 @Component
 public class MinioProperties {
-    private boolean enabled;
     @NotNull
+    private boolean enabled;
     private URL endpoint;
-    @NotBlank
     private String accessKey;
-    @NotBlank
     private String secretKey;
-    @NotBlank
     private String bucket;
     private int buffer;
-    @NotBlank
     private String filesOutputDir;
 }
