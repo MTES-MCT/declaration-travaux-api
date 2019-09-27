@@ -28,7 +28,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 		Optional<String> code = Optional.empty();
 		String pdfMimeType = "application/pdf";
 		if (!fichier.mimeType().equals(pdfMimeType))
-			throw new CerfaImportException("Le type MIME du fichier n'est pas " + pdfMimeType);
+			throw new CerfaImportException("Le type MIME du fichier n'est pas {" + pdfMimeType + "}");
 		try {
 			doc = PDDocument.load(fichier.contenu());
 			if (doc.isEncrypted()) {
@@ -57,7 +57,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 			}
 			doc.close();
 		} catch (IOException e) {
-			throw new CerfaImportException("Erreur de chargement du pdf: " + fichier.nom(), e);
+			throw new CerfaImportException("Erreur de chargement du pdf {" + fichier.nom() + "}", e);
 		}
 		return code;
 	}

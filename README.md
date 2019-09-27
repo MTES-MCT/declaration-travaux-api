@@ -22,7 +22,7 @@ cp src/main/resources/application-{env}.properties.sample src/main/resources/app
 -Pdev
 ```
 
-Ce dernier bouchonne la persistence des fichiers en mémoire, des données en mémoire dans une base H2 et l'authentification est basique avec Spring security.
+Ce dernier bouchonne la persistence des fichiers en filesystem, des données en mémoire dans une base H2 et l'authentification est basique avec Spring security.
 
 Sinon, par défaut c'est l'environnement d'intégration qui est activé. Ce dernier intègre la persistence des fichiers avec un serveur Minio, des données avec une base PostgreSQL et l'authentification avec un serveur Oauth2/OIDC Keycloak. Ces derniers doivent être lancés en préalable avec une stack docker-compose en phase de développement:
 
@@ -113,7 +113,7 @@ curl -k -H "Authorization: Bearer $KC_ACCESS_TOKEN" -v http://localhost:5000/dos
 ### Vérification des vulnérabilités
 
 ```shell
-./mvnw clean verify -Pdev
+./mvnw clean verify -Pdev -DskipTests
 ```
 
 ### Gestion des versions
@@ -141,7 +141,7 @@ mvn --batch-mode release:update-versions -DdevelopmentVersion=1.1.0-SNAPSHOT
 * Build:
 
 ```shell
-./mvnw clean package
+./mvnw clean package -DskipTests -DskipITs
 mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 ```
