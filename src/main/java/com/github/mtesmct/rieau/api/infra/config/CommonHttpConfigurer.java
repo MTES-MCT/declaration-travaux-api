@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 public class CommonHttpConfigurer extends AbstractHttpConfigurer<CommonHttpConfigurer, HttpSecurity> {
+
     @Override
     public void init(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

@@ -20,4 +20,5 @@ public class AppProperties {
     @NotNull
     private String datetimeFormat;
     private String fichiersDir;
+    private String uiUrl;
 }
