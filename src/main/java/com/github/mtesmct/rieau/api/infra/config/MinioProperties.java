@@ -2,7 +2,6 @@ package com.github.mtesmct.rieau.api.infra.config;
 
 import java.net.URL;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

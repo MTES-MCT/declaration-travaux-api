@@ -4,6 +4,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
@@ -27,6 +29,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
@@ -67,10 +70,14 @@ public class DossiersControllerTests {
 	private FichierService fichierService;
 	@MockBean
 	private TxImporterCerfaService mockImporterCerfaService;
+	@MockBean
+	private TxAjouterPieceJointeService mockAjouterPieceJointeService;
 	@Autowired
 	private FichierFactory fichierFactory;
 
 	private Dossier dossier;
+
+	private Optional<PieceJointe> pieceJointe;
 
 	private String uri;
 
@@ -86,6 +93,11 @@ public class DossiersControllerTests {
 		this.fichierService.save(fichier);
 		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
 		dossier.ajouterCerfa(fichier.identity());
+		file = new File("src/test/fixtures/dummy.pdf");
+		fichier = this.fichierFactory.creer(file, "application/pdf");
+		this.fichierService.save(fichier);
+		this.pieceJointe = dossier.ajouter("1", fichier.identity());
+		assertTrue(this.pieceJointe.isPresent());
 		this.dossier = this.dossierRepository.save(this.dossier);
 		assertNotNull(this.dossier);
 		assertNotNull(this.dossier.identity());
@@ -143,6 +155,23 @@ public class DossiersControllerTests {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
 		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void ajouterPieceJointeAutoriseTest() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
+		Mockito.when(this.mockAjouterPieceJointeService.execute(any(), anyString(), any(), anyString(), anyString(), anyLong()))
+				.thenReturn(this.pieceJointe);
+		this.mvc.perform(multipart(this.uri+"/"+this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile)).andExpect(status().isOk());
+	}
+
+	@Test
+	@WithInstructeurNonBetaDetails
+	public void ajouterPieceJointeInterditTest() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
+		this.mvc.perform(multipart(this.uri+"/"+this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile)).andExpect(status().isForbidden());
 	}
 
 }

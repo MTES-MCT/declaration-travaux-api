@@ -34,9 +34,6 @@ public class DossiersController {
 
 	public static final String ROOT_URI = "/dossiers";
 
-	// @Value("${spring.servlet.multipart.location}")
-	// private String uploadLocation;
-
 	@Autowired
 	private TxImporterCerfaService importerCerfaService;
 	@Autowired
@@ -81,7 +78,7 @@ public class DossiersController {
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
 			@RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getResource().getFile(), file.getContentType());
+		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(), file.getOriginalFilename(), file.getContentType(), file.getSize());
 	}
 
 }

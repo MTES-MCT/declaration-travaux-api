@@ -1,7 +1,7 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.ApplicationService;
@@ -50,26 +50,28 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
     }
 
     @Override
-    public Optional<PieceJointe> execute(DossierId id, String numero, File file, String mimeType)
+    public Optional<PieceJointe> execute(DossierId id, String numero, InputStream is, String nom, String mimeType, long taille)
             throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException {
         this.authorizationService.isDeposantAndBetaAuthorized();
         if (numero.equals("0"))
             throw new AjouterPieceJointeException(new NumeroPieceJointeException());
-        Fichier fichier;
         Optional<PieceJointe> pieceJointe = Optional.empty();
         try {
+            Fichier fichier = this.fichierFactory.creer(is, nom, mimeType, taille);
+            this.fichierService.save(fichier);
+            Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
+            if (fichierLu.isEmpty())
+                throw new AjouterPieceJointeException(new FichierNotFoundException(fichier.identity().toString()));
             Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
             if (dossier.isEmpty())
                 throw new AjouterPieceJointeException(new DossierNotFoundException(id.toString()));
             if (!dossier.get().deposant().identity().equals(this.authenticationService.user().get().identity()))
                 throw new AjouterPieceJointeException(
                         new DeposantNonAutoriseException(this.authenticationService.user().get()));
-            fichier = this.fichierFactory.creer(file, mimeType);
-            this.fichierService.save(fichier);
             pieceJointe = dossier.get().ajouter(numero, fichier.identity());
             this.dossierRepository.save(dossier.get());
-            fichier.fermer();
+            fichierLu.get().fermer();
         } catch (IOException e) {
             throw new AjouterPieceJointeException(e);
         }

@@ -72,13 +72,14 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
             this.fichierService.save(fichier);
             Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
             if (fichierLu.isEmpty())
-                throw new DossierImportException("Le fichier n'a pas pu être lu depuis le dépôt de fichier");
+                throw new DossierImportException(new FichierNotFoundException(fichier.identity().toString()));
             Optional<String> code = this.cerfaImportService.lireCode(fichierLu.get());
             if (code.isEmpty())
                 throw new DossierImportException("Aucun code CERFA trouvé dans le fichier pdf");
             Optional<TypeDossier> type = this.typeDossierRepository.findByCode(code.get());
             if (type.isEmpty())
-                throw new DossierImportException("Aucun type de dossier reconnu dans le fichier pdf pour le code {" + code.get() + "}");
+                throw new DossierImportException(
+                        "Aucun type de dossier reconnu dans le fichier pdf pour le code {" + code.get() + "}");
             Personne deposant = this.authenticationService.user().get();
             dossier = this.dossierFactory.creer(deposant, type.get().type());
             dossier.ajouterCerfa(fichier.identity());
