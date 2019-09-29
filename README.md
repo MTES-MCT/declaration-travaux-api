@@ -65,10 +65,16 @@ docker-compose -f src/main/docker/docker-compose.yml up --build -d
 
 Prérequis: la stack lancée avec docker-compose.
 
-* Lancez tous les tests:
+* Lancez tous les tests sans échec:
 
 ```shell
 ./mvnw clean integration-test
+```
+
+avec échec:
+
+```shell
+./mvnw clean verify
 ```
 
 * Lancez une seule classe de test:

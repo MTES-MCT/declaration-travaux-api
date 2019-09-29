@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,9 @@ import org.keycloak.adapters.spi.HttpFacade;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -27,6 +30,21 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @KeycloakConfiguration
 @ConditionalOnProperty(prefix = "keycloak", name = "enabled", havingValue = "true")
 public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
+
+    @Value("${keycloak.auth-server-url}")
+    private String authServerUrl;
+    @Value("${keycloak.ssl-required}")
+    private String sslRequired;
+    @Value("${keycloak.credentials.secret}")
+    private String credentialsSecret;
+    @Value("${keycloak.resource}")
+    private String resource;
+    @Value("${keycloak.realm}")
+    private String realm;
+    @Value("${keycloak.bearer-only}")
+    private boolean bearerOnly;
+    @Value("${keycloak.use-resource-role-mappings}")
+    private boolean useResourceRoleMappings;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -43,8 +61,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement()
-                .sessionAuthenticationStrategy(sessionAuthenticationStrategy()).and()
+        http.sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy()).and()
                 .addFilterBefore(keycloakPreAuthActionsFilter(), LogoutFilter.class)
                 .addFilterBefore(keycloakAuthenticationProcessingFilter(), X509AuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint()).and().logout()
@@ -64,13 +81,17 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
                 if (keycloakDeployment != null) {
                     return keycloakDeployment;
                 }
-                String path = "/keycloak.json";
-                InputStream configInputStream = getClass().getResourceAsStream(path);
-                if (configInputStream == null) {
-                    throw new RuntimeException("Could not load Keycloak deployment info: " + path);
-                } else {
-                    keycloakDeployment = KeycloakDeploymentBuilder.build(configInputStream);
-                }
+                AdapterConfig adapterConfig = new AdapterConfig();
+                adapterConfig.setAuthServerUrl(authServerUrl);
+                adapterConfig.setBearerOnly(bearerOnly);
+                adapterConfig.setRealm(realm);
+                adapterConfig.setResource(resource);
+                adapterConfig.setSslRequired(sslRequired);
+                adapterConfig.setUseResourceRoleMappings(useResourceRoleMappings);
+                Map<String,Object> credentials = new HashMap<String,Object>();
+                credentials.put("secret", credentialsSecret);
+                adapterConfig.setCredentials(credentials);
+                keycloakDeployment = KeycloakDeploymentBuilder.build(adapterConfig);
                 return keycloakDeployment;
             }
         };
