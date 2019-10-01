@@ -8,6 +8,7 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,27 +18,31 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     @Autowired
     private UserInfoService userInfoService;
 
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
     @Override
     public boolean isAuthenticaed() {
-        return SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+        return getAuthentication() != null ? getAuthentication().isAuthenticated() : false;
     }
 
     @Override
     public boolean isDeposant() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.DEPOSANT)).findAny().isPresent();
+        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.DEPOSANT)).findAny().isPresent() : false;
     }
 
     @Override
     public boolean isInstructeur() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.INSTRUCTEUR)).findAny().isPresent();
+        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.INSTRUCTEUR)).findAny().isPresent() : false;
     }
 
     @Override
     public boolean isBeta() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.BETA)).findAny().isPresent();
+        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.BETA)).findAny().isPresent() : false;
     }
 
     @Override

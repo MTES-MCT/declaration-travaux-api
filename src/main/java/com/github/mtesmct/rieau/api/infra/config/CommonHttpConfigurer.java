@@ -1,7 +1,8 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
 import com.github.mtesmct.rieau.api.application.auth.Roles;
-import com.github.mtesmct.rieau.api.infra.http.DossiersController;
+import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
+import com.github.mtesmct.rieau.api.infra.http.fichiers.FichiersController;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,8 +15,14 @@ public class CommonHttpConfigurer extends AbstractHttpConfigurer<CommonHttpConfi
     public void init(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
-                .and().authorizeRequests().antMatchers(HttpMethod.GET, DossiersController.ROOT_URI + "/**")
+                .and().authorizeRequests()
+                .antMatchers(HttpMethod.GET, DossiersController.ROOT_URI + "/**")
                 .hasRole(Roles.DEPOSANT).antMatchers(HttpMethod.POST, DossiersController.ROOT_URI + "/**")
-                .hasRole(Roles.BETA).anyRequest().denyAll();
+                .hasRole(Roles.BETA)
+                .antMatchers(HttpMethod.GET, FichiersController.ROOT_URI + "/**")
+                .hasRole(Roles.DEPOSANT)
+                .antMatchers(HttpMethod.GET, FichiersController.ROOT_URI + "/**")
+                .hasRole(Roles.BETA)
+                .anyRequest().denyAll();
     }
 }

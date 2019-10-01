@@ -2,6 +2,9 @@ package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
+import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
+import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.infra.InfraPackageScan;
 
 import org.springframework.http.HttpHeaders;
@@ -23,6 +26,21 @@ public class ControllersExceptionsAdvice extends ResponseEntityExceptionHandler 
   @ExceptionHandler({ UserForbiddenException.class })
   public ResponseEntity<Object> handleUserForbiddenException(Exception ex, WebRequest request) {
     return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler({ UserNotOwnerException.class })
+  public ResponseEntity<Object> handleUserNotOwnerException(Exception ex, WebRequest request) {
+    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler({ FichierNotFoundException.class })
+  public ResponseEntity<Object> handleFichierNotFoundException(Exception ex, WebRequest request) {
+    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler({ DossierNotFoundException.class })
+  public ResponseEntity<Object> handleDossierNotFoundException(Exception ex, WebRequest request) {
+    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler({ Exception.class })

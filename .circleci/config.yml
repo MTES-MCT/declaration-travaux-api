@@ -7,11 +7,12 @@ executors:
   jdkintegration:
     docker:
       - image: circleci/openjdk:11.0.4-jdk-stretch
-      - image: circleci/postgres:11-alpine-ram
+      - image: circleci/postgres:10-alpine-ram
         environment:
           POSTGRES_PASS: postgres
           POSTGRES_DB: postgres
       - image: jboss/keycloak:7.0.0
+        name: keycloak
         environment:
           DB_VENDOR: H2
           KEYCLOAK_USER: admin
@@ -95,6 +96,15 @@ jobs:
             done
             echo Failed waiting for Keycloak && exit 1
       - run:
+          name: Import realm rieau test with users in Keycloak
+          command: |
+            docker exec -it keycloak keycloak/bin/standalone.sh \
+              -Djboss.socket.binding.port-offset=100 \
+              -Dkeycloak.migration.action=import \
+              -Dkeycloak.migration.provider=singleFile \
+              -Dkeycloak.migration.file=src/main/docker/realm-rieau-test.json \
+              -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+      - run:
           name: Waiting for Minio to be ready
           command: |
             for i in `seq 1 10`;
@@ -106,7 +116,7 @@ jobs:
             echo Failed waiting for Minio && exit 1
       - run:
           command: |
-            mvn integration-test
+            mvn verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
       

@@ -19,7 +19,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantAndBetaDetails
+@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxAjouterPieceJointeServiceTests {
     @Autowired
@@ -46,7 +46,7 @@ public class TxAjouterPieceJointeServiceTests {
     private DossierRepository dossierRepository;
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executeDP1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
@@ -59,7 +59,7 @@ public class TxAjouterPieceJointeServiceTests {
     }
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executePCMI1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         Dossier pcmi = this.dossierFactory.creer(this.deposantBeta, TypesDossier.PCMI);

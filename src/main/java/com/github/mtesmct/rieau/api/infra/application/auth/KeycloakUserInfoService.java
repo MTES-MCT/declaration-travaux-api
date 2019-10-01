@@ -33,13 +33,6 @@ public class KeycloakUserInfoService implements UserInfoService {
                 AccessToken accessToken = keycloakSecurityContext.getToken();
                 if (accessToken == null)
                         throw new UserInfoServiceException("accessToken is null");
-                log.debug("Keycloak user info: ");
-                log.debug("user.id={}", accessToken.getPreferredUsername());
-                log.debug("user.email={}", accessToken.getEmail());
-                log.debug("user.birthdate={}", accessToken.getBirthdate());
-                log.debug("user.gender={}", accessToken.getGender());
-                log.debug("user.family_name={}", accessToken.getFamilyName());
-                log.debug("user.given_name={}", accessToken.getGivenName());
                 Personne user = new Personne(accessToken.getPreferredUsername(), accessToken.getEmail());
                 log.debug("user={}", user);
                 return user;

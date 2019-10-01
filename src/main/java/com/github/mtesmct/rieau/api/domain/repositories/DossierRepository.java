@@ -9,4 +9,5 @@ public interface DossierRepository {
     public List<Dossier> findByDeposantId(String deposantId);
     public Dossier save(Dossier dossier);
     public Optional<Dossier> findById(String id);
+    public boolean isDeposantOwner(String deposantId, String fichierId);
 }

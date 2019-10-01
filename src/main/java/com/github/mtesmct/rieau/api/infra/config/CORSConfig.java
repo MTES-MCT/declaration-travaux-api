@@ -1,12 +1,13 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CORSConfig implements WebMvcConfigurer {
+public class CORSConfig {
 
     private final AppProperties properties;
 
@@ -15,8 +16,13 @@ public class CORSConfig implements WebMvcConfigurer {
         this.properties = properties;
     }
  
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(this.properties.getCorsAllowedOrigins());
-    }
+    @Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins(properties.getCorsAllowedOrigins()).allowedHeaders("*").allowCredentials(true);
+			}
+		};
+	}
 }

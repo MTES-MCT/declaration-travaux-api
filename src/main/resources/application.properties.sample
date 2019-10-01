@@ -53,3 +53,10 @@ app.cors-allowed-origins=http://localhost:3000
 
 # HTTP server
 server.port=5000
+server.tomcat.accesslog.enabled = true
+server.tomcat.accesslog.directory = "/tmp"
+server.tomcat.accesslog.prefix = stdout
+server.tomcat.accesslog.buffered = false
+server.tomcat.accesslog.suffix =
+server.tomcat.accesslog.file-date-format =
+server.tomcat.accesslog.pattern = "[ACCESS] %{org.apache.catalina.AccessLog.RemoteAddr}r %l %t %D %F %B %S vcap_request_id:%{X-Vcap-Request-Id}i"

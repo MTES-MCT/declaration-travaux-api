@@ -10,6 +10,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 @Retention(RetentionPolicy.RUNTIME)
 @WithMockUser(username = MockUsers.JEAN_MARTIN, roles={Roles.DEPOSANT,Roles.BETA})
-public @interface WithDeposantAndBetaDetails {
+public @interface WithDeposantBetaDetails {
     public final static String ID = MockUsers.JEAN_MARTIN;
 }

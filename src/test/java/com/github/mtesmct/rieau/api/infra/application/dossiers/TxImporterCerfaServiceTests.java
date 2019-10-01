@@ -19,7 +19,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantAndBetaDetails
+@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxImporterCerfaServiceTests {
     @Autowired
@@ -49,7 +49,7 @@ public class TxImporterCerfaServiceTests {
     private Personne deposantBeta;
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
@@ -66,7 +66,7 @@ public class TxImporterCerfaServiceTests {
     }
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");

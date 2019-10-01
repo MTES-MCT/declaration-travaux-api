@@ -30,6 +30,29 @@ Sinon, par défaut c'est l'environnement d'intégration qui est activé. Ce dern
 docker-compose -f src/main/docker/docker-compose.yml up --build -d
 ```
 
+Exporter le realm de test avec les users:
+
+```shell
+docker exec -it docker_keycloak_1 keycloak/bin/standalone.sh \
+-Djboss.socket.binding.port-offset=100 \
+-Dkeycloak.migration.action=export \
+-Dkeycloak.migration.provider=dir \
+-Dkeycloak.migration.realmName=rieau \
+-Dkeycloak.migration.usersExportStrategy=REALM_FILE \
+-Dkeycloak.migration.dir=/tmp/export
+```
+
+Importer le realm de test avec les users:
+
+```shell
+docker exec -it docker_keycloak_1 keycloak/bin/standalone.sh \
+-Djboss.socket.binding.port-offset=100 \
+-Dkeycloak.migration.action=import \
+-Dkeycloak.migration.provider=singleFile \
+-Dkeycloak.migration.file=/tmp/realm-rieau-test.json \
+-Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+```
+
 ### Dev
 
 * Maven 3.6+, par exemple installé depuis [sdkman](https://sdkman.io).
@@ -52,13 +75,13 @@ docker-compose -f src/main/docker/docker-compose.yml up --build -d
 * Lancez une seule classe de test:
 
 ```shell
-./mvnw clean test -Pdev -Dtest=<nomdelaclasse>
+./mvnw clean test -Dtest=<nomdelaclasse> -Pdev
 ```
 
 * Lancez une seule méthode de test:
 
 ```shell
-./mvnw clean test -Pdev -Dtest=<nomdelaclasse>#<nomdelamethode>
+./mvnw clean test -Dtest=<nomdelaclasse>#<nomdelamethode> -Pdev
 ```
 
 ### Tests d'intégration
@@ -71,22 +94,22 @@ Prérequis: la stack lancée avec docker-compose.
 ./mvnw clean integration-test
 ```
 
-avec échec:
+avec échec mais sans l'analyse des vulnérabilités:
 
 ```shell
-./mvnw clean verify
+./mvnw clean verify -Dskip.check=true
 ```
 
 * Lancez une seule classe de test:
 
 ```shell
-./mvnw clean integration-test -Dit.test=<nomdelaclasse>
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT
 ```
 
 * Lancez une seule méthode de test:
 
 ```shell
-./mvnw clean integration-test -Dit.test=<nomdelaclasse>#<nomdelamethode>
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT#<nomdelamethode>
 ```
 
 ### Tests manuels
@@ -119,7 +142,7 @@ curl -k -H "Authorization: Bearer $KC_ACCESS_TOKEN" -v http://localhost:5000/dos
 ### Vérification des vulnérabilités
 
 ```shell
-./mvnw clean verify -Pdev -DskipTests
+./mvnw clean check -Pdev -DskipTests
 ```
 
 ### Gestion des versions

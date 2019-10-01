@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.http;
+package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -19,19 +19,20 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithDeposantAndBetaDetails
+@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DossiersControllerTests {
 
@@ -112,7 +113,7 @@ public class DossiersControllerTests {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
-				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().toString())))
+				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$[0].statut", equalTo(this.dossier.statut().toString())))
 				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.dossier.dateDepot())))));
 	}
@@ -135,7 +136,7 @@ public class DossiersControllerTests {
 				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
-				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().toString())))
+				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statut", equalTo(this.dossier.statut().toString())))
 				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))));
 	}

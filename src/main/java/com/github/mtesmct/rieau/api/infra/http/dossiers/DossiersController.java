@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.http;
+package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,7 +53,11 @@ public class DossiersController {
 	@GetMapping("/{id}")
 	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantNonAutoriseException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		return this.jsonDossierFactory.toJson(this.consulterMonDossierService.execute(id));
+		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
 	}
 
 	@GetMapping
@@ -63,22 +68,25 @@ public class DossiersController {
 	}
 
 	private void addJsonDossier(List<JsonDossier> dossiers, Dossier dossier) {
-		Optional<JsonDossier> jsonDossier = this.jsonDossierFactory.toJson(Optional.ofNullable(dossier));
-		if (jsonDossier.isPresent())
-			dossiers.add(jsonDossier.get());
+		if (dossier != null) {
+			JsonDossier jsonDossier = this.jsonDossierFactory.toJson(dossier);
+			dossiers.add(jsonDossier);
+		}
 	}
 
-	@PostMapping
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		this.importerCerfaService.execute(file.getInputStream(), file.getOriginalFilename(), file.getContentType(), file.getSize());
+		this.importerCerfaService.execute(file.getInputStream(), file.getOriginalFilename(), file.getContentType(),
+				file.getSize());
 	}
 
-	@PostMapping("/{id}/piecesjointes/{numero}")
+	@PostMapping(path = "/{id}/piecesjointes/{numero}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
 			@RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(), file.getOriginalFilename(), file.getContentType(), file.getSize());
+		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(),
+				file.getOriginalFilename(), file.getContentType(), file.getSize());
 	}
 
 }

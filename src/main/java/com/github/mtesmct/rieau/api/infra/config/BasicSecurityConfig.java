@@ -26,7 +26,8 @@ public class BasicSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser(MockUsers.JEAN_MARTIN).password(MockUsers.JEAN_MARTIN)
-                .roles(Roles.DEPOSANT, Roles.DEPOSANT).and().withUser(MockUsers.JACQUES_DUPONT)
+                .roles(Roles.DEPOSANT, Roles.BETA).and().withUser(MockUsers.CLAIRE_DENIS)
+                .password(MockUsers.CLAIRE_DENIS).roles(Roles.DEPOSANT, Roles.BETA).and().withUser(MockUsers.JACQUES_DUPONT)
                 .password(MockUsers.JACQUES_DUPONT).roles(Roles.INSTRUCTEUR);
     }
 

@@ -13,7 +13,7 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
@@ -28,7 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantAndBetaDetails
+@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxListerMesDossiersServiceTests {
     @Autowired
@@ -57,7 +57,7 @@ public class TxListerMesDossiersServiceTests {
     }
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executeTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         assertNotNull(this.listerMesDossiersService);
         assertFalse(this.listerMesDossiersService.execute().isEmpty());

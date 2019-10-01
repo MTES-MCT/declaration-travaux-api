@@ -56,6 +56,11 @@ public class JpaDossierRepository implements DossierRepository {
         return this.jpaDossierFactory.fromJpa(jpaDossierAfter);
     }
 
+    @Override
+    public boolean isDeposantOwner(String deposantId, String fichierId) {
+        return this.jpaSpringDossierRepository.existsByDeposantIdAndPiecesJointesIdFichierId(deposantId, fichierId);
+    }
+
     private void savePieceJointe(JpaDossier jpaDossier, PieceJointe pieceJointe) {
         if (pieceJointe.fichierId() == null)
             throw new NullPointerException("Le fichier id de la pièce jointe est nul");

@@ -20,7 +20,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantAndBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantAndBetaDetails
+@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxConsulterMonDossierServiceTests {
     @MockBean
@@ -82,7 +82,7 @@ public class TxConsulterMonDossierServiceTests {
     }
 
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executeTest()
             throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
@@ -92,7 +92,7 @@ public class TxConsulterMonDossierServiceTests {
     }
     
     @Test
-    @WithDeposantAndBetaDetails
+    @WithDeposantBetaDetails
     public void executeAutreDossierTestInterdit() throws Exception {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
         assertNotNull(this.otherDossier.deposant());

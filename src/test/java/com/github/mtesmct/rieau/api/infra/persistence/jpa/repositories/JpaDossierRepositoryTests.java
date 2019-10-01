@@ -16,9 +16,12 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonneFactory;
 
 import org.hibernate.Session;
@@ -57,6 +60,9 @@ public class JpaDossierRepositoryTests {
     @Autowired
     @Qualifier("deposantBeta")
     private Personne deposantBeta;
+    @Autowired
+    @Qualifier("autreDeposantBeta")
+    private Personne autreDeposantBeta;
 
 	@Autowired
 	private JpaPersonneFactory jpaPersonneFactory;
@@ -66,7 +72,6 @@ public class JpaDossierRepositoryTests {
 	@BeforeEach
 	public void setUp(){
 		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email());
-		this.jpaPersonne = this.entityManager.persistAndFlush(this.jpaPersonne);
 		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), TypesDossier.DP);
 		assertEquals(this.dossier.deposant().identity().toString(), this.deposantBeta.identity().toString());
 		assertEquals(this.dossier.deposant().email(), jpaPersonne.getEmail());
@@ -112,6 +117,28 @@ public class JpaDossierRepositoryTests {
 		assertEquals(dossiers.get(0).statut(), jpaDossier.getStatut());
 		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
 		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
+	}
+
+    
+    @Test
+	public void isDeposantOwnerTest() throws Exception {
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE, new Date(this.dateService.now().getTime()), new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		String fichierId = "fichier-1";
+		JpaPieceJointe pieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), fichierId));
+		jpaDossier.addPieceJointe(pieceJointe);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
+		assertTrue(this.repository.isDeposantOwner(this.deposantBeta.identity().toString(), fichierId));
+	}
+
+    
+    @Test
+	public void isDeposantNotOwnerTest() throws Exception {
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE, new Date(this.dateService.now().getTime()), new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		String fichierId = "fichier-1";
+		JpaPieceJointe pieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), fichierId));
+		jpaDossier.addPieceJointe(pieceJointe);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
+		assertFalse(this.repository.isDeposantOwner(this.autreDeposantBeta.identity().toString(), fichierId));
 	}
     
 }
