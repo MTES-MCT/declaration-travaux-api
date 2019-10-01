@@ -23,10 +23,15 @@ public class JsonDossierFactory {
             throw new NullPointerException("Le dossier ne peut pas être nul.");
         JsonDossier jsonDossier = new JsonDossier(Objects.toString(dossier.identity()), Objects.toString(dossier.type() != null ? dossier.type().type() : "null"), Objects.toString(dossier.statut()), this.dateTimeConverter.format(dossier.dateDepot()), this.jsonPieceJointeFactory.toJson(dossier.cerfa()));
         dossier.pieceJointes().forEach(pieceJointe -> this.ajouterPieceJointe(jsonDossier, pieceJointe));
+        dossier.piecesAJoindre().forEach(numero -> this.ajouterPieceAJoindre(jsonDossier, numero));
         return jsonDossier;
     }
 
     private void ajouterPieceJointe(JsonDossier jsonDossier, PieceJointe pieceJointe){
         jsonDossier.addPieceJointe(this.jsonPieceJointeFactory.toJson(pieceJointe));
+    }
+
+    private void ajouterPieceAJoindre(JsonDossier jsonDossier, String numero){
+        jsonDossier.addPieceJointe(numero);
     }
 }

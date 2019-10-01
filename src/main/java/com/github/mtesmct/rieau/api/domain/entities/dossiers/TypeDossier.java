@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,39 +7,35 @@ import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class TypeDossier implements ValueObject<TypeDossier> {
     private String code;
-    private int totalPiecesAJoindre;
+    private List<String> piecesAJoindre;
     private TypesDossier type;
 
-    public TypeDossier(TypesDossier type, String code, int totalPiecesAJoindre) {
+    public TypeDossier(TypesDossier type, String code, List<String> piecesAJoindre) {
         this.type = type;
         this.code = code;
-        this.totalPiecesAJoindre = totalPiecesAJoindre;
-    }
-
-    public List<CodePieceJointe> codesPiecesAJoindre() {
-        List<CodePieceJointe>  codesPiecesAJoindre = new ArrayList<CodePieceJointe>();
-        for (int i = 1; i <= this.totalPiecesAJoindre; i++){
-            codesPiecesAJoindre.add(new CodePieceJointe(this.type, Integer.toString(i)));
-        }
-        return codesPiecesAJoindre;
+        this.piecesAJoindre = piecesAJoindre;
     }
 
     public TypesDossier type(){
         return this.type;
     }
 
+    public List<String> piecesAJoindre(){
+        return this.piecesAJoindre;
+    }
+    
     public String code(){
         return this.code;
     }
 
     @Override
     public boolean hasSameValuesAs(TypeDossier other) {
-        return other != null && Objects.equals(this.type, other.type) && Objects.equals(this.code, other.code) && this.totalPiecesAJoindre == other.totalPiecesAJoindre;
+        return other != null && Objects.equals(this.type, other.type) && Objects.equals(this.code, other.code) && Objects.equals(this.piecesAJoindre, other.piecesAJoindre);
     }
     
     @Override
     public String toString() {
-        return "TypeDossier={ type={" + Objects.toString(this.type) + "}, totalPiecesAJoindre={" + this.totalPiecesAJoindre + "}, code={" + this.code + "} }";
+        return "TypeDossier={ type={" + Objects.toString(this.type) + "}, totalPiecesAJoindre={" + Objects.toString(this.piecesAJoindre) + "}, code={" + this.code + "} }";
     }
 
     @Override
@@ -55,6 +50,6 @@ public class TypeDossier implements ValueObject<TypeDossier> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.type,this.code,this.totalPiecesAJoindre);
+        return Objects.hash(this.type,this.code,this.piecesAJoindre);
     }
 }

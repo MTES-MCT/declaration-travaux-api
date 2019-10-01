@@ -1,5 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public class InMemoryTypeDossierRepository implements TypeDossierRepository {
     private EnumMap<TypesDossier, TypeDossier> types;
 
     @Override
-    public Optional<TypeDossier> findByCode(String code){
+    public Optional<TypeDossier> findByCode(String code) {
         Optional<TypeDossier> type = Optional.empty();
         if (this.types != null)
             type = this.types.values().stream().filter(t -> t.code().equals(code)).findAny();
@@ -22,14 +23,14 @@ public class InMemoryTypeDossierRepository implements TypeDossierRepository {
     }
 
     @Override
-    public Optional<TypeDossier> findByType(TypesDossier type){
+    public Optional<TypeDossier> findByType(TypesDossier type) {
         return Optional.ofNullable(this.types.get(type));
     }
 
     public InMemoryTypeDossierRepository() {        
         this.types = new EnumMap<>(TypesDossier.class);
-        this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406", 8));
-        this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703", 1));
+        this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406", Arrays.asList(new String[]{"1", "2", "3", "4", "5", "6", "7", "8"})));
+        this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703", Arrays.asList(new String[]{"1"})));
     }
 
 }

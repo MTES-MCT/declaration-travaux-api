@@ -13,6 +13,7 @@ public class JsonDossier {
     private String date;
     private JsonPieceJointe cerfa;
     private List<JsonPieceJointe> piecesJointes = new ArrayList<JsonPieceJointe>();
+    private List<String> piecesAJoindre = new ArrayList<String>();
 
     public JsonDossier(String id, String type, String statut, String date, JsonPieceJointe cerfa) {
         this.id = id;
@@ -24,6 +25,10 @@ public class JsonDossier {
 
     public void addPieceJointe(JsonPieceJointe pieceJointe){
         this.piecesJointes.add(pieceJointe);
+    }
+
+    public void addPieceJointe(String numero){
+        this.piecesAJoindre.add(numero);
     }
 
 }

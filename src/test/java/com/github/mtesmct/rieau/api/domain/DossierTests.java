@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.NumeroPieceJointeException;
@@ -60,9 +59,9 @@ public class DossierTests {
         this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         assertNotNull(this.dossier);
         assertNotNull(this.dossier.piecesAJoindre());
-        assertEquals(this.dossier.statut(), StatutDossier.DEPOSE);
-        assertEquals(this.dossier.piecesAJoindre().codesPiecesAJoindre().size(), 1);
-        assertTrue(this.dossier.piecesAJoindre().codesPiecesAJoindre().contains(new CodePieceJointe(TypesDossier.DP, "1")));
+        assertEquals(StatutDossier.DEPOSE, this.dossier.statut());
+        assertEquals(1, this.dossier.piecesAJoindre().size());
+        assertTrue(this.dossier.piecesAJoindre().contains("1"));
         this.dossier.ajouterCerfa(this.cerfa.identity());
         file = new File("src/test/fixtures/dummy.pdf");
         this.dp1 = this.fichierFactory.creer(file, "application/pdf");
@@ -82,19 +81,21 @@ public class DossierTests {
         assertNotNull(this.dossier.cerfa().code());
         assertTrue(this.dossier.cerfa().code().isCerfa());
         assertNotNull(this.dossier.cerfa().fichierId());
-        assertEquals(this.dossier.cerfa().fichierId(), this.cerfa.identity());
-        assertEquals(this.dossier.pieceJointes().size(), 0);
+        assertEquals(this.cerfa.identity(), this.dossier.cerfa().fichierId());
+        assertEquals(0, this.dossier.pieceJointes().size());
+        assertEquals(1, this.dossier.piecesAJoindre().size());
+        assertEquals("1", this.dossier.piecesAJoindre().get(0));
     }
 
     @Test
-    public void ajouterPieceJointeCERFAAuDossier_throwsErreurNumeroInvalide() {
+    public void ajouterPieceJointeAuDossier_throwsErreurNumeroInvalide() {
         AjouterPieceJointeException exception = assertThrows(AjouterPieceJointeException.class, () -> this.dossier.ajouter("0", this.dp1.identity()));
         assertNotNull(exception.getCause());
         assertEquals(exception.getCause().getClass(), NumeroPieceJointeException.class);
     }
 
     @Test
-    public void ajouterPieceJointeCERFAAuDossier_throwsErreurPieceNonAJoindre() {
+    public void ajouterPieceJointeAuDossier_throwsErreurPieceNonAJoindre() {
         AjouterPieceJointeException exception = assertThrows(AjouterPieceJointeException.class, () -> this.dossier.ajouter("2", this.dp1.identity()));
         assertNotNull(exception.getCause());
         assertEquals(exception.getCause().getClass(), PieceNonAJoindreException.class);

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
@@ -37,7 +39,7 @@ public class JpaDossierFactoryTests {
 
     @Test
     public void toJpaTest(){
-        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", 1));
+        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", Arrays.asList(new String[]{"1"})));
         dossier.ajouterCerfa(new FichierId("cerfa"));
         dossier.ajouter("1", new FichierId("dp1"));
         JpaDossier jpaDossier = this.jpaDossierFactory.toJpa(dossier);
@@ -63,7 +65,7 @@ public class JpaDossierFactoryTests {
         assertEquals(new Personne("toto", "toto@fai.fr"), dossier.deposant());
         assertEquals(new DossierId("0"), dossier.identity());
         assertEquals(StatutDossier.DEPOSE, dossier.statut());
-        assertEquals(new TypeDossier(TypesDossier.DP, "13703", 1), dossier.type());
+        assertEquals(new TypeDossier(TypesDossier.DP, "13703", Arrays.asList(new String[]{"1"})), dossier.type());
         assertNotNull(dossier.cerfa());
         assertEquals(new PieceJointe(dossier, new CodePieceJointe(TypesDossier.DP, "0"), new FichierId("cerfa")), dossier.cerfa());
         assertFalse(dossier.pieceJointes().isEmpty());

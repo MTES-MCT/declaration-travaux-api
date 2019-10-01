@@ -64,6 +64,6 @@ public class PieceJointe implements ValueObject<PieceJointe> {
     }
 
     public boolean isAJoindre() {
-        return this.dossier != null && this.dossier.piecesAJoindre() != null && this.dossier.piecesAJoindre().contains(this);
+        return this.dossier != null && this.dossier.piecesAJoindre() != null && this.dossier.piecesAJoindre().contains(this.code().numero());
     }
 }

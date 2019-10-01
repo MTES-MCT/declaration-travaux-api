@@ -20,7 +20,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private Projet projet;
     private PieceJointe cerfa;
     private List<PieceJointe> piecesJointes;
-    private PiecesAJoindre piecesAJoindre;
+    private List<String> piecesAJoindre;
 
     public Date dateDepot() {
         return this.dateDepot;
@@ -54,6 +54,10 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return this.piecesJointes;
     }
 
+    public List<String> piecesAJoindre() {
+        return this.piecesAJoindre;
+    }
+
     public PieceJointe ajouterCerfa(FichierId fichierId) throws PieceNonAJoindreException {
         PieceJointe pieceJointe = new PieceJointe(this, new CodePieceJointe(this.type.type(), "0"), fichierId);
         this.cerfa = pieceJointe;
@@ -77,10 +81,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
             throw new AjouterPieceJointeException("Ajout de la pièce jointe impossible", e);
         }
         return pieceJointe;
-    }
-
-    public PiecesAJoindre piecesAJoindre() {
-        return this.piecesAJoindre;
     }
 
     @Override
@@ -131,8 +131,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
         if (type == null)
             throw new NullPointerException("Le type du dossier ne peut pas être nul");
         this.type = type;
-        this.piecesAJoindre = new PiecesAJoindre(this);
         this.piecesJointes = new ArrayList<PieceJointe>();
+        this.piecesAJoindre = this.type.piecesAJoindre();
     }
 
 }

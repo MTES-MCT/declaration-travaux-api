@@ -32,7 +32,6 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBet
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,12 +109,18 @@ public class DossiersControllerTests {
 	@Test
 	public void listerTest() throws Exception {
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$[0].statut", equalTo(this.dossier.statut().toString())))
-				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.dossier.dateDepot())))));
+				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.dossier.dateDepot())))))
+				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
+				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(1)))
+				.andExpect(jsonPath("$[0].piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
 	}
 
 	@Test
@@ -138,7 +143,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statut", equalTo(this.dossier.statut().toString())))
-				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))));
+				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))))
+				.andExpect(jsonPath("$.piecesAJoindre").isArray())
+				.andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$.piecesAJoindre", hasSize(1)))
+				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
 	}
 
 	@Test
@@ -162,9 +171,11 @@ public class DossiersControllerTests {
 	public void ajouterPieceJointeAutoriseTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
-		Mockito.when(this.mockAjouterPieceJointeService.execute(any(), anyString(), any(), anyString(), anyString(), anyLong()))
-				.thenReturn(this.pieceJointe);
-		this.mvc.perform(multipart(this.uri+"/"+this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile)).andExpect(status().isOk());
+		Mockito.when(this.mockAjouterPieceJointeService.execute(any(), anyString(), any(), anyString(), anyString(),
+				anyLong())).thenReturn(this.pieceJointe);
+		this.mvc.perform(
+				multipart(this.uri + "/" + this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile))
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -172,7 +183,9 @@ public class DossiersControllerTests {
 	public void ajouterPieceJointeInterditTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
-		this.mvc.perform(multipart(this.uri+"/"+this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile)).andExpect(status().isForbidden());
+		this.mvc.perform(
+				multipart(this.uri + "/" + this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile))
+				.andExpect(status().isForbidden());
 	}
 
 }
