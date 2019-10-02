@@ -37,7 +37,7 @@ public class FichiersController {
         if (fichier.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fichier.get().nom())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM).contentLength(fichier.get().taille()).body(new InputStreamResource(fichier.get().contenu()));
+                .contentType(MediaType.valueOf(fichier.get().mimeType())).contentLength(fichier.get().taille()).body(new InputStreamResource(fichier.get().contenu()));
     }
 
 }

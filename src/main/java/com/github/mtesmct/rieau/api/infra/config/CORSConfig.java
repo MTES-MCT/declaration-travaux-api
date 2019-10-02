@@ -9,19 +9,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CORSConfig {
 
-    private final AppProperties properties;
+	private final AppProperties properties;
 
-    @Autowired
-    public CORSConfig(AppProperties properties){
-        this.properties = properties;
-    }
- 
-    @Bean
+	@Autowired
+	public CORSConfig(AppProperties properties) {
+		this.properties = properties;
+	}
+
+	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins(properties.getCorsAllowedOrigins()).allowedHeaders("*").allowCredentials(true);
+				registry.addMapping("/**").allowedOrigins(properties.getCorsAllowedOrigins()).allowedHeaders("*")
+						.allowCredentials(true).exposedHeaders("Content-Disposition");
 			}
 		};
 	}

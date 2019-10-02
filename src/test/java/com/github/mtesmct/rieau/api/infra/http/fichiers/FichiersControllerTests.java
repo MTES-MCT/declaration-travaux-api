@@ -59,7 +59,7 @@ public class FichiersControllerTests {
 	public void setup() throws IOException {
 		this.uri = FichiersController.ROOT_URI;
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-		fichier = this.fichierFactory.creer(file, "application/pdf");
+		fichier = this.fichierFactory.creer(file, MediaType.APPLICATION_PDF_VALUE);
 		this.fichierService.save(fichier);
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         dp.ajouterCerfa(fichier.identity());
@@ -70,15 +70,15 @@ public class FichiersControllerTests {
 	@WithDeposantBetaDetails
 	public void lireTest() throws Exception {
 		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_OCTET_STREAM))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_PDF))
 				.andExpect(jsonPath("$").isNotEmpty());
 	}
 
 	@Test
 	public void lireNonAuthentifieTest() throws Exception {
 		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_OCTET_STREAM))
+				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
 				.andExpect(status().isForbidden());
 	}
 
@@ -86,7 +86,7 @@ public class FichiersControllerTests {
 	@WithInstructeurNonBetaDetails
 	public void lireInterditTest() throws Exception {
 		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_OCTET_STREAM))
+				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
 				.andExpect(status().isForbidden());
 	}
 
@@ -94,7 +94,7 @@ public class FichiersControllerTests {
 	@WithAutreDeposantBetaDetails
 	public void lireNonProprietaireTest() throws Exception {
 		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_OCTET_STREAM))
+				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
 				.andExpect(status().isForbidden());
 	}
 
