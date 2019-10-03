@@ -75,7 +75,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
                 throw new DossierImportException(new FichierNotFoundException(fichier.identity().toString()));
             Optional<String> code = this.cerfaImportService.lireCode(fichierLu.get());
             if (code.isEmpty())
-                throw new DossierImportException("Aucun code CERFA trouvé dans le fichier pdf");
+                throw new DossierImportException( new CodeCerfaNotFoundException());
             Optional<TypeDossier> type = this.typeDossierRepository.findByCode(code.get());
             if (type.isEmpty())
                 throw new DossierImportException(
