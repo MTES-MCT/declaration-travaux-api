@@ -2,6 +2,7 @@ package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
@@ -109,10 +112,8 @@ public class DossiersControllerTests {
 	@Test
 	public void listerTest() throws Exception {
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$").isNotEmpty())
-				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$[0].statut", equalTo(this.dossier.statut().toString())))
@@ -144,8 +145,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statut", equalTo(this.dossier.statut().toString())))
 				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))))
-				.andExpect(jsonPath("$.piecesAJoindre").isArray())
-				.andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$.piecesAJoindre", hasSize(1)))
 				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
 	}
@@ -157,6 +157,18 @@ public class DossiersControllerTests {
 		Mockito.when(this.mockImporterCerfaService.execute(any(), anyString(), anyString(), anyLong()))
 				.thenReturn(Optional.ofNullable(this.dossier));
 		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void ajouterCerfaIncorrectExceptionTest() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
+		Mockito.when(this.mockImporterCerfaService.execute(any(), anyString(), anyString(), anyLong()))
+				.thenThrow(new DossierImportException(new CodeCerfaNotFoundException()));
+		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isInternalServerError())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(jsonPath("$.message",
+						containsString(CodeCerfaNotFoundException.AUCUN_CODE_CERFA_TROUVE_DANS_LE_FICHIER_PDF)));
 	}
 
 	@Test

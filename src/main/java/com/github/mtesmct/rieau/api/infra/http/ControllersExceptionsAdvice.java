@@ -2,50 +2,61 @@ package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.infra.InfraPackageScan;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice(basePackageClasses = InfraPackageScan.class)
-public class ControllersExceptionsAdvice extends ResponseEntityExceptionHandler {
+@RestControllerAdvice(basePackageClasses = InfraPackageScan.class)
+public class ControllersExceptionsAdvice {
 
   @ExceptionHandler({ AuthRequiredException.class })
-  public ResponseEntity<Object> handleAuthRequiredException(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public AuthRequiredException handleAuthRequiredException(AuthRequiredException e) {
+    return e;
   }
 
   @ExceptionHandler({ UserForbiddenException.class })
-  public ResponseEntity<Object> handleUserForbiddenException(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public UserForbiddenException handleUserForbiddenException(UserForbiddenException e) {
+    return e;
   }
 
   @ExceptionHandler({ UserNotOwnerException.class })
-  public ResponseEntity<Object> handleUserNotOwnerException(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public UserNotOwnerException handleUserNotOwnerException(UserNotOwnerException e) {
+    return e;
   }
 
   @ExceptionHandler({ FichierNotFoundException.class })
-  public ResponseEntity<Object> handleFichierNotFoundException(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public FichierNotFoundException handleFichierNotFoundException(FichierNotFoundException e) {
+    return e;
   }
 
   @ExceptionHandler({ DossierNotFoundException.class })
-  public ResponseEntity<Object> handleDossierNotFoundException(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public DossierNotFoundException handleDossierNotFoundException(DossierNotFoundException e) {
+    return e;
   }
 
-  @ExceptionHandler({ Exception.class })
-  public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+  @ExceptionHandler({ DossierImportException.class })
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public DossierImportException handleDossierImportException(DossierImportException e) {
+    return e;
+  }
+
+  @ExceptionHandler({ CerfaImportException.class })
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CerfaImportException handleCerfaImportException(CerfaImportException e) {
+    return e;
   }
 
 }

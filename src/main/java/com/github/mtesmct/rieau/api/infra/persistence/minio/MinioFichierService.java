@@ -123,6 +123,7 @@ public class MinioFichierService implements FichierService {
             log.debug("fichierId={}", Objects.toString(fichierId));
             log.debug("fichier={}", Objects.toString(fichier));
             log.debug("fileNameHeader={}", Objects.toString(headerMap.get(fileNameHeader)));
+            fichier.fermer();
         } catch (InvalidKeyException | InvalidBucketNameException | NoSuchAlgorithmException | InsufficientDataException
                 | NoResponseException | ErrorResponseException | InternalException | InvalidArgumentException
                 | InvalidResponseException | IOException | XmlPullParserException e) {
