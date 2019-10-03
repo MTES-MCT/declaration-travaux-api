@@ -55,7 +55,6 @@ public class DossierTests {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         this.cerfa = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(this.cerfa);
-        this.cerfa.fermer();
         this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
         assertNotNull(this.dossier);
         assertNotNull(this.dossier.piecesAJoindre());
@@ -66,7 +65,6 @@ public class DossierTests {
         file = new File("src/test/fixtures/dummy.pdf");
         this.dp1 = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(this.dp1);    
-        this.dp1.fermer();
     }
 
     @AfterEach

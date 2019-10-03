@@ -2,6 +2,8 @@ package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
@@ -41,6 +43,18 @@ public class ControllersExceptionsAdvice extends ResponseEntityExceptionHandler 
   @ExceptionHandler({ DossierNotFoundException.class })
   public ResponseEntity<Object> handleDossierNotFoundException(Exception ex, WebRequest request) {
     return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler({ DossierImportException.class })
+  public ResponseEntity<Object> handleDossierImportException(Exception ex, WebRequest request) {
+    if (ex.getCause() !=null && ex.getCause() instanceof FichierNotFoundException)
+      return new ResponseEntity<Object>(ex.getCause().getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler({ CerfaImportException.class })
+  public ResponseEntity<Object> handleCerfaImportException(Exception ex, WebRequest request) {
+    return new ResponseEntity<Object>(ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler({ Exception.class })

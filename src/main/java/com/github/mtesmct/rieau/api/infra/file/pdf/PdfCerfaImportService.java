@@ -40,7 +40,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 			}
 			log.debug("Le pdf contient " + doc.getNumberOfPages() + " pages");
 			if (doc.getNumberOfPages() < 2) {
-				throw new CerfaImportException("Le pdf contient moins de 2 pages");
+				throw new CerfaImportException(CerfaImportException.MOINS_2_PAGES);
 			}
 			PDFTextStripper stripper = new PDFTextStripper();
 			stripper.setStartPage(2);
@@ -55,9 +55,15 @@ public class PdfCerfaImportService implements CerfaImportService {
 				if (lCode.isPresent())
 					code = lCode;
 			}
-			doc.close();
 		} catch (IOException e) {
 			throw new CerfaImportException("Erreur de chargement du pdf {" + fichier.nom() + "}", e);
+		} finally {
+			if (doc != null)
+				try {
+					doc.close();
+				} catch (IOException e) {
+					throw new CerfaImportException("Erreur de chargement du pdf {" + fichier.nom() + "}", e);
+				}
 		}
 		return code;
 	}

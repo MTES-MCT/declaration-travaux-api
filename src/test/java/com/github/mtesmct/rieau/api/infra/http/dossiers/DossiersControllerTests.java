@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
@@ -158,6 +160,19 @@ public class DossiersControllerTests {
 				.thenReturn(Optional.ofNullable(this.dossier));
 		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isOk());
 	}
+
+	@Test
+	public void ajouterCerfaIncorrectExceptionTest() throws Exception {
+		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
+				"Spring Framework".getBytes());
+		Mockito.when(this.mockImporterCerfaService.execute(any(), anyString(), anyString(), anyLong()))
+				.thenThrow(new DossierImportException( new CodeCerfaNotFoundException()));
+		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isInternalServerError())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(jsonPath("$").isNotEmpty())
+		.andExpect(jsonPath("$.message", equalTo(CodeCerfaNotFoundException.AUCUN_CODE_CERFA_TROUVE_DANS_LE_FICHIER_PDF)));
+	}
+
 
 	@Test
 	@WithInstructeurNonBetaDetails
