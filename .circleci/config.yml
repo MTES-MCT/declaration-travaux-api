@@ -4,26 +4,6 @@ executors:
     docker:
       - image: circleci/openjdk:11.0.4-jdk-stretch
     working_directory: '~/rieau-api'
-  jdkintegration:
-    docker:
-      - image: circleci/openjdk:11.0.4-jdk-stretch
-      - image: circleci/postgres:10-alpine-ram
-        environment:
-          POSTGRES_PASS: postgres
-          POSTGRES_DB: postgres
-      - image: jboss/keycloak:7.0.0
-        name: keycloak
-        environment:
-          KEYCLOAK_HTTP_PORT: 8080
-          DB_VENDOR: H2
-          KEYCLOAK_USER: admin
-          KEYCLOAK_PASSWORD: admin
-      - image: minio/minio:RELEASE.2019-09-18T21-55-05Z
-        environment:
-          MINIO_ACCESS_KEY: minio
-          MINIO_SECRET_KEY: minio123
-        command: ["server", "/data"]
-    working_directory: '~/rieau-api'
 
 jobs:
   install-dependencies:
@@ -61,61 +41,19 @@ jobs:
       - store_test_results:
           path: target/surefire-reports
   integration-tests:
-    executor: jdkintegration
+    executor: jdk
     steps:
       - attach_workspace:
           at: '~/'
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true 
       - run:
-          name: Waiting for Postgres to be ready
+          name: Start container stack and verify it is working
           command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
-      - run:
-          name: Install PgSQL CLI; Init database
-          environment:
-            POSTGRES_USER: postgres
-            POSTGRES_DB: postgres
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y postgresql-client
-            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE USER rieau;"
-            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE DATABASE rieau;"
-            psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
-      - run:
-          name: Waiting for Minio to be ready
-          command: |
-            for i in `seq 1 20`;
-            do
-              nc -z localhost 9000 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Minio && exit 1
-      - run:
-          name: Waiting for Keycloak to be ready
-          command: |
-            for i in `seq 1 40`;
-            do
-              nc -z localhost 8080 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Keycloak && exit 1
-      - run:
-          name: Import realm rieau test with users in Keycloak
-          command: |
-            docker exec -it keycloak keycloak/bin/standalone.sh \
-              -Djboss.socket.binding.port-offset=100 \
-              -Dkeycloak.migration.action=import \
-              -Dkeycloak.migration.provider=singleFile \
-              -Dkeycloak.migration.file=src/main/docker/realm-rieau-test.json \
-              -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+            set -x
+            docker-compose -f src/main/docker/docker-compose.yml up --build -d
+            docker run --network container:keycloak \
+              appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused http://localhost:8080
       - run:
           command: |
             mvn verify -Dskip.check=true
