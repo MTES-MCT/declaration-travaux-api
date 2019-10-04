@@ -100,7 +100,7 @@ jobs:
           command: |
             for i in `seq 1 50`;
             do
-              nc -z localhost 8080 && echo Success && exit 0
+              curl -so /dev/null -w '%{response_code}' http://localhost:8080 && echo Success && exit 0
               echo -n .
               sleep 1
             done
