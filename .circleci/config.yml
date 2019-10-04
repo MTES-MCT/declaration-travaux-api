@@ -48,14 +48,20 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true 
       - run:
-          name: Start container stack and verify it is working
+          name: Start container stack
           command: |
             set -x
             docker-compose -f src/main/docker/docker-compose.yml up --build -d
-            docker run --network container:keycloak \
-              appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused http://localhost:8080
       - run:
+          name: Verify container stack is ready
           command: |
+            set -x
+            docker run --network container:keycloak \
+              appropriate/curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080
+      - run:
+          name: Start integration tests
+          command: |
+            set -x
             mvn verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
@@ -67,6 +73,7 @@ jobs:
           at: '~/'
       - run:
           command: |
+            set -x
             mvn package -DskipTests -DskipITs
             mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
       - store_artifacts:
@@ -83,6 +90,7 @@ jobs:
           at: '~/'
       - setup_remote_docker
       - run: |
+          set -x
           if [[ -z "$DOCKERHUB_USER" || -z "$DOCKERHUB_PASSWORD" ]]; then
             echo "Missing DOCKERHUB_USER or DOCKERHUB_PASSWORD environment variables!"
             exit 1
