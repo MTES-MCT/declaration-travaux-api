@@ -95,16 +95,16 @@ jobs:
               sleep 1
             done
             echo Failed waiting for Minio && exit 1
-      - run:
-          name: Waiting for Keycloak to be ready
-          command: |
-            for i in `seq 1 50`;
-            do
-              curl -so /dev/null -w '%{response_code}' http://localhost:8080 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Keycloak && exit 1
+      # - run:
+      #     name: Waiting for Keycloak to be ready
+      #     command: |
+      #       for i in `seq 1 40`;
+      #       do
+      #         nc -z localhost 8080 && echo Success && exit 0
+      #         echo -n .
+      #         sleep 1
+      #       done
+      #       echo Failed waiting for Keycloak && exit 1
       - run:
           name: Import realm rieau test with users in Keycloak
           command: |
