@@ -4,10 +4,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.core.StringContains.containsString;
 
 import java.io.File;
 import java.io.IOException;
 
+import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
@@ -44,16 +46,19 @@ public class FichiersControllerTests {
 	private FichierService fichierService;
 	@Autowired
 	private FichierFactory fichierFactory;
-    @Autowired
-    private DossierFactory dossierFactory;
-    @Autowired
-    private DossierRepository dossierRepository;
+	@Autowired
+	private DossierFactory dossierFactory;
+	@Autowired
+	private DossierRepository dossierRepository;
 
 	private String uri;
 	private Fichier fichier;
-    @Autowired
-    @Qualifier("deposantBeta")
-    private Personne deposantBeta;
+	@Autowired
+	@Qualifier("deposantBeta")
+	private Personne deposantBeta;
+	@Autowired
+	@Qualifier("autreDeposantBeta")
+	private Personne autreDeposantBeta;
 
 	@BeforeEach
 	public void setup() throws IOException {
@@ -61,41 +66,46 @@ public class FichiersControllerTests {
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		fichier = this.fichierFactory.creer(file, MediaType.APPLICATION_PDF_VALUE);
 		this.fichierService.save(fichier);
-        Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
-        dp.ajouterCerfa(fichier.identity());
-        dp = this.dossierRepository.save(dp);
+		Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
+		dp.ajouterCerfa(fichier.identity());
+		dp = this.dossierRepository.save(dp);
 	}
 
 	@Test
 	@WithDeposantBetaDetails
 	public void lireTest() throws Exception {
-		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_PDF))
+		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
+				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_PDF))
 				.andExpect(jsonPath("$").isNotEmpty());
 	}
 
 	@Test
 	public void lireNonAuthentifieTest() throws Exception {
-		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
+		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
+				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithInstructeurNonBetaDetails
 	public void lireInterditTest() throws Exception {
-		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
+		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
+				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithAutreDeposantBetaDetails
 	public void lireNonProprietaireTest() throws Exception {
-		this.mvc.perform(
-				get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF))
-				.andExpect(status().isForbidden());
+		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
+				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				.andExpect(status().isForbidden())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(jsonPath("$.message",
+						containsString(UserNotOwnerException.message(this.autreDeposantBeta.identity().toString(), this.fichier.identity().toString()))));
 	}
 
 }

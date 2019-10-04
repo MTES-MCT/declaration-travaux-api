@@ -24,13 +24,13 @@ public class ControllersExceptionsAdvice {
   }
 
   @ExceptionHandler({ UserForbiddenException.class })
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public UserForbiddenException handleUserForbiddenException(UserForbiddenException e) {
     return e;
   }
 
   @ExceptionHandler({ UserNotOwnerException.class })
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public UserNotOwnerException handleUserNotOwnerException(UserNotOwnerException e) {
     return e;
   }
