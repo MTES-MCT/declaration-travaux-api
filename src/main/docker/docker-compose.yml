@@ -1,6 +1,21 @@
 version: '3.5'
 
+networks:
+  api:
+
 services:
+
+  api:
+    image: circleci/openjdk:11.0.4-jdk-stretch
+    container_name: api
+    depends_on: 
+      - db
+      - minio
+      - keycloak
+    volumes:
+      - ./target/failsafe-reports:/target/failsafe-reports
+    networks:
+      - api
 
   db:
     image: postgres:10-alpine
@@ -12,6 +27,8 @@ services:
       POSTGRES_PASS: postgres
     volumes:
       - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    networks:
+      - api
   
   keycloak:
     image: jboss/keycloak:7.0.0
@@ -31,6 +48,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - api
   
   minio:
     image: minio/minio:RELEASE.2019-09-18T21-55-05Z
@@ -48,6 +67,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - api
 
 volumes:
   minio-data:

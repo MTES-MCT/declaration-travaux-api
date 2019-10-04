@@ -52,19 +52,12 @@ jobs:
           command: |
             set -x
             docker-compose -f src/main/docker/docker-compose.yml up --build -d
-      - run:
-          name: Verify container stack is ready
-          command: |
-            set -x
-            docker run --network container:minio \
-              appropriate/curl --retry 10 --retry-delay 5 --retry-connrefused http://minio:9000
-            # docker run --network container:keycloak \
-            #   appropriate/curl --retry 10 --retry-delay 30 --retry-connrefused http://keycloak:8080
+            sleep 60
       - run:
           name: Start integration tests
           command: |
             set -x
-            mvn verify -Dskip.check=true
+            docker-compose -f src/main/docker/docker-compose.yml exec -it mvn clean verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
       

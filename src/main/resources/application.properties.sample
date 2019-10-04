@@ -21,7 +21,7 @@ logging.level.com.github.mtesmct.rieau = warn
 # Persistence
 spring.jpa.open-in-view=false
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=jdbc:postgresql://db:5432/rieau
+spring.datasource.url=jdbc:postgresql://localhost:5432/rieau
 spring.datasource.username=rieau
 spring.datasource.password=rieau
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
@@ -33,7 +33,7 @@ spring.flyway.locations=classpath:db/migration/{vendor}
 
 # Fichiers
 minio.enabled = true
-minio.endpoint=http://minio:9000
+minio.endpoint=http://localhost:9000
 minio.access-key=minio
 minio.secret-key=minio123
 minio.bucket=rieau
@@ -43,7 +43,7 @@ minio.buffer=4096
 keycloak.enabled = true
 keycloak.principal-attribute=preferred_username
 keycloak.realm = rieau
-keycloak.auth-server-url = http://keycloak:8080/auth
+keycloak.auth-server-url = http://localhost:8080/auth
 keycloak.ssl-required = external
 keycloak.resource = rieau-api
 keycloak.credentials.secret = secret
