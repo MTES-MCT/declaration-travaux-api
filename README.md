@@ -154,7 +154,7 @@ Tag git et pom puis update de la dev version dans pom:
 ```shell
 mvn --batch-mode -Dtag=v1.0.0 release:prepare \
     -DreleaseVersion=1.0.0 \
-    -DdevelopmentVersion=1.1.0-SNAPSHOT
+    -DdevelopmentVersion=1.1.0-SNAPSHOT -Ddry.run=true -Dskip.check=true
 ```
 
 Ajout de `-DdryRun=true` pour tester seulement, puis `mvn release:clean`.
