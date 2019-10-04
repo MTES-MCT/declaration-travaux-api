@@ -52,12 +52,14 @@ jobs:
           command: |
             set -x
             docker-compose -f src/main/docker/docker-compose.yml up --build -d
-      # - run:
-      #     name: Verify container stack is ready
-      #     command: |
-      #       set -x
-      #       docker run --network container:keycloak \
-      #         appropriate/curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080
+      - run:
+          name: Verify container stack is ready
+          command: |
+            set -x
+            docker run --network container:minio \
+              appropriate/curl --retry 10 --retry-delay 5 --retry-connrefused http://minio:9000
+            docker run --network container:keycloak \
+              appropriate/curl --retry 10 --retry-delay 5 --retry-connrefused http://keycloak:8080
       - run:
           name: Start integration tests
           command: |
