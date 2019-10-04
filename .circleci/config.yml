@@ -86,9 +86,19 @@ jobs:
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "CREATE DATABASE rieau;"
             psql -h localhost -p 5432 --username $POSTGRES_USER --dbname $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON DATABASE rieau TO rieau;"
       - run:
+          name: Waiting for Minio to be ready
+          command: |
+            for i in `seq 1 20`;
+            do
+              nc -z localhost 9000 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Minio && exit 1
+      - run:
           name: Waiting for Keycloak to be ready
           command: |
-            for i in `seq 1 30`;
+            for i in `seq 1 50`;
             do
               nc -z localhost 8080 && echo Success && exit 0
               echo -n .
@@ -104,16 +114,6 @@ jobs:
               -Dkeycloak.migration.provider=singleFile \
               -Dkeycloak.migration.file=src/main/docker/realm-rieau-test.json \
               -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
-      - run:
-          name: Waiting for Minio to be ready
-          command: |
-            for i in `seq 1 20`;
-            do
-              nc -z localhost 9000 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Minio && exit 1
       - run:
           command: |
             mvn verify -Dskip.check=true
