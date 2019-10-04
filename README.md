@@ -152,9 +152,9 @@ Avec le plugin [maven-release](https://maven.apache.org/guides/mini/guide-releas
 Tag git et pom puis update de la dev version dans pom:
 
 ```shell
-mvn --batch-mode -Dtag=v1.0.0 release:prepare \
+./mvnw --batch-mode -Dtag=v1.0.0 -Ddry.run=true -Dskip.check=true release:prepare \
     -DreleaseVersion=1.0.0 \
-    -DdevelopmentVersion=1.1.0-SNAPSHOT -Ddry.run=true -Dskip.check=true
+    -DdevelopmentVersion=1.1.0-SNAPSHOT
 ```
 
 Ajout de `-DdryRun=true` pour tester seulement, puis `mvn release:clean`.
