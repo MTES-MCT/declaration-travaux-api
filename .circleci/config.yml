@@ -14,6 +14,7 @@ executors:
       - image: jboss/keycloak:7.0.0
         name: keycloak
         environment:
+          KEYCLOAK_HTTP_PORT: 8080
           DB_VENDOR: H2
           KEYCLOAK_USER: admin
           KEYCLOAK_PASSWORD: admin
@@ -64,6 +65,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~/'
+      - setup_remote_docker
       - run:
           name: Waiting for Postgres to be ready
           command: |
@@ -95,16 +97,16 @@ jobs:
               sleep 1
             done
             echo Failed waiting for Minio && exit 1
-      # - run:
-      #     name: Waiting for Keycloak to be ready
-      #     command: |
-      #       for i in `seq 1 40`;
-      #       do
-      #         nc -z localhost 8080 && echo Success && exit 0
-      #         echo -n .
-      #         sleep 1
-      #       done
-      #       echo Failed waiting for Keycloak && exit 1
+      - run:
+          name: Waiting for Keycloak to be ready
+          command: |
+            for i in `seq 1 40`;
+            do
+              nc -z localhost 8080 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Keycloak && exit 1
       - run:
           name: Import realm rieau test with users in Keycloak
           command: |
