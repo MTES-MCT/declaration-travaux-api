@@ -12,10 +12,13 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
@@ -53,6 +56,8 @@ public class DossiersControllerIT {
 	private FichierService fichierService;
 	@Autowired
 	private FichierFactory fichierFactory;
+	@Autowired
+	private ProjetFactory projetFactory;
 
 	private Dossier dossier;
 
@@ -76,7 +81,9 @@ public class DossiersControllerIT {
 		cerfa = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		fichier = this.fichierFactory.creer(cerfa, "application/pdf");
 		fichierService.save(fichier);
-		dossier = dossierFactory.creer(deposantBeta, TypesDossier.DP);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+				new ParcelleCadastrale("0", "1", "2"), true);
+		dossier = dossierFactory.creer(deposantBeta, TypesDossier.DP, projet);
 		dossier.ajouterCerfa(fichier.identity());
 		dossier = dossierRepository.save(dossier);
 		assertNotNull(dossier);

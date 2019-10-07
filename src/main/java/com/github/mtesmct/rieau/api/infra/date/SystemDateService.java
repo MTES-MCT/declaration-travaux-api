@@ -16,7 +16,10 @@ public class SystemDateService implements DateService {
     private Date date;
     @Autowired
     @Qualifier("dateTimeConverter")
-    private DateConverter converter;
+    private DateConverter dateTimeConverter;
+    @Autowired
+    @Qualifier("yearConverter")
+    private DateConverter yearConverter;
 
     @Override
     public Date now() {
@@ -29,7 +32,12 @@ public class SystemDateService implements DateService {
 
     @Override
     public String nowText() {
-        return this.converter.format(this.date);
+        return this.dateTimeConverter.format(this.date);
+    }
+
+    @Override
+    public String year() {
+        return this.yearConverter.format(this.date);
     }
 
 }

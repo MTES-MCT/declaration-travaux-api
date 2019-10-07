@@ -9,11 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
@@ -41,28 +45,30 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class JpaDossierRepositoryTests {
 
-    @Autowired
+	@Autowired
 	private TestEntityManager entityManager;
 
 	@Autowired
 	private DossierRepository repository;
 
-    @Autowired
-    @Qualifier("dateTimeConverter")
+	@Autowired
+	@Qualifier("dateTimeConverter")
 	private DateConverter dateConverter;
 
-    @Autowired
+	@Autowired
 	private DateService dateService;
-    @Autowired
-    private DossierFactory dossierFactory;
-	
+	@Autowired
+	private DossierFactory dossierFactory;
+	@Autowired
+	private ProjetFactory projetFactory;
+
 	private Dossier dossier;
-    @Autowired
-    @Qualifier("deposantBeta")
-    private Personne deposantBeta;
-    @Autowired
-    @Qualifier("autreDeposantBeta")
-    private Personne autreDeposantBeta;
+	@Autowired
+	@Qualifier("deposantBeta")
+	private Personne deposantBeta;
+	@Autowired
+	@Qualifier("autreDeposantBeta")
+	private Personne autreDeposantBeta;
 
 	@Autowired
 	private JpaPersonneFactory jpaPersonneFactory;
@@ -70,9 +76,10 @@ public class JpaDossierRepositoryTests {
 	private JpaPersonne jpaPersonne;
 
 	@BeforeEach
-	public void setUp(){
+	public void setUp() throws CommuneNotFoundException {
 		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email());
-		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), TypesDossier.DP);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+        this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), TypesDossier.DP, projet);
 		assertEquals(this.dossier.deposant().identity().toString(), this.deposantBeta.identity().toString());
 		assertEquals(this.dossier.deposant().email(), jpaPersonne.getEmail());
     }

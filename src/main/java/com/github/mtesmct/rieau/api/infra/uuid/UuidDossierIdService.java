@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class UuidDossierIdService implements DossierIdService {
 
     @Override
-    public DossierId creer() {
-        return new DossierId(UUID.randomUUID().toString());
+    public DossierId creer(String typeDossier, String departement, String commune, String annee) {
+        return new DossierId(typeDossier + "-" +  departement + "-" + commune + "-" + annee + "-" + UUID.randomUUID().hashCode());
     }
 }

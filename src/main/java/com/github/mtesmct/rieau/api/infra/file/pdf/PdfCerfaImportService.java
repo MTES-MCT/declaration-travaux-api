@@ -5,10 +5,16 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportService;
+import com.github.mtesmct.rieau.api.application.dossiers.NombrePagesCerfaException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.services.StringExtractService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +27,9 @@ public class PdfCerfaImportService implements CerfaImportService {
 
 	@Autowired
 	private StringExtractService stringExtractService;
+	@Autowired
+	private CerfaFormMapper cerfaFormMapper;
+	
 
 	@Override
 	public Optional<String> lireCode(Fichier fichier) throws CerfaImportException {
@@ -39,12 +48,13 @@ public class PdfCerfaImportService implements CerfaImportService {
 				throw new CerfaImportException("Pas de permission d'extraire du texte depuis le pdf");
 			}
 			log.debug("Le pdf contient " + doc.getNumberOfPages() + " pages");
-			if (doc.getNumberOfPages() < 2) {
-				throw new CerfaImportException(CerfaImportException.MOINS_2_PAGES);
+			int nombrePagesMini = 2;
+			if (doc.getNumberOfPages() < nombrePagesMini) {
+				throw new CerfaImportException(new NombrePagesCerfaException(nombrePagesMini));
 			}
 			PDFTextStripper stripper = new PDFTextStripper();
-			stripper.setStartPage(2);
-			stripper.setEndPage(2);
+			stripper.setStartPage(nombrePagesMini);
+			stripper.setEndPage(nombrePagesMini);
 			stripper.setSortByPosition(true);
 			stripper.setLineSeparator("\n");
 			String[] lines = stripper.getText(doc).split(stripper.getLineSeparator());
@@ -66,6 +76,44 @@ public class PdfCerfaImportService implements CerfaImportService {
 				}
 		}
 		return code;
+	}
+
+	@Override
+	public Optional<String> lireFormValue(Fichier fichier, TypesDossier type, String attribut) throws CerfaImportException {
+		PDDocument doc = null;
+		Optional<String> valeur = Optional.empty();
+		String pdfMimeType = "application/pdf";
+		if (!fichier.mimeType().equals(pdfMimeType))
+			throw new CerfaImportException("Le type MIME du fichier n'est pas {" + pdfMimeType + "}");
+		try {
+			doc = PDDocument.load(fichier.contenu());
+			if (doc.isEncrypted()) {
+				throw new CerfaImportException("Le pdf est chiffré");
+			}
+			AccessPermission ap = doc.getCurrentAccessPermission();
+			if (!ap.canExtractContent()) {
+				throw new CerfaImportException("Pas de permission d'extraire du texte depuis le pdf");
+			}
+			log.debug("Le pdf contient " + doc.getNumberOfPages() + " pages");
+			int nombrePagesMini = 3;
+			if (doc.getNumberOfPages() < nombrePagesMini) {
+				throw new CerfaImportException(new NombrePagesCerfaException(nombrePagesMini));
+			}
+			PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
+			PDAcroForm acroForm = docCatalog.getAcroForm();
+	        PDField field = acroForm.getField(this.cerfaFormMapper.toNomChamp(type, attribut));
+			valeur = Optional.ofNullable(field.getValueAsString());
+		} catch (IOException e) {
+			throw new CerfaImportException("Erreur de chargement du pdf {" + fichier.nom() + "}", e);
+		} finally {
+			if (doc != null)
+				try {
+					doc.close();
+				} catch (IOException e) {
+					throw new CerfaImportException("Erreur de chargement du pdf {" + fichier.nom() + "}", e);
+				}
+		}
+		return valeur;
 	}
 
 }

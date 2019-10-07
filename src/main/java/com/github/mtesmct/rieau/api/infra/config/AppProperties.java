@@ -19,6 +19,8 @@ public class AppProperties {
     private String dateFormat;
     @NotNull
     private String datetimeFormat;
+    @NotNull
+    private String yearFormat;
     private String fichiersDir;
     private String corsAllowedOrigins;
 }

@@ -27,6 +27,11 @@ public class DateFormatConfig {
     public DateConverter dateConverter(){
         return new DateConverter(this.properties.getDateFormat());
     }
+
+    @Bean(name = "yearConverter")
+    public DateConverter yearConverter(){
+        return new DateConverter(this.properties.getYearFormat());
+    }
  
     @Bean
     @ConditionalOnProperty(value = "spring.jackson.date-format", matchIfMissing = true, havingValue = "none")

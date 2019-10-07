@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
+import com.github.mtesmct.rieau.api.application.dossiers.NombrePagesCerfaException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
@@ -60,7 +61,7 @@ public class PdfCerfaServiceTests {
         Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
         assertTrue(fichierLu.isPresent());
         CerfaImportException exception = assertThrows(CerfaImportException.class, () -> this.filePdfCerfaService.lireCode(fichierLu.get()));
-        assertEquals(CerfaImportException.MOINS_2_PAGES, exception.getMessage());
+        assertTrue(exception.getCause() instanceof NombrePagesCerfaException);
         fichierLu.get().fermer();
     }
 }

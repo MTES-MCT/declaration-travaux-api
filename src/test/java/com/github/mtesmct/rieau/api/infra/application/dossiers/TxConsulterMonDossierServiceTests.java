@@ -16,9 +16,12 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
@@ -46,6 +49,8 @@ public class TxConsulterMonDossierServiceTests {
     private TxConsulterMonDossierService consulterMonDossierService;
     @Autowired
     private DossierFactory dossierFactory;
+    @Autowired
+    private ProjetFactory projetFactory;
 
     @Autowired
     @Qualifier("dateTimeConverter")
@@ -65,14 +70,16 @@ public class TxConsulterMonDossierServiceTests {
 
     @BeforeEach
     public void setUp() throws Exception {
-        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
+        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+                new ParcelleCadastrale("0", "1", "2"), true);
+        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.dossier);
         this.dossier = this.dossierRepository.save(this.dossier);
         assertNotNull(this.dossier);
         assertNotNull(this.dossier.identity());
         assertNotNull(this.dossier.deposant());
         assertTrue(this.dossier.pieceJointes().isEmpty());
-        this.otherDossier = this.dossierFactory.creer(this.instructeurNonBeta, TypesDossier.DP);
+        this.otherDossier = this.dossierFactory.creer(this.instructeurNonBeta, TypesDossier.DP, projet);
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.otherDossier);
         this.otherDossier = this.dossierRepository.save(this.otherDossier);
         assertNotNull(this.otherDossier);

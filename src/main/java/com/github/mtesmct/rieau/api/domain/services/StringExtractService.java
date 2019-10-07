@@ -1,13 +1,13 @@
-package com.github.mtesmct.rieau.api.infra.file.pdf;
+package com.github.mtesmct.rieau.api.domain.services;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.springframework.stereotype.Service;
+import com.github.mtesmct.rieau.api.domain.services.DomainService;
 
-@Service
+@DomainService
 public class StringExtractService {
     public Optional<String> extract(String regexp, String text, int indexGroup) throws PatternSyntaxException {
 		Optional<String> code = Optional.empty();

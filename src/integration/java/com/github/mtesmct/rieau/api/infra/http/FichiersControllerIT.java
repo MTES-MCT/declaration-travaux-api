@@ -9,10 +9,13 @@ import java.io.InputStream;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBetaDetails;
@@ -46,10 +49,12 @@ public class FichiersControllerIT {
 	private FichierService fichierService;
 	@Autowired
 	private FichierFactory fichierFactory;
-    @Autowired
-    private DossierFactory dossierFactory;
-    @Autowired
-    private DossierRepository dossierRepository;
+	@Autowired
+	private DossierFactory dossierFactory;
+	@Autowired
+	private ProjetFactory projetFactory;
+	@Autowired
+	private DossierRepository dossierRepository;
 
 	@Autowired
 	@Qualifier("deposantBeta")
@@ -69,9 +74,11 @@ public class FichiersControllerIT {
 		cerfa = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		fichier = this.fichierFactory.creer(cerfa, "application/pdf");
 		fichierService.save(fichier);
-        Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
-        dp.ajouterCerfa(fichier.identity());
-        dp = this.dossierRepository.save(dp);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+				new ParcelleCadastrale("0", "1", "2"), true);
+		Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
+		dp.ajouterCerfa(fichier.identity());
+		dp = this.dossierRepository.save(dp);
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 		this.accessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
 				WithDeposantBetaDetails.ID);
@@ -105,7 +112,7 @@ public class FichiersControllerIT {
 	public void lireNonProprietaireTest() throws Exception {
 		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.keycloakTestsHelper.getAccessToken(WithAutreDeposantBetaDetails.ID,
-				WithAutreDeposantBetaDetails.ID))
+						WithAutreDeposantBetaDetails.ID))
 				.multiPart("file", this.cerfa).expect().statusCode(403).when()
 				.get("/{id}", this.fichier.identity().toString());
 	}

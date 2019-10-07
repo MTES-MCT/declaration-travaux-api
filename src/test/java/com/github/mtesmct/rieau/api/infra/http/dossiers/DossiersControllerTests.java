@@ -23,12 +23,16 @@ import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundExcept
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -77,6 +81,8 @@ public class DossiersControllerTests {
 	private TxAjouterPieceJointeService mockAjouterPieceJointeService;
 	@Autowired
 	private FichierFactory fichierFactory;
+	@Autowired
+	private ProjetFactory projetFactory;
 
 	private Dossier dossier;
 
@@ -89,12 +95,13 @@ public class DossiersControllerTests {
 	private Personne deposantBeta;
 
 	@BeforeEach
-	public void setup() throws IOException {
+	public void setup() throws IOException, CommuneNotFoundException {
 		this.uri = DossiersController.ROOT_URI;
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
-		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
 		dossier.ajouterCerfa(fichier.identity());
 		file = new File("src/test/fixtures/dummy.pdf");
 		fichier = this.fichierFactory.creer(file, "application/pdf");

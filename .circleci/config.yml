@@ -52,12 +52,6 @@ jobs:
           command: |
             set -x
             docker-compose -f src/main/docker/docker-compose.yml up --build -d
-            sleep 45
-      - run:
-          name: Start integration tests
-          command: |
-            set -x
-            docker-compose -f src/main/docker/docker-compose.yml exec api mvn clean verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
       

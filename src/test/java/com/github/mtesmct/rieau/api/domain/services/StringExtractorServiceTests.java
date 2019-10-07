@@ -1,4 +1,4 @@
-package com.github.mtesmct.rieau.api.infra.file.pdf;
+package com.github.mtesmct.rieau.api.domain.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
+import com.github.mtesmct.rieau.api.domain.services.StringExtractService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

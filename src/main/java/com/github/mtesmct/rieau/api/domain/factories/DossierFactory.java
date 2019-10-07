@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
@@ -18,7 +19,8 @@ public class DossierFactory {
     private TypeDossierRepository typeDossierRepository;
     private DateService dateService;
 
-    public DossierFactory(DossierIdService dossierIdService, DateService dateService, TypeDossierRepository typeDossierRepository) {
+    public DossierFactory(DossierIdService dossierIdService, DateService dateService,
+            TypeDossierRepository typeDossierRepository) {
         if (dossierIdService == null)
             throw new NullPointerException("Le service des id des dossiers ne peut pas être nul.");
         this.dossierIdService = dossierIdService;
@@ -30,7 +32,7 @@ public class DossierFactory {
         this.typeDossierRepository = typeDossierRepository;
     }
 
-    public Dossier creer(Personne deposant, TypesDossier type) {
+    public Dossier creer(Personne deposant, TypesDossier type, Projet projet) {
         if (deposant == null)
             throw new NullPointerException("Le deposant du dossier ne peut pas être nul.");
         if (type == null)
@@ -38,6 +40,9 @@ public class DossierFactory {
         Optional<TypeDossier> typeDossier = this.typeDossierRepository.findByType(type);
         if (typeDossier.isEmpty())
             throw new IllegalArgumentException("Aucun type de dossier correspondant à type=" + type.toString());
-        return new Dossier(this.dossierIdService.creer(), deposant, StatutDossier.DEPOSE, this.dateService.now(), typeDossier.orElseThrow());
+        if (projet == null)
+            throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
+        return new Dossier(this.dossierIdService.creer(type.toString(), projet.localisation().adresse().commune().department(), projet.localisation().adresse().commune().codePostal(), this.dateService.year()), deposant, StatutDossier.DEPOSE,
+                this.dateService.now(), typeDossier.orElseThrow());
     }
 }

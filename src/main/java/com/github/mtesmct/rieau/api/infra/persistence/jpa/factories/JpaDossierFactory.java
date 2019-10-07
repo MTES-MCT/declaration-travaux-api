@@ -11,6 +11,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ public class JpaDossierFactory {
     private TypeDossierRepository typeDossierRepository;
     @Autowired
     private JpaPieceJointeFactory jpaPieceJointeFactory;
+    @Autowired
+    private JpaProjetFactory jpaProjetFactory;
 
     public JpaDossier toJpa(Dossier dossier) {
         if (dossier.deposant() == null)
@@ -33,6 +36,7 @@ public class JpaDossierFactory {
         if (!dossier.pieceJointes().isEmpty())
             dossier.pieceJointes().forEach(pieceJointe -> jpaDossier
                     .addPieceJointe(this.jpaPieceJointeFactory.toJpa(jpaDossier, pieceJointe)));
+        JpaProjet jpaProjet = jpaProjetFactory.toJpa(jpaDossier, dossier.projet());
         return jpaDossier;
     }
 

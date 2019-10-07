@@ -8,13 +8,15 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerMesDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +42,8 @@ public class TxListerMesDossiersServiceTests {
     private DateService dateService;
     @Autowired
     private DossierFactory dossierFactory;
+	@Autowired
+	private ProjetFactory projetFactory;
 
     @Autowired
     @Qualifier("dateTimeConverter")
@@ -52,7 +56,8 @@ public class TxListerMesDossiersServiceTests {
 
     @BeforeEach
     public void setUp() throws Exception {
-        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
+        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         this.dossierRepository.save(this.dossier);
     }
 

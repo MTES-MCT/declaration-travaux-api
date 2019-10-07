@@ -16,6 +16,7 @@ services:
       - ./target/failsafe-reports:/target/failsafe-reports
     networks:
       - api
+    command: mvn clean verify -Dskip.check=true
 
   db:
     image: postgres:10-alpine

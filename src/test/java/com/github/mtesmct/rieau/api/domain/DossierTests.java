@@ -14,13 +14,17 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeE
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.NumeroPieceJointeException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
+import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +45,8 @@ public class DossierTests {
     @Autowired
     private FichierFactory fichierFactory;
     @Autowired
+    private ProjetFactory projetFactory;
+    @Autowired
     private FichierService fichierService;
     @Autowired
     @Qualifier("deposantBeta")
@@ -51,11 +57,12 @@ public class DossierTests {
     private Fichier dp1;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, CommuneNotFoundException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         this.cerfa = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(this.cerfa);
-        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP);
+        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         assertNotNull(this.dossier);
         assertNotNull(this.dossier.piecesAJoindre());
         assertEquals(StatutDossier.DEPOSE, this.dossier.statut());
@@ -83,6 +90,11 @@ public class DossierTests {
         assertEquals(0, this.dossier.pieceJointes().size());
         assertEquals(1, this.dossier.piecesAJoindre().size());
         assertEquals("1", this.dossier.piecesAJoindre().get(0));
+        assertNotNull(this.dossier.projet());
+        assertNotNull(this.dossier.projet().localisation());
+        assertNotNull(this.dossier.projet().localisation().adresse());
+        assertNotNull(this.dossier.projet().localisation().adresse().commune());
+        assertEquals("44100", this.dossier.projet().localisation().adresse().commune().codePostal());
     }
 
     @Test

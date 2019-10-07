@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00"})
+@SpringBootTest(properties = {"app.datetime.mock=01/01/2019 00:00:00","app.year.mock=2019"})
 public class DateConverterTests {
     @Autowired
     @Qualifier("dateConverter")
