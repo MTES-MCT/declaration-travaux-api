@@ -16,7 +16,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public TypeDossier type;
     private Date dateDepot;
     private Personne deposant;
-    private Petitionnaires petitionnaires;
     private Projet projet;
     private PieceJointe cerfa;
     private List<PieceJointe> piecesJointes;
@@ -32,10 +31,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     public StatutDossier statut() {
         return this.statut;
-    }
-
-    public Petitionnaires petitionnaires() {
-        return this.petitionnaires;
     }
 
     public Personne deposant() {
