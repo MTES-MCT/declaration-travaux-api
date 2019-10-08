@@ -2,8 +2,6 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
@@ -46,7 +44,7 @@ public class JpaPieceJointeFactoryTests {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true);
-        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", Arrays.asList(new String[]{"1"})), projet);
+        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0"), projet);
         PieceJointe pieceJointe = new PieceJointe(dossier, new CodePieceJointe(TypesDossier.DP, "0"), new FichierId("0"));
         JpaPieceJointe jpaPieceJointe = this.jpaPieceJointeFactory.toJpa(jpaDossier, pieceJointe);
         assertEquals(jpaPieceJointe.getId().getDossier(), jpaDossier);
@@ -59,7 +57,7 @@ public class JpaPieceJointeFactoryTests {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true);
-        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", Arrays.asList(new String[]{"1"})), projet);
+        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0"), projet);
         JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "0"), "0"));
         PieceJointe pieceJointe = this.jpaPieceJointeFactory.fromJpa(dossier, jpaPieceJointe);
         assertEquals(pieceJointe.dossier(), dossier);

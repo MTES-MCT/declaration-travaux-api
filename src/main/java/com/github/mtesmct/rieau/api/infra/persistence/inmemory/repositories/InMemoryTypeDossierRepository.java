@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Optional;
 
@@ -29,8 +28,8 @@ public class InMemoryTypeDossierRepository implements TypeDossierRepository {
 
     public InMemoryTypeDossierRepository() {        
         this.types = new EnumMap<>(TypesDossier.class);
-        this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406", Arrays.asList(new String[]{"1", "2", "3", "4", "5", "6", "7", "8"})));
-        this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703", Arrays.asList(new String[]{"1"})));
+        this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406"));
+        this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703"));
     }
 
 }

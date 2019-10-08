@@ -130,7 +130,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.dossier.dateDepot())))))
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
-				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(1)))
+				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$[0].piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
 	}
 
@@ -156,7 +156,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statut", equalTo(this.dossier.statut().toString())))
 				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))))
 				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
-				.andExpect(jsonPath("$.piecesAJoindre", hasSize(1)))
+				.andExpect(jsonPath("$.piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())))
 				.andExpect(jsonPath("$.projet.nouvelleConstruction", equalTo(this.dossier.projet().nature().nouvelleConstruction())))
 				.andExpect(jsonPath("$.projet.adresse.commune", equalTo(this.dossier.projet().localisation().adresse().commune().nom())))

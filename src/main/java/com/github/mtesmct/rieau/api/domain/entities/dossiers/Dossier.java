@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
@@ -19,7 +21,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private Projet projet;
     private PieceJointe cerfa;
     private List<PieceJointe> piecesJointes;
-    private List<String> piecesAJoindre;
 
     public Date dateDepot() {
         return this.dateDepot;
@@ -50,7 +51,12 @@ public class Dossier implements Entity<Dossier, DossierId> {
     }
 
     public List<String> piecesAJoindre() {
-        return this.piecesAJoindre;
+        List<String> liste = new ArrayList<String>();
+        if (this.projet.nature().nouvelleConstruction()) {
+            if (this.type.type().equals(TypesDossier.DP))
+                liste.add("2");
+        }
+        return Stream.of(this.type.piecesAJoindreObligatoires(), liste).flatMap(x -> x.stream()).collect(Collectors.toList());
     }
 
     public PieceJointe ajouterCerfa(FichierId fichierId) throws PieceNonAJoindreException {
@@ -131,7 +137,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
             throw new NullPointerException("Le projet du dossier ne peut pas être nul");
         this.projet = projet;
         this.piecesJointes = new ArrayList<PieceJointe>();
-        this.piecesAJoindre = this.type.piecesAJoindre();
     }
 
 }
