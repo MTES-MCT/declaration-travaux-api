@@ -39,7 +39,7 @@ public class PdfCerfaServiceTests {
         Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
         assertTrue(fichierLu.isPresent());
         Map<String, String> valeurs = this.filePdfCerfaService.lire(fichierLu.get());
-        assertEquals(11, valeurs.size());
+        assertEquals(12, valeurs.size());
         assertEquals(TypesDossier.DP.toString(), valeurs.get("type"));
         assertEquals("false", valeurs.get("nouvelleConstruction"));
         assertEquals("1", valeurs.get("numeroVoie"));
@@ -60,7 +60,7 @@ public class PdfCerfaServiceTests {
         Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
         assertTrue(fichierLu.isPresent());
         Map<String, String> valeurs = this.filePdfCerfaService.lire(fichierLu.get());
-        assertEquals(11, valeurs.size());
+        assertEquals(12, valeurs.size());
         assertEquals(TypesDossier.PCMI.toString(), valeurs.get("type"));
         assertEquals("true", valeurs.get("nouvelleConstruction"));
         assertEquals("1", valeurs.get("numeroVoie"));

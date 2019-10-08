@@ -22,10 +22,10 @@ public class ProjetFactory {
             throw new NullPointerException("Le service des communes ne peut pas être nul.");
         this.communeService = communeService;
     }
-    public Projet creer(String numero, String voie, String lieuDit, String codePostal, String bp, String cedex, ParcelleCadastrale parcelleCadastrale, boolean nouvelleConstruction) throws CommuneNotFoundException {
+    public Projet creer(String numero, String voie, String lieuDit, String codePostal, String bp, String cedex, ParcelleCadastrale parcelleCadastrale, boolean nouvelleConstruction, boolean lotissement) throws CommuneNotFoundException {
         Optional<Commune> commune = this.communeService.findByCodeCodePostal(codePostal);
         if (commune.isEmpty())
             throw new CommuneNotFoundException(codePostal);
-        return new Projet(new Localisation(new Adresse(numero, voie, lieuDit, commune.get(), bp, cedex), parcelleCadastrale), new Nature(nouvelleConstruction));
+        return new Projet(new Localisation(new Adresse(numero, voie, lieuDit, commune.get(), bp, cedex), parcelleCadastrale, lotissement), new Nature(nouvelleConstruction));
     }
 }

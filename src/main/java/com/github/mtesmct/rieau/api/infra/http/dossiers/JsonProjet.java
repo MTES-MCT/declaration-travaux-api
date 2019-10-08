@@ -6,10 +6,12 @@ import lombok.Getter;
 public class JsonProjet{
     private JsonAdresse adresse;
     private boolean nouvelleConstruction;
+    private boolean lotissement;
 
-    public JsonProjet(JsonAdresse adresse, boolean nouvelleConstruction) {
+    public JsonProjet(JsonAdresse adresse, boolean nouvelleConstruction, boolean lotissement) {
         this.adresse = adresse;
         this.nouvelleConstruction = nouvelleConstruction;
+        this.lotissement = lotissement;
     }
 
 }

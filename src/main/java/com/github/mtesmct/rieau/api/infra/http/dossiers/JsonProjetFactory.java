@@ -17,7 +17,7 @@ public class JsonProjetFactory {
                             projet.localisation().adresse().voie(), projet.localisation().adresse().lieuDit(),
                             projet.localisation().adresse().bp(), projet.localisation().adresse().cedex(),
                             projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).toArray(String[]::new)),
-                    projet.nature().nouvelleConstruction());
+                    projet.nature().nouvelleConstruction(), projet.localisation().lotissement());
         }
         return jsonProjet;
     }

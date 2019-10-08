@@ -56,7 +56,7 @@ public class TxAjouterPieceJointeServiceTests {
     public void executeDP1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException, CommuneNotFoundException {
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, false);
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         dp = this.dossierRepository.save(dp);
         assertEquals(dp.statut(), StatutDossier.DEPOSE);
@@ -72,7 +72,7 @@ public class TxAjouterPieceJointeServiceTests {
     public void executePCMI1Test() throws IOException, AjouterPieceJointeException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException, CommuneNotFoundException {
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, true);
         Dossier pcmi = this.dossierFactory.creer(this.deposantBeta, TypesDossier.PCMI, projet);
         pcmi = this.dossierRepository.save(pcmi);
         Optional<Dossier> optionalDossier = this.dossierRepository.findById(pcmi.identity().toString());

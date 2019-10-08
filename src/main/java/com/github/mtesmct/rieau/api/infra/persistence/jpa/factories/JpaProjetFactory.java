@@ -43,7 +43,7 @@ public class JpaProjetFactory {
                 projet.localisation().adresse().cedex());
         String parcelles = projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(joining()));
         log.debug("parcelles={}", parcelles);
-        JpaProjet jpaProjet = new JpaProjet(jpaDossier, jpaNature, jpaAdresse, parcelles);
+        JpaProjet jpaProjet = new JpaProjet(jpaDossier, jpaNature, jpaAdresse, parcelles, projet.localisation().lotissement());
         log.debug("jpaProjet={}", jpaProjet);
         return jpaProjet;
     }
@@ -62,7 +62,7 @@ public class JpaProjetFactory {
         Projet projet = this.projetFactory.creer(jpaProjet.getAdresse().getNumero(), jpaProjet.getAdresse().getVoie(),
                 jpaProjet.getAdresse().getLieuDit(), jpaProjet.getAdresse().getCodePostal(),
                 jpaProjet.getAdresse().getBp(), jpaProjet.getAdresse().getCedex(), parcelle.get(),
-                jpaProjet.getNature().isConstructionNouvelle());
+                jpaProjet.getNature().isConstructionNouvelle(), jpaProjet.isLotissement());
         if (jpaParcelles.length > 1) {
             for (int i = 1; i < jpaParcelles.length; i++) {
                 parcelle = ParcelleCadastrale.parse(jpaParcelles[i]);

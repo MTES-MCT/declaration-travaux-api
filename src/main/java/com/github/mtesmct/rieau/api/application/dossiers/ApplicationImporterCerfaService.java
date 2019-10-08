@@ -96,15 +96,11 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
 
             Optional<Projet> projet = Optional.empty();
             try {
-                String nouvelleConstruction = valeurs.get("nouvelleConstruction");
-				log.debug("nouvelleConstruction={}", nouvelleConstruction);
-                boolean parsedBoolean = Boolean.parseBoolean(nouvelleConstruction);
-				log.debug("parsedBoolean={}", parsedBoolean);
                 projet = Optional.ofNullable(this.projetFactory.creer(valeurs.get("numeroVoie"), valeurs.get("voie"),
                         valeurs.get("lieuDit"), valeurs.get("codePostal"), valeurs.get("bp"), valeurs.get("cedex"),
                         new ParcelleCadastrale(valeurs.get("prefixe"), valeurs.get("section"),
                                 valeurs.get("numeroCadastre")),
-                        parsedBoolean));
+                                Boolean.parseBoolean(valeurs.get("nouvelleConstruction")), Boolean.parseBoolean(valeurs.get("lotissement"))));
             } catch (CommuneNotFoundException e) {
                 throw new DossierImportException(e);
             }

@@ -71,7 +71,7 @@ public class TxConsulterMonDossierServiceTests {
     @BeforeEach
     public void setUp() throws Exception {
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, true);
         this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.dossier);
         this.dossier = this.dossierRepository.save(this.dossier);

@@ -38,7 +38,7 @@ public class JpaProjetFactoryTests {
     public void toJpaTest() throws CommuneNotFoundException {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, true);
         JpaProjet jpaProjet = this.jpaProjetFactory.toJpa(jpaDossier, projet);
         assertEquals(projet.localisation().adresse().numero(), jpaProjet.getAdresse().getNumero());
         assertEquals(projet.localisation().adresse().voie(), jpaProjet.getAdresse().getVoie());
@@ -46,12 +46,13 @@ public class JpaProjetFactoryTests {
         assertEquals(projet.localisation().adresse().cedex(), jpaProjet.getAdresse().getCedex());
         assertEquals(projet.localisation().parcellesCadastrales().get(0).toFlatString(), jpaProjet.getParcelles());
         assertEquals(projet.nature().nouvelleConstruction(), jpaProjet.getNature().isConstructionNouvelle());
+        assertEquals(projet.localisation().lotissement(), jpaProjet.isLotissement());
     }
 
     @Test
     public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
-        JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01"), "0-1-2,1-2-3");
+        JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01"), "0-1-2,1-2-3", true);
         Projet projet = this.jpaProjetFactory.fromJpa(jpaProjet);
         assertEquals(jpaProjet.getAdresse().getNumero(), projet.localisation().adresse().numero());
         assertEquals(jpaProjet.getAdresse().getVoie(), projet.localisation().adresse().voie());
@@ -60,6 +61,7 @@ public class JpaProjetFactoryTests {
         assertEquals("0-1-2", projet.localisation().parcellesCadastrales().get(0).toFlatString());
         assertEquals("1-2-3", projet.localisation().parcellesCadastrales().get(1).toFlatString());
         assertEquals(jpaProjet.getNature().isConstructionNouvelle(), projet.nature().nouvelleConstruction());
+        assertEquals(jpaProjet.isLotissement(), projet.localisation().lotissement());
     }
     
 }

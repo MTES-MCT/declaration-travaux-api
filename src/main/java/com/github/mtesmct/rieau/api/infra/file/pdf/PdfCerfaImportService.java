@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -84,7 +83,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 				PDField field = acroForm.getField(this.cerfaFormMapper.toNomChamp(type.get().type(), attribut));
 				String valeur = field.getValueAsString();
 				log.debug("La valeur trouvée de l'attribut {} est {}", attribut, valeur);
-				if (Objects.equals(attribut, "nouvelleConstruction")) {
+				if (Arrays.asList(new String[]{"nouvelleConstruction","lotissement"}).contains(attribut)) {
 					if (valeur != null && Arrays.asList(new String[] { "On", "Oui", "true", "TRUE", "1", "on", "oui" })
 							.contains(valeur)) {
 						valeur = "true";

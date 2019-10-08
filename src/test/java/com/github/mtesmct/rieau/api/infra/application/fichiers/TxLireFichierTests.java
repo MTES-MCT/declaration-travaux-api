@@ -65,7 +65,7 @@ public class TxLireFichierTests {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         fichier = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(fichier);
-        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true, true);
         Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         dp.ajouterCerfa(fichier.identity());
         dp = this.dossierRepository.save(dp);

@@ -56,7 +56,15 @@ public class Dossier implements Entity<Dossier, DossierId> {
             if (this.type.type().equals(TypesDossier.DP))
                 liste.add("2");
         }
-        return Stream.of(this.type.piecesAJoindreObligatoires(), liste).flatMap(x -> x.stream()).collect(Collectors.toList());
+        if (this.projet.localisation().lotissement()) {
+            if (this.type.type().equals(TypesDossier.PCMI)) {
+                liste.add("9");
+                liste.add("10");
+            }
+        }
+
+        return Stream.of(this.type.piecesAJoindreObligatoires(), liste).flatMap(x -> x.stream())
+                .collect(Collectors.toList());
     }
 
     public PieceJointe ajouterCerfa(FichierId fichierId) throws PieceNonAJoindreException {

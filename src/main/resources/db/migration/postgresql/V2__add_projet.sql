@@ -6,6 +6,7 @@ create table projets (
     adresse_numero varchar(255), 
     adresse_voie varchar(255), 
     construction_nouvelle boolean not null, 
+    lotissement boolean not null,
     parcelles_cadastrales varchar(255) not null, 
     dossier_id bigint not null, 
     primary key (dossier_id)

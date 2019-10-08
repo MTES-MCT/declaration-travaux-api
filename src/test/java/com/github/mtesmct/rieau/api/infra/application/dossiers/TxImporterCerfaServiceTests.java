@@ -74,6 +74,7 @@ public class TxImporterCerfaServiceTests {
         assertEquals("", dossier.get().projet().localisation().adresse().lieuDit());
         assertEquals("44500", dossier.get().projet().localisation().adresse().commune().codePostal());
         assertEquals("", dossier.get().projet().localisation().adresse().bp());
+        assertFalse(dossier.get().projet().localisation().lotissement());
         assertEquals(1, dossier.get().projet().localisation().parcellesCadastrales().size());
         assertEquals("000-CT-0099", dossier.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
     }
@@ -103,6 +104,7 @@ public class TxImporterCerfaServiceTests {
         assertEquals("", dossier.get().projet().localisation().adresse().lieuDit());
         assertEquals("44100", dossier.get().projet().localisation().adresse().commune().codePostal());
         assertEquals("", dossier.get().projet().localisation().adresse().bp());
+        assertTrue(dossier.get().projet().localisation().lotissement());
         assertEquals(1, dossier.get().projet().localisation().parcellesCadastrales().size());
         assertEquals("000-LV-0040", dossier.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
     }

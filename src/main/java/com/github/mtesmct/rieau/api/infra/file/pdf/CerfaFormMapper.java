@@ -30,6 +30,7 @@ public class CerfaFormMapper {
         champsFormPCMI.put("section", "topmostSubform[0].Page3[0].T2S_section[0]");
         champsFormPCMI.put("numeroCadastre", "topmostSubform[0].Page3[0].T2N_numero[0]");
         champsFormPCMI.put("nouvelleConstruction", "topmostSubform[0].Page4[0].C2ZA1_nouvelle[0]");
+        champsFormPCMI.put("lotissement", "topmostSubform[0].Page3[0].T3I_lotoui[0]");
         this.champsForm.put(TypesDossier.PCMI.toString(), champsFormPCMI);
         Map<String, String> champsFormDPMI = new HashMap<String, String>();
         champsFormDPMI = new HashMap<String, String>();
@@ -43,6 +44,7 @@ public class CerfaFormMapper {
         champsFormDPMI.put("section", "topmostSubform[0].Page3[0].T2S_section[0]");
         champsFormDPMI.put("numeroCadastre", "topmostSubform[0].Page3[0].T2N_numero[0]");
         champsFormDPMI.put("nouvelleConstruction", "topmostSubform[0].Page3[0].C2ZA1_nouvelle[0]");
+        champsFormDPMI.put("lotissement", "topmostSubform[0].Page3[0].T2J_lotissement[0]");
         this.champsForm.put(TypesDossier.DP.toString(), champsFormDPMI);
     }
 

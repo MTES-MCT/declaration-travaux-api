@@ -67,7 +67,7 @@ public class DossierTests {
         this.cerfaDP = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(this.cerfaDP);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, true);
         this.dossierDP = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
         assertNotNull(this.dossierDP);
         assertNotNull(this.dossierDP.piecesAJoindre());
@@ -112,7 +112,7 @@ public class DossierTests {
         this.cerfaPCMI = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(this.cerfaPCMI);
         Projet projet = this.projetFactory.creer("2", "rue des Fleurs", "ZI des Lilas", "44500", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("3", "4", "5"), true);
+                new ParcelleCadastrale("3", "4", "5"), true, true);
         projet.localisation().ajouterParcelle(new ParcelleCadastrale("6", "7", "8"));
         this.dossierPCMI = this.dossierFactory.creer(this.deposantBeta, TypesDossier.PCMI, projet);
         assertNotNull(this.dossierPCMI);
@@ -125,8 +125,8 @@ public class DossierTests {
         assertNotNull(this.dossierPCMI.cerfa().fichierId());
         assertEquals(this.cerfaPCMI.identity(), this.dossierPCMI.cerfa().fichierId());
         assertEquals(0, this.dossierPCMI.pieceJointes().size());
-        assertEquals(8, this.dossierPCMI.piecesAJoindre().size());
-        assertIterableEquals(Arrays.asList(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" }),
+        assertEquals(10, this.dossierPCMI.piecesAJoindre().size());
+        assertIterableEquals(Arrays.asList(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }),
                 this.dossierPCMI.piecesAJoindre());
         assertNotNull(this.dossierPCMI.projet());
         assertNotNull(this.dossierPCMI.projet().localisation());

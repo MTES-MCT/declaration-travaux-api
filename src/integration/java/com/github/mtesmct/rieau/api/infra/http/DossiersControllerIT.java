@@ -3,11 +3,13 @@ package com.github.mtesmct.rieau.api.infra.http;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -82,7 +84,7 @@ public class DossiersControllerIT {
 		fichier = this.fichierFactory.creer(cerfa, "application/pdf");
 		fichierService.save(fichier);
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-				new ParcelleCadastrale("0", "1", "2"), true);
+				new ParcelleCadastrale("0", "1", "2"), true, true);
 		dossier = dossierFactory.creer(deposantBeta, TypesDossier.DP, projet);
 		dossier.ajouterCerfa(fichier.identity());
 		dossier = dossierRepository.save(dossier);
@@ -156,6 +158,8 @@ public class DossiersControllerIT {
 		assertNotNull(dossierLu.get().cerfa().code());
 		assertEquals(TypesDossier.DP, dossierLu.get().cerfa().code().type());
         assertFalse(dossierLu.get().projet().nature().nouvelleConstruction());
+        assertFalse(dossierLu.get().projet().localisation().lotissement());
+        assertIterableEquals(Arrays.asList(new String[] { "1" }), dossierLu.get().piecesAJoindre());
         assertEquals("1", dossierLu.get().projet().localisation().adresse().numero());
         assertEquals("Route de Kerrivaud", dossierLu.get().projet().localisation().adresse().voie());
         assertEquals("", dossierLu.get().projet().localisation().adresse().lieuDit());

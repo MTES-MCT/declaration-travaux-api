@@ -49,7 +49,7 @@ public class JpaDossierFactoryTests {
     @Test
     public void toJpaTest() throws CommuneNotFoundException {
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true);
+                new ParcelleCadastrale("0", "1", "2"), true, true);
         Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE,
                 this.dateService.now(), new TypeDossier(TypesDossier.DP, "0"),
                 projet);
@@ -72,7 +72,7 @@ public class JpaDossierFactoryTests {
     @Test
     public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
-        JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Fleurs", "ZI les roses", "44100", "BP 1", "Cedex 1"), "1-2-3,4-5-6" );
+        JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Fleurs", "ZI les roses", "44100", "BP 1", "Cedex 1"), "1-2-3,4-5-6", true);
         JpaPieceJointe cerfa = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "0"), "cerfa"));
         jpaDossier.addPieceJointe(cerfa);
         JpaPieceJointe dp1 = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "dp1"));

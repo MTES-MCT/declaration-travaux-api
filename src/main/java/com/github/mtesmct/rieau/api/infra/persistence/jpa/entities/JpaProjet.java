@@ -51,6 +51,9 @@ public class JpaProjet {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private JpaDossier dossier;
+    @Column(name = "lotissement", nullable = false)
+    @NotNull
+    private boolean lotissement;
 
     @Override
     public boolean equals(Object o) {
@@ -68,11 +71,12 @@ public class JpaProjet {
     }
 
     public JpaProjet(@NotNull JpaDossier dossier, @NotNull JpaNature nature, @NotNull JpaAdresse adresse,
-            @NotBlank String parcelles) {
+            @NotBlank String parcelles, @NotNull boolean lotissement) {
         this.dossier = dossier;
         this.nature = nature;
         this.adresse = adresse;
         this.parcelles = parcelles;
+        this.lotissement = lotissement;
     }
 
     public JpaProjet() {
@@ -80,8 +84,8 @@ public class JpaProjet {
 
     @Override
     public String toString() {
-        return "JpaProjet [adresse=" + adresse + ", dossier=" + dossier + ", id=" + id + ", nature=" + nature
-                + ", parcelles=" + parcelles + "]";
+        return "JpaProjet [adresse=" + adresse + ", dossier=" + dossier + ", id=" + id + ", lotissement=" + lotissement
+                + ", nature=" + nature + ", parcelles=" + parcelles + "]";
     }
 
 }

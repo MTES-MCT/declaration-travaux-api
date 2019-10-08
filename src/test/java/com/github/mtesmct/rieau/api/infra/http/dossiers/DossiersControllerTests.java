@@ -101,7 +101,7 @@ public class DossiersControllerTests {
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
-		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true, true);
 		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3","4","5"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());
 		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
@@ -159,6 +159,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())))
 				.andExpect(jsonPath("$.projet.nouvelleConstruction", equalTo(this.dossier.projet().nature().nouvelleConstruction())))
+				.andExpect(jsonPath("$.projet.lotissement", equalTo(this.dossier.projet().localisation().lotissement())))
 				.andExpect(jsonPath("$.projet.adresse.commune", equalTo(this.dossier.projet().localisation().adresse().commune().nom())))
 				.andExpect(jsonPath("$.projet.adresse.codePostal", equalTo(this.dossier.projet().localisation().adresse().commune().codePostal())))
 				.andExpect(jsonPath("$.projet.adresse.numero", equalTo(this.dossier.projet().localisation().adresse().numero())))
