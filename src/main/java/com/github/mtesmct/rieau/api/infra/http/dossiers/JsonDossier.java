@@ -14,13 +14,15 @@ public class JsonDossier {
     private JsonPieceJointe cerfa;
     private List<JsonPieceJointe> piecesJointes = new ArrayList<JsonPieceJointe>();
     private List<String> piecesAJoindre = new ArrayList<String>();
+    private JsonProjet projet;
 
-    public JsonDossier(String id, String type, String statut, String date, JsonPieceJointe cerfa) {
+    public JsonDossier(String id, String type, String statut, String date, JsonPieceJointe cerfa, JsonProjet projet) {
         this.id = id;
         this.type = type;
         this.statut = statut;
         this.date = date;
         this.cerfa = cerfa;
+        this.projet = projet;
     }
 
     public void addPieceJointe(JsonPieceJointe pieceJointe){

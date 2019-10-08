@@ -6,22 +6,30 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.regex.PatternSyntaxException;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
+import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaNature;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,10 +44,16 @@ public class JpaDossierFactoryTests {
     private DateService dateService;
     @Autowired
     private JpaDossierFactory jpaDossierFactory;
+    @Autowired
+    private ProjetFactory projetFactory;
 
     @Test
-    public void toJpaTest(){
-        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE, this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", Arrays.asList(new String[]{"1"})));
+    public void toJpaTest() throws CommuneNotFoundException {
+        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+                new ParcelleCadastrale("0", "1", "2"), true);
+        Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), StatutDossier.DEPOSE,
+                this.dateService.now(), new TypeDossier(TypesDossier.DP, "0", Arrays.asList(new String[] { "1" })),
+                projet);
         dossier.ajouterCerfa(new FichierId("cerfa"));
         dossier.ajouter("1", new FichierId("dp1"));
         JpaDossier jpaDossier = this.jpaDossierFactory.toJpa(dossier);
@@ -50,18 +64,21 @@ public class JpaDossierFactoryTests {
         assertEquals(jpaDossier.getType(), TypesDossier.DP);
         assertFalse(jpaDossier.getPiecesJointes().isEmpty());
         assertEquals(jpaDossier.getPiecesJointes().size(), 2);
-        assertTrue(jpaDossier.getPiecesJointes().contains(new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "0"), "cerfa"))));
-        assertTrue(jpaDossier.getPiecesJointes().contains(new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "dp1"))));
+        assertTrue(jpaDossier.getPiecesJointes().contains(new JpaPieceJointe(
+                new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "0"), "cerfa"))));
+        assertTrue(jpaDossier.getPiecesJointes().contains(new JpaPieceJointe(
+                new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "dp1"))));
     }
 
     @Test
-    public void fromJpaTest(){
+    public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
         JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
+        JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Fleurs", "ZI les roses", "44100", "BP 1", "Cedex 1"), "1-2-3,4-5-6" );
         JpaPieceJointe cerfa = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "0"), "cerfa"));
         jpaDossier.addPieceJointe(cerfa);
         JpaPieceJointe dp1 = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "dp1"));
         jpaDossier.addPieceJointe(dp1);
-        Dossier dossier = this.jpaDossierFactory.fromJpa(jpaDossier);
+        Dossier dossier = this.jpaDossierFactory.fromJpa(jpaDossier, jpaProjet);
         assertEquals(new Personne("toto", "toto@fai.fr"), dossier.deposant());
         assertEquals(new DossierId("0"), dossier.identity());
         assertEquals(StatutDossier.DEPOSE, dossier.statut());

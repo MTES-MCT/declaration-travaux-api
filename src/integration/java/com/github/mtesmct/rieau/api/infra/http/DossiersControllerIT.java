@@ -90,7 +90,7 @@ public class DossiersControllerIT {
 		assertNotNull(dossier.identity());
 		assertNotNull(dossier.deposant());
 		assertNotNull(dossier.type());
-		assertEquals(dossier.deposant().identity(), deposantBeta.identity());
+		assertEquals(deposantBeta.identity(), dossier.deposant().identity());
 		dp1 = new File("src/test/fixtures/dummy.pdf");
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 		this.accessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
@@ -106,7 +106,7 @@ public class DossiersControllerIT {
 				.extract().jsonPath().getList("", JsonDossier.class);
 		assertFalse(dossiers.isEmpty());
 		assertEquals(1, dossiers.size());
-		assertEquals(this.dossier.identity().toString(), dossiers.get(0).getId());
+		assertEquals(dossiers.get(0).getId(), this.dossier.identity().toString());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class DossiersControllerIT {
 				.get("/{id}", this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
-		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(jsonDossier.getId(), this.dossier.identity().toString());
 	}
 
 	@Test
@@ -149,11 +149,20 @@ public class DossiersControllerIT {
 	public void ajouterCerfaTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive().oauth2(this.accessToken)
 				.multiPart("file", this.cerfa, "application/pdf").expect().statusCode(200).when().post();
-		Optional<Dossier> dossierLu = this.dossierRepository.findById(dossier.identity().toString());
+		List<Dossier> dossiers = this.dossierRepository.findByDeposantId(this.deposantBeta.identity().toString());
+		Optional<Dossier> dossierLu = dossiers.stream().filter(d -> !d.identity().equals(this.dossier.identity())).findAny();
 		assertTrue(dossierLu.isPresent());
 		assertNotNull(dossierLu.get().cerfa());
 		assertNotNull(dossierLu.get().cerfa().code());
 		assertEquals(TypesDossier.DP, dossierLu.get().cerfa().code().type());
+        assertFalse(dossierLu.get().projet().nature().nouvelleConstruction());
+        assertEquals("1", dossierLu.get().projet().localisation().adresse().numero());
+        assertEquals("Route de Kerrivaud", dossierLu.get().projet().localisation().adresse().voie());
+        assertEquals("", dossierLu.get().projet().localisation().adresse().lieuDit());
+        assertEquals("44500", dossierLu.get().projet().localisation().adresse().commune().codePostal());
+        assertEquals("", dossierLu.get().projet().localisation().adresse().bp());
+        assertEquals(1, dossierLu.get().projet().localisation().parcellesCadastrales().size());
+        assertEquals("000-CT-0099", dossierLu.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
 	}
 
 	@Test

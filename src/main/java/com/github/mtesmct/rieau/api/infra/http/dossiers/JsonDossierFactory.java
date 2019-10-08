@@ -17,19 +17,23 @@ public class JsonDossierFactory {
     private DateConverter dateTimeConverter;
     @Autowired
     private JsonPieceJointeFactory jsonPieceJointeFactory;
+    @Autowired
+    private JsonProjetFactory jsonProjetFactory;
     
     public JsonDossier toJson(Dossier dossier){
         if (dossier == null)
             throw new NullPointerException("Le dossier ne peut pas être nul.");
-        JsonDossier jsonDossier = new JsonDossier(Objects.toString(dossier.identity()), Objects.toString(dossier.type() != null ? dossier.type().type() : "null"), Objects.toString(dossier.statut()), this.dateTimeConverter.format(dossier.dateDepot()), this.jsonPieceJointeFactory.toJson(dossier.cerfa()));
+        JsonDossier jsonDossier = new JsonDossier(Objects.toString(dossier.identity()), Objects.toString(dossier.type() != null ? dossier.type().type() : "null"), Objects.toString(dossier.statut()), this.dateTimeConverter.format(dossier.dateDepot()), this.jsonPieceJointeFactory.toJson(dossier.cerfa()), this.jsonProjetFactory.toJson(dossier.projet()));
         dossier.pieceJointes().forEach(pieceJointe -> this.ajouterPieceJointe(jsonDossier, pieceJointe));
         dossier.piecesAJoindre().forEach(numero -> this.ajouterPieceAJoindre(jsonDossier, numero));
+
         return jsonDossier;
     }
 
     private void ajouterPieceJointe(JsonDossier jsonDossier, PieceJointe pieceJointe){
         jsonDossier.addPieceJointe(this.jsonPieceJointeFactory.toJson(pieceJointe));
     }
+
 
     private void ajouterPieceAJoindre(JsonDossier jsonDossier, String numero){
         jsonDossier.addPieceJointe(numero);

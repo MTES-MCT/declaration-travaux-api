@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,16 +54,28 @@ public class TxImporterCerfaServiceTests {
     public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-        Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(), "application/pdf", file.length());
+        Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
+                "application/pdf", file.length());
         assertTrue(dossier.isPresent());
-        assertEquals(dossier.get().type().type(), TypesDossier.DP);
-        assertEquals(dossier.get().statut(), StatutDossier.DEPOSE);
-        assertEquals(dossier.get().dateDepot(), this.dateService.now());
+        assertTrue(dossier.get().identity().toString().startsWith(
+                TypesDossier.DP + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                        + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
+        assertEquals(TypesDossier.DP, dossier.get().type().type());
+        assertEquals(StatutDossier.DEPOSE, dossier.get().statut());
+        assertEquals(this.dateService.now(), dossier.get().dateDepot());
         assertNotNull(dossier.get().piecesAJoindre());
-        assertEquals(dossier.get().deposant().identity().toString(), this.deposantBeta.identity().toString());
+        assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
         assertEquals(new CodePieceJointe(TypesDossier.DP, "0"), dossier.get().cerfa().code());
+        assertFalse(dossier.get().projet().nature().nouvelleConstruction());
+        assertEquals("1", dossier.get().projet().localisation().adresse().numero());
+        assertEquals("Route de Kerrivaud", dossier.get().projet().localisation().adresse().voie());
+        assertEquals("", dossier.get().projet().localisation().adresse().lieuDit());
+        assertEquals("44500", dossier.get().projet().localisation().adresse().commune().codePostal());
+        assertEquals("", dossier.get().projet().localisation().adresse().bp());
+        assertEquals(1, dossier.get().projet().localisation().parcellesCadastrales().size());
+        assertEquals("000-CT-0099", dossier.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
     }
 
     @Test
@@ -70,15 +83,27 @@ public class TxImporterCerfaServiceTests {
     public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
-        Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(), "application/pdf", file.length());
+        Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
+                "application/pdf", file.length());
         assertTrue(dossier.isPresent());
-        assertEquals(dossier.get().type().type(), TypesDossier.PCMI);
-        assertEquals(dossier.get().statut(), StatutDossier.DEPOSE);
-        assertEquals(dossier.get().dateDepot(), this.dateService.now());
+        assertTrue(dossier.get().identity().toString().startsWith(
+                TypesDossier.PCMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                        + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
+        assertEquals(TypesDossier.PCMI, dossier.get().type().type());
+        assertEquals(StatutDossier.DEPOSE, dossier.get().statut());
+        assertEquals(this.dateService.now(), dossier.get().dateDepot());
         assertNotNull(dossier.get().piecesAJoindre());
-        assertEquals(dossier.get().deposant().identity().toString(), this.deposantBeta.identity().toString());
+        assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
         assertEquals(new CodePieceJointe(TypesDossier.PCMI, "0"), dossier.get().cerfa().code());
+        assertTrue(dossier.get().projet().nature().nouvelleConstruction());
+        assertEquals("1", dossier.get().projet().localisation().adresse().numero());
+        assertEquals("Rue des Dervallières", dossier.get().projet().localisation().adresse().voie());
+        assertEquals("", dossier.get().projet().localisation().adresse().lieuDit());
+        assertEquals("44100", dossier.get().projet().localisation().adresse().commune().codePostal());
+        assertEquals("", dossier.get().projet().localisation().adresse().bp());
+        assertEquals(1, dossier.get().projet().localisation().parcellesCadastrales().size());
+        assertEquals("000-LV-0040", dossier.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
     }
 }

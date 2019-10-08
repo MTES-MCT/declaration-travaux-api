@@ -42,7 +42,7 @@ public class DossierFactory {
             throw new IllegalArgumentException("Aucun type de dossier correspondant à type=" + type.toString());
         if (projet == null)
             throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
-        return new Dossier(this.dossierIdService.creer(type.toString(), projet.localisation().adresse().commune().department(), projet.localisation().adresse().commune().codePostal(), this.dateService.year()), deposant, StatutDossier.DEPOSE,
-                this.dateService.now(), typeDossier.orElseThrow());
+        return new Dossier(this.dossierIdService.creer(type.toString(), projet.localisation().adresse().commune()), deposant, StatutDossier.DEPOSE,
+                this.dateService.now(), typeDossier.orElseThrow(), projet);
     }
 }

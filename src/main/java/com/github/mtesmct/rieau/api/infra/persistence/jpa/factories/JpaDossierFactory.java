@@ -1,13 +1,16 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
 import java.util.Optional;
+import java.util.regex.PatternSyntaxException;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
@@ -36,19 +39,20 @@ public class JpaDossierFactory {
         if (!dossier.pieceJointes().isEmpty())
             dossier.pieceJointes().forEach(pieceJointe -> jpaDossier
                     .addPieceJointe(this.jpaPieceJointeFactory.toJpa(jpaDossier, pieceJointe)));
-        JpaProjet jpaProjet = jpaProjetFactory.toJpa(jpaDossier, dossier.projet());
         return jpaDossier;
     }
 
-    public Dossier fromJpa(JpaDossier jpaDossier) {
+    public Dossier fromJpa(JpaDossier jpaDossier, JpaProjet jpaProjet)
+            throws PatternSyntaxException, CommuneNotFoundException {
         if (jpaDossier.getDeposant() == null)
             throw new NullPointerException("Le déposant du dossier ne peut pas être nul.");
         Personne deposant = new Personne(jpaDossier.getDeposant().getId(), jpaDossier.getDeposant().getEmail());
         Optional<TypeDossier> type = this.typeDossierRepository.findByType(jpaDossier.getType());
         if (type.isEmpty())
             throw new NullPointerException("Le type de dossier ne peut pas être nul.");
+        Projet projet = this.jpaProjetFactory.fromJpa(jpaProjet);
         Dossier dossier = new Dossier(new DossierId(jpaDossier.getDossierId()), deposant, jpaDossier.getStatut(),
-                jpaDossier.getDateDepot(), type.get());
+                jpaDossier.getDateDepot(), type.get(), projet);
         if (!jpaDossier.getPiecesJointes().isEmpty())
             jpaDossier.getPiecesJointes().forEach(jpaPieceJointe -> this.ajouterPieceJointe(dossier, jpaPieceJointe));
         return dossier;

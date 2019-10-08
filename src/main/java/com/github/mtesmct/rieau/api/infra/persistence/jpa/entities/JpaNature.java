@@ -38,4 +38,9 @@ public class JpaNature {
     public int hashCode() {
         return Objects.hash(this.constructionNouvelle);
     }
+
+    @Override
+    public String toString() {
+        return "JpaNature [constructionNouvelle=" + constructionNouvelle + "]";
+    }
 }

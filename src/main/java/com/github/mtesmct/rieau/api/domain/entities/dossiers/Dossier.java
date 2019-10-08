@@ -100,9 +100,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     @Override
     public String toString() {
-        return "Dossier={ id={" + Objects.toString(this.id) + "}, deposant={" + Objects.toString(this.deposant) + "}, statut={"
-                + Objects.toString(this.statut) + "}, dateDepot={" + Objects.toString(this.dateDepot) + "}, type={"
-                + Objects.toString(this.type) + "} }";
+        return "Dossier={ id={" + Objects.toString(this.id) + "}, deposant={" + Objects.toString(this.deposant)
+                + "}, statut={" + Objects.toString(this.statut) + "}, dateDepot={" + Objects.toString(this.dateDepot)
+                + "}, type={" + Objects.toString(this.type) + "} }";
     }
 
     @Override
@@ -115,7 +115,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && Objects.equals(this.id, other.id);
     }
 
-    public Dossier(DossierId id, Personne deposant, StatutDossier statut, Date dateDepot, TypeDossier type) {
+    public Dossier(DossierId id, Personne deposant, StatutDossier statut, Date dateDepot, TypeDossier type,
+            Projet projet) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut pas être nul");
         this.id = id;
@@ -131,6 +132,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
         if (type == null)
             throw new NullPointerException("Le type du dossier ne peut pas être nul");
         this.type = type;
+        if (projet == null)
+            throw new NullPointerException("Le projet du dossier ne peut pas être nul");
+        this.projet = projet;
         this.piecesJointes = new ArrayList<PieceJointe>();
         this.piecesAJoindre = this.type.piecesAJoindre();
     }

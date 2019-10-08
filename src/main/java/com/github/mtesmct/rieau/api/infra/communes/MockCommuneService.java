@@ -12,7 +12,7 @@ public class MockCommuneService implements CommuneService {
 
     @Override
     public Optional<Commune> findByCodeCodePostal(String codePostal) {
-        return Optional.ofNullable(new Commune(codePostal, "test", "test"));
+        return Optional.ofNullable(new Commune(codePostal, codePostal, codePostal.substring(0, 1)));
     }
 
 }

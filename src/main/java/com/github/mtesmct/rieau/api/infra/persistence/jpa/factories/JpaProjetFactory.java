@@ -2,6 +2,7 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
@@ -15,13 +16,22 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class JpaProjetFactory {
 
     @Autowired
     private ProjetFactory projetFactory;
 
+    public String joining() {
+        return ",";
+    }
+
     public JpaProjet toJpa(JpaDossier jpaDossier, Projet projet) {
+        if (projet == null)
+            throw new NullPointerException("Le projet ne peut pas être nul.");
         if (projet.nature() == null)
             throw new NullPointerException("La nature du projet ne peut pas être nulle.");
         JpaNature jpaNature = new JpaNature(projet.nature().nouvelleConstruction());
@@ -31,8 +41,10 @@ public class JpaProjetFactory {
                 projet.localisation().adresse().voie(), projet.localisation().adresse().lieuDit(),
                 projet.localisation().adresse().commune().codePostal(), projet.localisation().adresse().bp(),
                 projet.localisation().adresse().cedex());
-        String parcelles = projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).reduce(",", String::join);
+        String parcelles = projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(joining()));
+        log.debug("parcelles={}", parcelles);
         JpaProjet jpaProjet = new JpaProjet(jpaDossier, jpaNature, jpaAdresse, parcelles);
+        log.debug("jpaProjet={}", jpaProjet);
         return jpaProjet;
     }
 
@@ -41,7 +53,7 @@ public class JpaProjetFactory {
             throw new NullPointerException("L'adresse du projet ne peut pas être nulle.");
         if (jpaProjet.getNature() == null)
             throw new NullPointerException("La nature du projet ne peut pas être nulle.");
-        String[] jpaParcelles = jpaProjet.getParcelles().split(",");
+        String[] jpaParcelles = jpaProjet.getParcelles().split(joining());
         if (jpaParcelles.length < 1)
             throw new NullPointerException("Le projet doit contenir au moins une parcelle cadastrale.");
         Optional<ParcelleCadastrale> parcelle = ParcelleCadastrale.parse(jpaParcelles[0]);

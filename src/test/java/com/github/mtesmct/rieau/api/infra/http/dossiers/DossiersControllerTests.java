@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,7 +102,9 @@ public class DossiersControllerTests {
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true);
-        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
+		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3","4","5"));
+		assertEquals(2, projet.localisation().parcellesCadastrales().size());
+		this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
 		dossier.ajouterCerfa(fichier.identity());
 		file = new File("src/test/fixtures/dummy.pdf");
 		fichier = this.fichierFactory.creer(file, "application/pdf");
@@ -154,7 +157,18 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.date", equalTo(this.dateConverter.format(this.dossier.dateDepot()))))
 				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$.piecesAJoindre", hasSize(1)))
-				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
+				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())))
+				.andExpect(jsonPath("$.projet.nouvelleConstruction", equalTo(this.dossier.projet().nature().nouvelleConstruction())))
+				.andExpect(jsonPath("$.projet.adresse.commune", equalTo(this.dossier.projet().localisation().adresse().commune().nom())))
+				.andExpect(jsonPath("$.projet.adresse.codePostal", equalTo(this.dossier.projet().localisation().adresse().commune().codePostal())))
+				.andExpect(jsonPath("$.projet.adresse.numero", equalTo(this.dossier.projet().localisation().adresse().numero())))
+				.andExpect(jsonPath("$.projet.adresse.voie", equalTo(this.dossier.projet().localisation().adresse().voie())))
+				.andExpect(jsonPath("$.projet.adresse.lieuDit", equalTo(this.dossier.projet().localisation().adresse().lieuDit())))
+				.andExpect(jsonPath("$.projet.adresse.bp", equalTo(this.dossier.projet().localisation().adresse().bp())))
+				.andExpect(jsonPath("$.projet.adresse.cedex", equalTo(this.dossier.projet().localisation().adresse().cedex())))
+				.andExpect(jsonPath("$.projet.adresse.parcelles").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$.projet.adresse.parcelles", hasSize(2)))
+				.andExpect(jsonPath("$.projet.adresse.parcelles", containsInAnyOrder(this.dossier.projet().localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).toArray(String[]::new))));
 	}
 
 	@Test

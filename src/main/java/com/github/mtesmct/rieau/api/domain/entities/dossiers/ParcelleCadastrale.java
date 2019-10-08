@@ -24,6 +24,10 @@ public class ParcelleCadastrale implements ValueObject<ParcelleCadastrale> {
         return this.numero;
     }
 
+    private static String joining() {
+        return "-";
+    }
+
     @Override
     public boolean hasSameValuesAs(ParcelleCadastrale other) {
         return other != null && Objects.equals(this.prefixe, other.prefixe)
@@ -42,12 +46,12 @@ public class ParcelleCadastrale implements ValueObject<ParcelleCadastrale> {
     }
 
     public String toFlatString() {
-        return this.prefixe + "-" + this.section + "-" + this.numero;
+        return this.prefixe + joining() + this.section + joining() + this.numero;
     }
 
     public static Optional<ParcelleCadastrale> parse(String text) throws PatternSyntaxException {
         Optional<ParcelleCadastrale> parcelle = Optional.empty();
-        String[] splitted = text.split("-");
+        String[] splitted = text.split(joining());
         if (splitted.length == 3) {
             parcelle = Optional.ofNullable(new ParcelleCadastrale(splitted[0], splitted[1], splitted[2]));
         }

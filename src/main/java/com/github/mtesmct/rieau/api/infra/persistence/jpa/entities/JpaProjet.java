@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
@@ -31,7 +30,6 @@ import lombok.Setter;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JpaProjet {
     @Id
-    @GeneratedValue
     private Long id;
     @Embedded
     @NotNull
@@ -69,7 +67,8 @@ public class JpaProjet {
         return Objects.hash(this.id);
     }
 
-    public JpaProjet(@NotNull JpaDossier dossier, @NotNull JpaNature nature, @NotNull JpaAdresse adresse, @NotBlank String parcelles) {
+    public JpaProjet(@NotNull JpaDossier dossier, @NotNull JpaNature nature, @NotNull JpaAdresse adresse,
+            @NotBlank String parcelles) {
         this.dossier = dossier;
         this.nature = nature;
         this.adresse = adresse;
@@ -77,6 +76,12 @@ public class JpaProjet {
     }
 
     public JpaProjet() {
+    }
+
+    @Override
+    public String toString() {
+        return "JpaProjet [adresse=" + adresse + ", dossier=" + dossier + ", id=" + id + ", nature=" + nature
+                + ", parcelles=" + parcelles + "]";
     }
 
 }
