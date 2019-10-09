@@ -33,7 +33,7 @@ docker-compose -f src/main/docker/docker-compose.yml up --build -d
 Exporter le realm de test avec les users:
 
 ```shell
-docker exec -it docker_keycloak_1 keycloak/bin/standalone.sh \
+docker exec -it keycloak keycloak/bin/standalone.sh \
 -Djboss.socket.binding.port-offset=100 \
 -Dkeycloak.migration.action=export \
 -Dkeycloak.migration.provider=dir \
@@ -45,7 +45,7 @@ docker exec -it docker_keycloak_1 keycloak/bin/standalone.sh \
 Importer le realm de test avec les users:
 
 ```shell
-docker exec -it docker_keycloak_1 keycloak/bin/standalone.sh \
+docker exec -it keycloak keycloak/bin/standalone.sh \
 -Djboss.socket.binding.port-offset=100 \
 -Dkeycloak.migration.action=import \
 -Dkeycloak.migration.provider=singleFile \
