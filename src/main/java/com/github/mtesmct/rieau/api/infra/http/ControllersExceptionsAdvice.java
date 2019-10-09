@@ -7,6 +7,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.infra.InfraPackageScan;
 
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,18 @@ public class ControllersExceptionsAdvice {
   @ExceptionHandler({ UserNotOwnerException.class })
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public UserNotOwnerException handleUserNotOwnerException(UserNotOwnerException e) {
+    return e;
+  }
+
+  @ExceptionHandler({ DeposantForbiddenException.class })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public DeposantForbiddenException handleDeposantForbiddenException(DeposantForbiddenException e) {
+    return e;
+  }
+
+  @ExceptionHandler({ MairieForbiddenException.class })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public MairieForbiddenException handleMairieForbiddenException(MairieForbiddenException e) {
     return e;
   }
 

@@ -75,7 +75,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
             throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         Dossier dossier;
         try {
-            this.authorizationService.isDeposantAndBetaAuthorized();
+            this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
             Fichier fichier = this.fichierFactory.creer(is, nom, mimeType, taille);
             this.fichierService.save(fichier);
             Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());

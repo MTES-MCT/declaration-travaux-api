@@ -17,10 +17,11 @@ public class CommonHttpConfigurer extends AbstractHttpConfigurer<CommonHttpConfi
                 .authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.GET, DossiersController.ROOT_URI + "/**")
-                .hasRole(Roles.DEPOSANT).antMatchers(HttpMethod.POST, DossiersController.ROOT_URI + "/**")
+                .hasAnyRole(Roles.DEPOSANT, Roles.MAIRIE)
+                .antMatchers(HttpMethod.POST, DossiersController.ROOT_URI + "/**")
                 .hasRole(Roles.BETA)
                 .antMatchers(HttpMethod.GET, FichiersController.ROOT_URI + "/**")
-                .hasRole(Roles.DEPOSANT)
+                .hasAnyRole(Roles.DEPOSANT, Roles.MAIRIE)
                 .antMatchers(HttpMethod.GET, FichiersController.ROOT_URI + "/**")
                 .hasRole(Roles.BETA)
                 .anyRequest().denyAll();

@@ -24,6 +24,8 @@ public class JpaProjetFactory {
 
     @Autowired
     private ProjetFactory projetFactory;
+    @Autowired
+    private JpaAdresseFactory jpaAdresseFactory;
 
     public String joining() {
         return ",";
@@ -37,10 +39,7 @@ public class JpaProjetFactory {
         JpaNature jpaNature = new JpaNature(projet.nature().nouvelleConstruction());
         if (projet.localisation() == null)
             throw new NullPointerException("La localisation du projet ne peut pas être nulle.");
-        JpaAdresse jpaAdresse = new JpaAdresse(projet.localisation().adresse().numero(),
-                projet.localisation().adresse().voie(), projet.localisation().adresse().lieuDit(),
-                projet.localisation().adresse().commune().codePostal(), projet.localisation().adresse().bp(),
-                projet.localisation().adresse().cedex());
+        JpaAdresse jpaAdresse = this.jpaAdresseFactory.toJpa(projet.localisation().adresse());
         String parcelles = projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(joining()));
         log.debug("parcelles={}", parcelles);
         JpaProjet jpaProjet = new JpaProjet(jpaDossier, jpaNature, jpaAdresse, parcelles, projet.localisation().lotissement());

@@ -18,6 +18,9 @@ public class SystemDateService implements DateService {
     @Qualifier("dateTimeConverter")
     private DateConverter dateTimeConverter;
     @Autowired
+    @Qualifier("dateConverter")
+    private DateConverter dateConverter;
+    @Autowired
     @Qualifier("yearConverter")
     private DateConverter yearConverter;
 
@@ -38,6 +41,11 @@ public class SystemDateService implements DateService {
     @Override
     public String year() {
         return this.yearConverter.format(this.date);
+    }
+
+    @Override
+    public Date parse(String texte){
+        return this.dateConverter.parse(texte);
     }
 
 }

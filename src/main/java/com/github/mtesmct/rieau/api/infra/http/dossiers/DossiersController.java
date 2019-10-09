@@ -9,13 +9,13 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterMonDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
-import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerMesDossiersService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerDossiersService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +40,9 @@ public class DossiersController {
 	@Autowired
 	private TxAjouterPieceJointeService ajouterPieceJointeService;
 	@Autowired
-	private TxListerMesDossiersService listerMesDossiersService;
+	private TxListerDossiersService listerDossiersService;
 	@Autowired
-	private TxConsulterMonDossierService consulterMonDossierService;
+	private TxConsulterDossierService consulterDossierService;
 	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;
@@ -51,9 +51,9 @@ public class DossiersController {
 	private JsonDossierFactory jsonDossierFactory;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantNonAutoriseException,
+	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantForbiddenException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-		Optional<Dossier> dossier = this.consulterMonDossierService.execute(id);
+		Optional<Dossier> dossier = this.consulterDossierService.execute(id);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
 			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
@@ -63,7 +63,7 @@ public class DossiersController {
 	@GetMapping
 	List<JsonDossier> lister() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		List<JsonDossier> dossiers = new ArrayList<JsonDossier>();
-		this.listerMesDossiersService.execute().forEach(dossier -> this.addJsonDossier(dossiers, dossier));
+		this.listerDossiersService.execute().forEach(dossier -> this.addJsonDossier(dossiers, dossier));
 		return dossiers;
 	}
 
@@ -83,7 +83,7 @@ public class DossiersController {
 
 	@PostMapping(path = "/{id}/piecesjointes/{numero}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
-			@RequestParam("file") MultipartFile file) throws IOException, DeposantNonAutoriseException,
+			@RequestParam("file") MultipartFile file) throws IOException, DeposantForbiddenException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(),
 				file.getOriginalFilename(), file.getContentType(), file.getSize());

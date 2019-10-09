@@ -7,6 +7,7 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,5 +45,15 @@ public class MockUsersConfig {
             throw new NullPointerException("Le bean de l'utilisateur instructeur non beta ne peut être instantié car le user service ne le trouve pas.");
         return instructeurNonBeta.get();
     }
+
+    @Bean
+    @Qualifier("mairieBeta")
+    public Personne mairieBeta(){
+        Optional<Personne> mairieBeta = this.userService.findUserById(WithMairieBetaDetails.ID);
+        if (mairieBeta.isEmpty())
+            throw new NullPointerException("Le bean de l'utilisateur mairie beta ne peut être instantié car le user service ne le trouve pas.");
+        return mairieBeta.get();
+    }
+
 
 }

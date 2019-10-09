@@ -5,9 +5,9 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.application.dossiers.ApplicationConsulterMonDossierService;
-import com.github.mtesmct.rieau.api.application.dossiers.ConsulterMonDossierService;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
+import com.github.mtesmct.rieau.api.application.dossiers.ApplicationConsulterDossierService;
+import com.github.mtesmct.rieau.api.application.dossiers.ConsulterDossierService;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class TxConsulterMonDossierService implements ConsulterMonDossierService {
+public class TxConsulterDossierService implements ConsulterDossierService {
 
     @Autowired
-    private ApplicationConsulterMonDossierService applicationConsulterMonDossierService;
+    private ApplicationConsulterDossierService applicationConsulterDossierService;
 
     @Override
     public Optional<Dossier> execute(String id)
-            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-        return this.applicationConsulterMonDossierService.execute(id);
+            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+        return this.applicationConsulterDossierService.execute(id);
     }    
 }

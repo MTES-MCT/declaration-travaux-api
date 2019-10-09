@@ -7,6 +7,6 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 
-public interface ListerMesDossiersService {
+public interface ListerDossiersService {
     public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException;
 }

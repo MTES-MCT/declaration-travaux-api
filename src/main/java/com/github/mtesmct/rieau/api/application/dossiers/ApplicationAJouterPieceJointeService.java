@@ -11,7 +11,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
@@ -53,7 +53,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
     public Optional<PieceJointe> execute(DossierId id, String numero, InputStream is, String nom, String mimeType, long taille)
             throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException {
-        this.authorizationService.isDeposantAndBetaAuthorized();
+        this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         if (numero.equals("0"))
             throw new AjouterPieceJointeException(new NumeroPieceJointeException());
         Optional<PieceJointe> pieceJointe = Optional.empty();
@@ -68,7 +68,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
                 throw new AjouterPieceJointeException(new DossierNotFoundException(id.toString()));
             if (!dossier.get().deposant().identity().equals(this.authenticationService.user().get().identity()))
                 throw new AjouterPieceJointeException(
-                        new DeposantNonAutoriseException(this.authenticationService.user().get()));
+                        new DeposantForbiddenException(this.authenticationService.user().get()));
             pieceJointe = dossier.get().ajouter(numero, fichier.identity());
             this.dossierRepository.save(dossier.get());
             fichierLu.get().fermer();

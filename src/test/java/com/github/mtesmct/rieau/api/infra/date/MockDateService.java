@@ -11,17 +11,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
-@ConditionalOnProperty(value = {"app.datetime.mock","app.year.mock"})
+@ConditionalOnProperty(value = { "app.datetime.mock", "app.year.mock" })
 public class MockDateService implements DateService {
-    
+
     @Autowired
     @Qualifier("dateTimeConverter")
     private DateConverter dateTimeConverter;
+    @Autowired
+    @Qualifier("dateConverter")
+    private DateConverter dateConverter;
 
     @Value("${app.datetime.mock}")
     private String dateString;
     @Value("${app.year.mock}")
     private String yearString;
+
 
     @Override
     public Date now() {
@@ -36,6 +40,11 @@ public class MockDateService implements DateService {
     @Override
     public String year() {
         return this.yearString;
+    }
+
+    @Override
+    public Date parse(String texte){
+        return this.dateConverter.parse(texte);
     }
 
 }

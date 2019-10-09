@@ -37,7 +37,7 @@ public class JpaPersonneRepositoryTests {
     
     @Test
 	public void findByPersonneIdTest() throws Exception {
-		JpaPersonne jpaPersonne = new JpaPersonne("insee_01", "toto@tata.fr");
+		JpaPersonne jpaPersonne = new JpaPersonne("insee_01", "toto@tata.fr", "44100");
 		this.entityManager.persistAndFlush(jpaPersonne);
 		Optional<Personne> personne = this.personneRepository.findByPersonneId(jpaPersonne.getPersonneId());
 		assertTrue(personne.isPresent());

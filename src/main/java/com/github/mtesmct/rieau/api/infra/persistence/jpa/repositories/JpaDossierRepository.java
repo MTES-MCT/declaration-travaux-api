@@ -73,6 +73,19 @@ public class JpaDossierRepository implements DossierRepository {
     }
 
     @Override
+    public List<Dossier> findByCommune(String commune) {
+        List<Dossier> dossiers = new ArrayList<Dossier>();
+        this.jpaSpringDossierRepository.findAllByProjetAdresseCodePostal(commune).forEach(jpaDossier -> {
+            try {
+                dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier, findJpaProjet(jpaDossier)));
+            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+                log.debug("{}", e);
+            }
+        });
+        return dossiers;
+    }
+
+    @Override
     public Dossier save(Dossier dossier) {
         JpaDossier jpaDossierAfter = this.jpaDossierFactory.toJpa(dossier);
         JpaProjet jpaProjetAfter = this.jpaProjetFactory.toJpa(jpaDossierAfter, dossier.projet());

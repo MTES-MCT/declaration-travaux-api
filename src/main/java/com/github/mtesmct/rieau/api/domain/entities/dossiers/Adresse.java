@@ -56,17 +56,9 @@ public class Adresse implements ValueObject<Adresse> {
     }
 
     public Adresse(String numero, String voie, String lieuDit, Commune commune, String bp, String cedex) {
-        if (Objects.isNull(numero))
-            throw new NullPointerException("Le numero de l'adresse ne peut pas être nul");
         this.numero = numero;
-        if (Objects.isNull(voie))
-            throw new NullPointerException("La voie de l'adresse ne peut pas être nul");
         this.voie = voie;
-        if (Objects.isNull(lieuDit))
-            throw new NullPointerException("Le lieu dit de l'adresse ne peut pas être nul");
         this.lieuDit = lieuDit;
-        if (Objects.isNull(numero))
-            throw new NullPointerException("La commune de l'adresse ne peut pas être nulle");
         this.commune = commune;
         this.bp = bp;
         this.cedex = cedex;

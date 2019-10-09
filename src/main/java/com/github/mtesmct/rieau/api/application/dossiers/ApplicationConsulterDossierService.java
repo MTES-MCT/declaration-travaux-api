@@ -8,19 +8,20 @@ import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 
 @ApplicationService
-public class ApplicationConsulterMonDossierService implements ConsulterMonDossierService {
+public class ApplicationConsulterDossierService implements ConsulterDossierService {
 
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
 
-    public ApplicationConsulterMonDossierService(AuthenticationService authenticationService,
+    public ApplicationConsulterDossierService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
@@ -34,17 +35,20 @@ public class ApplicationConsulterMonDossierService implements ConsulterMonDossie
     }
 
     @Override
-    public Optional<Dossier> execute(String id)
-            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-        this.authorizationService.isDeposantAndBetaAuthorized();
+    public Optional<Dossier> execute(String id) throws DeposantForbiddenException, AuthRequiredException,
+            UserForbiddenException, UserInfoServiceException {
+        this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id);
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
         if (!dossier.isEmpty() && dossier.get().deposant() == null)
             throw new NullPointerException("Le déposant du dossier ne peut pas être nul");
-        if (!dossier.isEmpty() && !dossier.get().deposant().equals(user.get()))
-            throw new DeposantNonAutoriseException(user.get());
+        if (this.authenticationService.isDeposant() && !dossier.isEmpty() && !dossier.get().deposant().equals(user.get()))
+            throw new DeposantForbiddenException(user.get());
+        if (this.authenticationService.isMairie() && !dossier.isEmpty()
+                && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
+            throw new MairieForbiddenException(user.get());
         return dossier;
     }
 }

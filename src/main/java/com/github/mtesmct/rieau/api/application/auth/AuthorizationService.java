@@ -13,12 +13,12 @@ public class AuthorizationService {
         this.authenticationService = authenticationService;
     }
 
-    public void isDeposantAndBetaAuthorized() throws AuthRequiredException, UserForbiddenException {
+    public void isDeposantOrMairieAndBetaAuthorized() throws AuthRequiredException, UserForbiddenException {
         if (!this.authenticationService.isAuthenticaed())
             throw new AuthRequiredException();
-        if (!this.authenticationService.isDeposant())
-            throw new UserForbiddenException(Roles.DEPOSANT);
+        if (!this.authenticationService.isDeposant() && !this.authenticationService.isMairie())
+            throw new UserForbiddenException(new String[]{Roles.DEPOSANT, Roles.MAIRIE});
         if (!this.authenticationService.isBeta())
-            throw new UserForbiddenException(Roles.BETA);
+            throw new UserForbiddenException(new String[]{Roles.BETA});
     }
 }

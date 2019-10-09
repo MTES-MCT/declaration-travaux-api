@@ -85,7 +85,7 @@ public class JpaDossierRepositoryTests {
 
 	@BeforeEach
 	public void setUp() throws CommuneNotFoundException {
-		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email());
+		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email(), "44100");
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true, true);
 		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3","4","5"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());

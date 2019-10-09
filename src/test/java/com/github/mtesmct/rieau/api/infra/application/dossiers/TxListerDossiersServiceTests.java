@@ -17,6 +17,7 @@ import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +33,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class TxListerMesDossiersServiceTests {
+public class TxListerDossiersServiceTests {
     @Autowired
     private DossierRepository dossierRepository;
 
     @Autowired
-    private TxListerMesDossiersService listerMesDossiersService;
+    private TxListerDossiersService listerDossiersService;
     @Autowired
     private DateService dateService;
     @Autowired
@@ -63,13 +64,24 @@ public class TxListerMesDossiersServiceTests {
 
     @Test
     @WithDeposantBetaDetails
-    public void executeTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-        assertNotNull(this.listerMesDossiersService);
-        assertFalse(this.listerMesDossiersService.execute().isEmpty());
-        assertEquals(this.listerMesDossiersService.execute().size(), 1);
-        assertNotNull(this.listerMesDossiersService.execute().get(0));
-        assertEquals(this.listerMesDossiersService.execute().get(0).identity(), this.dossier.identity());
-        assertEquals(this.listerMesDossiersService.execute().get(0).statut(), this.dossier.statut());
-        assertEquals(this.listerMesDossiersService.execute().get(0).dateDepot().compareTo(this.dateService.now()), 0);
+    public void executeDeposantTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+        assertNotNull(this.listerDossiersService);
+        assertFalse(this.listerDossiersService.execute().isEmpty());
+        assertEquals(this.listerDossiersService.execute().size(), 1);
+        assertNotNull(this.listerDossiersService.execute().get(0));
+        assertEquals(this.listerDossiersService.execute().get(0).identity(), this.dossier.identity());
+        assertEquals(this.listerDossiersService.execute().get(0).statut(), this.dossier.statut());
+        assertEquals(this.listerDossiersService.execute().get(0).dateDepot().compareTo(this.dateService.now()), 0);
+    }
+    @Test
+    @WithMairieBetaDetails
+    public void executeMairieTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+        assertNotNull(this.listerDossiersService);
+        assertFalse(this.listerDossiersService.execute().isEmpty());
+        assertEquals(this.listerDossiersService.execute().size(), 1);
+        assertNotNull(this.listerDossiersService.execute().get(0));
+        assertEquals(this.listerDossiersService.execute().get(0).identity(), this.dossier.identity());
+        assertEquals(this.listerDossiersService.execute().get(0).statut(), this.dossier.statut());
+        assertEquals(this.listerDossiersService.execute().get(0).dateDepot().compareTo(this.dateService.now()), 0);
     }
 }

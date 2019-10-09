@@ -3,6 +3,8 @@ package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 import java.util.EnumMap;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
@@ -26,7 +28,8 @@ public class InMemoryTypeDossierRepository implements TypeDossierRepository {
         return Optional.ofNullable(this.types.get(type));
     }
 
-    public InMemoryTypeDossierRepository() {        
+    @PostConstruct
+    public void initTypes() {        
         this.types = new EnumMap<>(TypesDossier.class);
         this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406"));
         this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703"));

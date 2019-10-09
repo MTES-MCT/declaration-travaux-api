@@ -28,7 +28,8 @@ public class BasicSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication().withUser(MockUsers.JEAN_MARTIN).password(MockUsers.JEAN_MARTIN)
                 .roles(Roles.DEPOSANT, Roles.BETA).and().withUser(MockUsers.CLAIRE_DENIS)
                 .password(MockUsers.CLAIRE_DENIS).roles(Roles.DEPOSANT, Roles.BETA).and().withUser(MockUsers.JACQUES_DUPONT)
-                .password(MockUsers.JACQUES_DUPONT).roles(Roles.INSTRUCTEUR);
+                .password(MockUsers.JACQUES_DUPONT).roles(Roles.INSTRUCTEUR).and().withUser(MockUsers.MADAME_LE_MAIRE)
+                .password(MockUsers.MADAME_LE_MAIRE).roles(Roles.MAIRIE, Roles.BETA);
     }
 
     @Override

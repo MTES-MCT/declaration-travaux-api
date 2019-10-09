@@ -36,6 +36,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
@@ -61,7 +62,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DossiersControllerTests {
 
@@ -94,6 +94,9 @@ public class DossiersControllerTests {
 	@Autowired
 	@Qualifier("deposantBeta")
 	private Personne deposantBeta;
+	@Autowired
+	@Qualifier("autreDeposantBeta")
+	private Personne autreDeposantBeta;
 
 	@BeforeEach
 	public void setup() throws IOException, CommuneNotFoundException {
@@ -120,7 +123,37 @@ public class DossiersControllerTests {
 	}
 
 	@Test
-	public void listerTest() throws Exception {
+	@WithDeposantBetaDetails
+	public void listerDeposantTest() throws Exception {
+		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
+				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
+				.andExpect(jsonPath("$[0].statut", equalTo(this.dossier.statut().toString())))
+				.andExpect(jsonPath("$[0].date", equalTo(this.dateConverter.format((this.dossier.dateDepot())))))
+				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
+				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(2)))
+				.andExpect(jsonPath("$[0].piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
+	}
+	@Test
+	@WithMairieBetaDetails
+	public void listerMairieTest() throws Exception {
+		File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
+		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+		this.fichierService.save(fichier);
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44500", "BP 44", "Cedex 01", new ParcelleCadastrale("1","2","3"), true, true);
+		projet.localisation().ajouterParcelle(new ParcelleCadastrale("4","5","6"));
+		assertEquals(2, projet.localisation().parcellesCadastrales().size());
+		Dossier dossier = this.dossierFactory.creer(this.autreDeposantBeta, TypesDossier.PCMI, projet);
+		dossier.ajouterCerfa(fichier.identity());
+		file = new File("src/test/fixtures/dummy.pdf");
+		fichier = this.fichierFactory.creer(file, "application/pdf");
+		this.fichierService.save(fichier);
+		this.pieceJointe = dossier.ajouter("1", fichier.identity());
+		assertTrue(this.pieceJointe.isPresent());
+		dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
@@ -147,6 +180,7 @@ public class DossiersControllerTests {
 	}
 
 	@Test
+	@WithDeposantBetaDetails
 	public void consulterTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.dossier.identity().toString()).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -173,6 +207,7 @@ public class DossiersControllerTests {
 	}
 
 	@Test
+	@WithDeposantBetaDetails
 	public void ajouterCerfaAutoriseTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
@@ -182,6 +217,7 @@ public class DossiersControllerTests {
 	}
 
 	@Test
+	@WithDeposantBetaDetails
 	public void ajouterCerfaIncorrectExceptionTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
@@ -202,6 +238,7 @@ public class DossiersControllerTests {
 	}
 
 	@Test
+	@WithDeposantBetaDetails
 	public void ajouterPieceJointeAutoriseTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());

@@ -6,4 +6,5 @@ public interface DateService {
     public Date now();
     public String year();
     public String nowText();
+    public Date parse(String texte);
 }

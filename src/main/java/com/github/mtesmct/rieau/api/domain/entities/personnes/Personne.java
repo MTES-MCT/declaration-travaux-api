@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
 
 public class Personne implements Entity<Personne, PersonneId> {
     public static final String EMAIL_REGEXP = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
@@ -13,6 +14,7 @@ public class Personne implements Entity<Personne, PersonneId> {
     private String nom;
     private String prenom;
     private Naissance naissance;
+    private Adresse adresse;
 
     public String email() {
         return this.email;
@@ -34,11 +36,15 @@ public class Personne implements Entity<Personne, PersonneId> {
         return this.naissance;
     }
 
+    public Adresse adresse() {
+        return this.adresse;
+    }
+
     @Override
     public String toString() {
         return "Personne={ id={" + Objects.toString(this.id) + "}, prenom={" + this.prenom + "}, nom={" + this.nom
                 + "}, sexe={" + Objects.toString(this.sexe) + "}, email={" + this.email + "}, naissance={"
-                + Objects.toString(this.naissance) + "} }";
+                + Objects.toString(this.naissance) + "}, adresse={" + Objects.toString(this.adresse) + "} }";
     }
 
     @Override
@@ -72,13 +78,14 @@ public class Personne implements Entity<Personne, PersonneId> {
         this.email = email;
     }
 
-    public Personne(final String personneId, String email, String nom, String prenom, Sexe sexe, Naissance naissance) {
+    public Personne(final String personneId, String email, String nom, String prenom, Sexe sexe, Naissance naissance, Adresse adresse) {
         this(personneId, email);
         this.email = email;
         this.nom = nom;
         this.prenom = prenom;
         this.sexe = sexe;
         this.naissance = naissance;
+        this.adresse = adresse;
     }
 
     @Override

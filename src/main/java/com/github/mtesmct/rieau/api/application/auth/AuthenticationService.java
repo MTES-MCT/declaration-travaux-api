@@ -8,6 +8,7 @@ public interface AuthenticationService {
     public boolean isAuthenticaed();
     public boolean isDeposant();
     public boolean isInstructeur();
+    public boolean isMairie();
     public boolean isBeta();
     public Optional<Personne> user() throws UserInfoServiceException;
 }

@@ -28,12 +28,16 @@ public class JpaAdresse {
     private String codePostal;
 
     public JpaAdresse(String numero, String voie, String lieuDit, @NotNull String codePostal, String bp, String cedex) {
-        this.codePostal = codePostal;
+        this(codePostal);
         this.numero = numero;
         this.voie = voie;
         this.lieuDit = lieuDit;
         this.bp = bp;
         this.cedex = cedex;
+    }
+
+    public JpaAdresse(@NotNull String codePostal) {
+        this.codePostal = codePostal;
     }
 
     public JpaAdresse() {

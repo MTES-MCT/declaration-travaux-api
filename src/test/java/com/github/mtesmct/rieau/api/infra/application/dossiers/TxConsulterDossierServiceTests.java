@@ -14,7 +14,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantNonAutoriseException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
@@ -24,6 +24,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,14 +40,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class TxConsulterMonDossierServiceTests {
+public class TxConsulterDossierServiceTests {
     @MockBean
     private DossierRepository dossierRepository;
 
     @Autowired
-    private TxConsulterMonDossierService consulterMonDossierService;
+    private TxConsulterDossierService consulterDossierService;
     @Autowired
     private DossierFactory dossierFactory;
     @Autowired
@@ -90,22 +90,32 @@ public class TxConsulterMonDossierServiceTests {
 
     @Test
     @WithDeposantBetaDetails
-    public void executeTest()
-            throws DeposantNonAutoriseException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+    public void executeDeposantTest()
+            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        Optional<Dossier> dossierTrouve = this.consulterMonDossierService.execute(this.dossier.identity().toString());
+        Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
+        assertTrue(dossierTrouve.isPresent());
+        assertEquals(this.dossier, dossierTrouve.get());
+    }
+
+    @Test
+    @WithMairieBetaDetails
+    public void executeMairieTest()
+            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
+        Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
         assertTrue(dossierTrouve.isPresent());
         assertEquals(this.dossier, dossierTrouve.get());
     }
     
     @Test
     @WithDeposantBetaDetails
-    public void executeAutreDossierTestInterdit() throws Exception {
+    public void executeDeposantAutreDossierTestInterdit() throws Exception {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
         assertNotNull(this.otherDossier.deposant());
         Optional<Personne> user = this.authenticationService.user();
         assertTrue(user.isPresent());
         assertFalse(this.otherDossier.deposant().equals(user.get()));
-        assertThrows(DeposantNonAutoriseException.class, () -> this.consulterMonDossierService.execute(this.otherDossier.identity().toString()));
+        assertThrows(DeposantForbiddenException.class, () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
     }
 }

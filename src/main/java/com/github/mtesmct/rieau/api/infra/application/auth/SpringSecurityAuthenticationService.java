@@ -40,6 +40,12 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
+    public boolean isMairie() {
+        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.MAIRIE)).findAny().isPresent() : false;
+    }
+
+    @Override
     public boolean isBeta() {
         return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
                 .filter(a -> a.getAuthority().equals("ROLE_" + Roles.BETA)).findAny().isPresent() : false;

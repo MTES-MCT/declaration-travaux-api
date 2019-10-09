@@ -10,4 +10,8 @@ public class UserInfoServiceException extends Exception {
     public UserInfoServiceException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public UserInfoServiceException(Throwable cause) {
+        super(cause);
+    }
 }

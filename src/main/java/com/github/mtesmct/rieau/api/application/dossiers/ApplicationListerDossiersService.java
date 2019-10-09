@@ -1,5 +1,6 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,13 +15,13 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 
 @ApplicationService
-public class ApplicationListerMesDossiersService implements ListerMesDossiersService {
+public class ApplicationListerDossiersService implements ListerDossiersService {
 
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
 
-    public ApplicationListerMesDossiersService(AuthenticationService authenticationService,
+    public ApplicationListerDossiersService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
@@ -35,10 +36,17 @@ public class ApplicationListerMesDossiersService implements ListerMesDossiersSer
 
     @Override
     public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
-        this.authorizationService.isDeposantAndBetaAuthorized();
+        this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new IllegalArgumentException("L'utilisateur connecté est vide");
-        return this.dossierRepository.findByDeposantId(this.authenticationService.user().get().identity().toString());
+        List<Dossier> dossiers = new ArrayList<Dossier>();
+        if (this.authenticationService.isDeposant())
+            dossiers = this.dossierRepository
+                    .findByDeposantId(this.authenticationService.user().get().identity().toString());
+        if (this.authenticationService.isMairie())
+            dossiers = this.dossierRepository
+                    .findByCommune(this.authenticationService.user().get().adresse().commune().codePostal());
+        return dossiers;
     }
 }

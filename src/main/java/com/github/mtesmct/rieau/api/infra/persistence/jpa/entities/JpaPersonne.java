@@ -37,6 +37,7 @@ public class JpaPersonne {
     @GeneratedValue
     private Long id;
     @NaturalId
+    @NotNull
     @Column(name = "personne_id", nullable = false, unique = true)
     private String personneId;
     @Email(regexp = Personne.EMAIL_REGEXP)
@@ -54,6 +55,15 @@ public class JpaPersonne {
     @AttributeOverrides({ @AttributeOverride(name = "date", column = @Column(name = "date_naissance")),
             @AttributeOverride(name = "commune", column = @Column(name = "commune_naissance")) })
     private JpaNaissance naissance;
+    @Embedded
+    @NotNull
+    @AttributeOverrides({ @AttributeOverride(name = "voie", column = @Column(name = "adresse_voie")),
+            @AttributeOverride(name = "numero", column = @Column(name = "adresse_numero")),
+            @AttributeOverride(name = "lieu_dit", column = @Column(name = "adresse_lieu_dit")),
+            @AttributeOverride(name = "code_postal", column = @Column(name = "adresse_code_postal")),
+            @AttributeOverride(name = "bp", column = @Column(name = "adresse_bp")),
+            @AttributeOverride(name = "cedex", column = @Column(name = "adresse_cedex")) })
+    private JpaAdresse adresse;
 
     @Override
     public boolean equals(Object o) {
@@ -73,18 +83,28 @@ public class JpaPersonne {
     public JpaPersonne() {
     }
 
-    public JpaPersonne(String personneId, @Email(regexp = Personne.EMAIL_REGEXP) @NotNull String email, Sexe sexe,
-            String nom, String prenom, JpaNaissance naissance) {
-        this(personneId, email);
+    public JpaPersonne(
+        @NotNull String personneId, @Email(regexp = Personne.EMAIL_REGEXP) @NotNull String email, Sexe sexe,
+            String nom, String prenom, JpaNaissance naissance, JpaAdresse adresse) {
+        this(personneId, email, adresse);
         this.sexe = sexe;
         this.nom = nom;
         this.prenom = prenom;
         this.naissance = naissance;
+        this.adresse = adresse;
     }
 
-    public JpaPersonne(String personneId, @Email(regexp = Personne.EMAIL_REGEXP) @NotNull String email) {
+    public JpaPersonne(String personneId, @Email(regexp = Personne.EMAIL_REGEXP) @NotNull String email, @NotNull String codePostal) {
         this();
         this.personneId = personneId;
         this.email = email;
+        this.adresse = new JpaAdresse(codePostal);
+    }
+
+    public JpaPersonne(String personneId, @Email(regexp = Personne.EMAIL_REGEXP) @NotNull String email, @NotNull JpaAdresse adresse) {
+        this();
+        this.personneId = personneId;
+        this.email = email;
+        this.adresse = adresse;
     }
 }
