@@ -1,5 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
+import java.util.Map;
+
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
@@ -16,7 +18,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,21 +43,27 @@ public class KeycloakUserInfoService implements UserInfoService {
                 AccessToken accessToken = keycloakSecurityContext.getToken();
                 if (accessToken == null)
                         throw new UserInfoServiceException("accessToken is null");
-                Sexe sexe = Sexe.valueOf(accessToken.getGender());
+                Sexe sexe = null;
+                if (accessToken.getGender() != null)
+                        sexe = Sexe.valueOf(accessToken.getGender());
                 Personne user;
-                if (token.getAccount().getRoles().contains(Roles.MAIRIE))
-                        if (StringUtils.isEmpty(accessToken.getAddress().getPostalCode()))
+                Map<String, Object> otherClaims = accessToken.getOtherClaims();
+                log.debug("otherClaims={}", otherClaims);
+                if (token.getAccount().getRoles().contains(Roles.MAIRIE)) {
+                        if (!otherClaims.containsKey("codePostal") || (String) accessToken.getOtherClaims().get("codePostal") == null
+                                        || ((String) accessToken.getOtherClaims().get("codePostal")).isBlank())
                                 throw new UserInfoServiceException(
                                                 "L'utilisateur doit avoir un code postal de renseigné dans son profil {"
                                                                 + Roles.MAIRIE + "}");
+                }
                 try {
                         user = this.personneFactory.creer(accessToken.getPreferredUsername(), accessToken.getEmail(),
                                         sexe, accessToken.getFamilyName(), accessToken.getGivenName(),
                                         accessToken.getBirthdate(),
                                         (String) accessToken.getOtherClaims().get("birthPostalCode"),
-                                        accessToken.getAddress().getPostalCode(),
+                                        (String) accessToken.getOtherClaims().get("codePostal"),
                                         (String) accessToken.getOtherClaims().get("numero"),
-                                        accessToken.getAddress().getStreetAddress(),
+                                        (String) accessToken.getOtherClaims().get("voie"),
                                         (String) accessToken.getOtherClaims().get("lieuDit"),
                                         (String) accessToken.getOtherClaims().get("bp"),
                                         (String) accessToken.getOtherClaims().get("cedex"));

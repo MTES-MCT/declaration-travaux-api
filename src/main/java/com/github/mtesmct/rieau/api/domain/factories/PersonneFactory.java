@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
@@ -33,10 +32,10 @@ public class PersonneFactory {
         if (personneId == null)
             throw new NullPointerException("L'id de la personne ne peut pas être nul.");
         Naissance naissance = null;
-        if (!Objects.equals(dateNaissance, "null"))
+        if (dateNaissance != null)
             naissance = new Naissance(this.dateService.parse(dateNaissance), communeNaissance);
         Adresse adresse = null;
-        if (!Objects.equals(codePostal, "null")) {
+        if (codePostal != null) {
             Optional<Commune> commune = this.communeService.findByCodeCodePostal(codePostal);
             if (commune.isEmpty())
                 throw new CommuneNotFoundException(codePostal);

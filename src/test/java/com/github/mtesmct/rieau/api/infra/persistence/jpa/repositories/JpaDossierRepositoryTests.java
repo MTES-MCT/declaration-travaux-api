@@ -169,6 +169,23 @@ public class JpaDossierRepositoryTests {
 		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
 		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
 	}
+	@Test
+	public void findByCommuneTest() throws Exception {
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
+				new Date(this.dateService.now().getTime()),
+				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
+		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
+				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
+		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
+		List<Dossier> dossiers = this.repository.findByCommune("codePostal");
+		assertFalse(dossiers.isEmpty());
+		assertEquals(dossiers.size(), 1);
+		assertEquals(dossiers.get(0).identity().toString(), jpaDossier.getDossierId());
+		assertEquals(dossiers.get(0).statut(), jpaDossier.getStatut());
+		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
+		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
+	}
 
 	@Test
 	public void isDeposantOwnerTest() throws Exception {

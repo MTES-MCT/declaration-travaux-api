@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -25,6 +25,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.JsonDossier;
@@ -74,7 +75,8 @@ public class DossiersControllerIT {
 	private KeycloakTestsHelper keycloakTestsHelper;
 	@LocalServerPort
 	private int serverPort;
-	private String accessToken;
+	private String deposantAccessToken;
+	private String mairieAccessToken;
 	private String forbiddenToken;
 	private String invalidToken = "invalid-token";
 
@@ -95,17 +97,29 @@ public class DossiersControllerIT {
 		assertEquals(deposantBeta.identity(), dossier.deposant().identity());
 		dp1 = new File("src/test/fixtures/dummy.pdf");
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-		this.accessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
+		this.deposantAccessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
 				WithDeposantBetaDetails.ID);
+		this.mairieAccessToken = this.keycloakTestsHelper.getAccessToken(WithMairieBetaDetails.ID,
+				WithMairieBetaDetails.ID);
 		this.forbiddenToken = this.keycloakTestsHelper.getAccessToken(WithInstructeurNonBetaDetails.ID,
 				WithInstructeurNonBetaDetails.ID);
 	}
 
 	@Test
-	public void listerTest() throws Exception {
+	public void listerDeposantTest() throws Exception {
 		List<JsonDossier> dossiers = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.accessToken).expect().statusCode(200).when().get().then().assertThat().and()
-				.extract().jsonPath().getList("", JsonDossier.class);
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(200).when().get().then().assertThat()
+				.and().extract().jsonPath().getList("", JsonDossier.class);
+		assertFalse(dossiers.isEmpty());
+		assertEquals(1, dossiers.size());
+		assertEquals(dossiers.get(0).getId(), this.dossier.identity().toString());
+	}
+
+	@Test
+	public void listerMairieTest() throws Exception {
+		List<JsonDossier> dossiers = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.mairieAccessToken).expect().statusCode(200).when().get().then().assertThat()
+				.and().extract().jsonPath().getList("", JsonDossier.class);
 		assertFalse(dossiers.isEmpty());
 		assertEquals(1, dossiers.size());
 		assertEquals(dossiers.get(0).getId(), this.dossier.identity().toString());
@@ -124,9 +138,19 @@ public class DossiersControllerIT {
 	}
 
 	@Test
-	public void consulterTest() throws Exception {
+	public void consulterDeposantTest() throws Exception {
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.accessToken).expect().statusCode(200).when()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(200).when()
+				.get("/{id}", this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(jsonDossier.getId(), this.dossier.identity().toString());
+	}
+
+	@Test
+	public void consulterMairieTest() throws Exception {
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.mairieAccessToken).expect().statusCode(200).when()
 				.get("/{id}", this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
@@ -149,24 +173,27 @@ public class DossiersControllerIT {
 
 	@Test
 	public void ajouterCerfaTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive().oauth2(this.accessToken)
-				.multiPart("file", this.cerfa, "application/pdf").expect().statusCode(200).when().post();
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.deposantAccessToken).multiPart("file", this.cerfa, "application/pdf").expect()
+				.statusCode(200).when().post();
 		List<Dossier> dossiers = this.dossierRepository.findByDeposantId(this.deposantBeta.identity().toString());
-		Optional<Dossier> dossierLu = dossiers.stream().filter(d -> !d.identity().equals(this.dossier.identity())).findAny();
+		Optional<Dossier> dossierLu = dossiers.stream().filter(d -> !d.identity().equals(this.dossier.identity()))
+				.findAny();
 		assertTrue(dossierLu.isPresent());
 		assertNotNull(dossierLu.get().cerfa());
 		assertNotNull(dossierLu.get().cerfa().code());
 		assertEquals(TypesDossier.DP, dossierLu.get().cerfa().code().type());
-        assertFalse(dossierLu.get().projet().nature().nouvelleConstruction());
-        assertFalse(dossierLu.get().projet().localisation().lotissement());
-        assertIterableEquals(Arrays.asList(new String[] { "1" }), dossierLu.get().piecesAJoindre());
-        assertEquals("1", dossierLu.get().projet().localisation().adresse().numero());
-        assertEquals("Route de Kerrivaud", dossierLu.get().projet().localisation().adresse().voie());
-        assertEquals("", dossierLu.get().projet().localisation().adresse().lieuDit());
-        assertEquals("44500", dossierLu.get().projet().localisation().adresse().commune().codePostal());
-        assertEquals("", dossierLu.get().projet().localisation().adresse().bp());
-        assertEquals(1, dossierLu.get().projet().localisation().parcellesCadastrales().size());
-        assertEquals("000-CT-0099", dossierLu.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
+		assertFalse(dossierLu.get().projet().nature().nouvelleConstruction());
+		assertFalse(dossierLu.get().projet().localisation().lotissement());
+		assertIterableEquals(Arrays.asList(new String[] { "1" }), dossierLu.get().piecesAJoindre());
+		assertEquals("1", dossierLu.get().projet().localisation().adresse().numero());
+		assertEquals("Route de Kerrivaud", dossierLu.get().projet().localisation().adresse().voie());
+		assertEquals("", dossierLu.get().projet().localisation().adresse().lieuDit());
+		assertEquals("44500", dossierLu.get().projet().localisation().adresse().commune().codePostal());
+		assertEquals("", dossierLu.get().projet().localisation().adresse().bp());
+		assertEquals(1, dossierLu.get().projet().localisation().parcellesCadastrales().size());
+		assertEquals("000-CT-0099",
+				dossierLu.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
 	}
 
 	@Test
@@ -183,8 +210,8 @@ public class DossiersControllerIT {
 
 	@Test
 	public void ajouterPieceJointeTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive().oauth2(this.accessToken)
-				.multiPart("file", this.dp1).expect().statusCode(200).when()
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.deposantAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
 				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
 		Optional<Dossier> dossierLu = this.dossierRepository.findById(dossier.identity().toString());
 		assertTrue(dossierLu.isPresent());

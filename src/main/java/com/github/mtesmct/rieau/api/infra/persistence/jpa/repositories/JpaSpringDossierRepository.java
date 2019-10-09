@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface JpaSpringDossierRepository extends NaturalRepository<JpaDossier, String>{
     List<JpaDossier> findAllByDeposantId(String deposantId);
     boolean existsByDeposantIdAndPiecesJointesIdFichierId(String deposantId, String fichierId);
-    @Query("select d from Dossier d join Projet p where p.id = d.id and p.adresse.codePostal = ?1")
+    @Query("select d from Projet p join p.dossier d where p.adresse.codePostal = ?1")
 	List<JpaDossier> findAllByProjetAdresseCodePostal(String codePostal);
 }

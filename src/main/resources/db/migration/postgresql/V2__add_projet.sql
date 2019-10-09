@@ -11,4 +11,10 @@ create table projets (
     dossier_id bigint not null, 
     primary key (dossier_id)
 );
-alter table projets add constraint FK8vojf2o8m8xowtu6h2t0iqxg7 foreign key (dossier_id) references dossiers
+alter table projets add constraint FK8vojf2o8m8xowtu6h2t0iqxg7 foreign key (dossier_id) references dossiers;
+alter table personnes add column adresse_bp varchar(255);
+alter table personnes add column adresse_cedex varchar(255);
+alter table personnes add column code_postal varchar(255) not null;
+alter table personnes add column lieu_dit varchar(255);
+alter table personnes add column adresse_numero varchar(255);
+alter table personnes add column adresse_voie varchar(255);
