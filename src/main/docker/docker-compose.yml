@@ -8,6 +8,10 @@ services:
   api:
     image: circleci/openjdk:11.0.4-jdk-stretch
     container_name: api
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      KEYCLOAK_AUTH-SERVER-URL: http://keycloak:8080
+      SPRING_DATASOURCE.URL: jdbc:postgresql://db:5432/rieau
     depends_on: 
       - db
       - minio

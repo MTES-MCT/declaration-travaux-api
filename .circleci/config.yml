@@ -48,10 +48,11 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true 
       - run:
-          name: Start container stack
+          name: Start container stack and execute tests
           command: |
             set -x
-            docker-compose -f src/main/docker/docker-compose.yml up --build -d
+            docker-compose -f src/main/docker/docker-compose.yml build
+            docker-compose -f src/main/docker/docker-compose.yml up --abort-on-container-exit --exit-code-from api            
       - store_test_results:
           path: target/failsafe-reports
       
