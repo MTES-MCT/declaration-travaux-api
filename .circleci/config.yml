@@ -52,7 +52,7 @@ jobs:
           command: |
             set -x
             docker-compose -f src/main/docker/docker-compose.yml build
-            docker cp ~/. api:/
+            docker cp ~/. api:/home/circleci
             docker-compose -f src/main/docker/docker-compose.yml up --abort-on-container-exit --exit-code-from api            
       - store_test_results:
           path: target/failsafe-reports
