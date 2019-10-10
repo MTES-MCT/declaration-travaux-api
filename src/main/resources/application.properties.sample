@@ -65,6 +65,9 @@ server.tomcat.accesslog.pattern = "[ACCESS] %{org.apache.catalina.AccessLog.Remo
 # Communes
 app.communes-url=https://geo.api.gouv.fr/communes?codePostal={codePostal}&fields=nom,code,codeDepartement,codeRegion&format=json&geometry=centre
 
+# Timeout en ms
+app.http-timeout=200
+
 # Proxy
 app.proxy-host=
 app.proxy-port=

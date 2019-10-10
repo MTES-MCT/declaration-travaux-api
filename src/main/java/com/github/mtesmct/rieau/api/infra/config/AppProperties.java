@@ -24,7 +24,9 @@ public class AppProperties {
     private String fichiersDir;
     private String corsAllowedOrigins;
     private String communesUrl;
+    private Integer httpTimeout;
     private String proxyHost;
     private String proxyScheme;
+    @NotNull
     private Integer proxyPort;
 }

@@ -37,7 +37,12 @@ public class ProxyRestTemplateCustomizer implements RestTemplateCustomizer {
             }
 
         }).build();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        log.info("Le timeout des connexions HTTP utilisé est de {} ms", this.properties.getHttpTimeout());
+        requestFactory.setConnectTimeout(this.properties.getHttpTimeout());
+        requestFactory.setConnectionRequestTimeout(this.properties.getHttpTimeout());
+        requestFactory.setReadTimeout(this.properties.getHttpTimeout());
+        restTemplate.setRequestFactory(requestFactory);
     }
 
 }
