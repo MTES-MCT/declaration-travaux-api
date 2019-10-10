@@ -35,6 +35,7 @@ public class ApiCommuneService implements CommuneService {
 
     @Override
     public Optional<Commune> findByCodeCodePostal(String codePostal) {
+        log.debug("Utilisation de l'api geo data communes service");
         Optional<Commune> commune = Optional.empty();
         JsonCommune[] jsonCommunes = new JsonCommune[]{};
         try{
