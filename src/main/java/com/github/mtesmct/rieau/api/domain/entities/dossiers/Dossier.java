@@ -147,4 +147,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
         this.piecesJointes = new ArrayList<PieceJointe>();
     }
 
+	public void qualifier() {
+        this.statut = StatutDossier.QUALIFIE;
+	}
+
 }

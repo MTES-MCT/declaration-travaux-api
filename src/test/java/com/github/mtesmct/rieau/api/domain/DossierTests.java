@@ -173,4 +173,10 @@ public class DossierTests {
         assertTrue(this.dossierDP.pieceJointes().contains(pjDP1.get()));
     }
 
+    @Test
+    public void qualifierDossier() {
+        this.dossierDP.qualifier();
+        assertEquals(StatutDossier.QUALIFIE, this.dossierDP.statut());
+    }
+
 }

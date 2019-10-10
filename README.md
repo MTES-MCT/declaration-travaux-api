@@ -88,28 +88,36 @@ docker exec -it keycloak keycloak/bin/standalone.sh \
 
 Prérequis: la stack lancée avec docker-compose.
 
+Attention [geo.api.gouv.fr](https://api.gouv.fr/api/api-geo.html) est limité à 10 appels/s/IP!
+
+Pour désactiver la vérification des communes, ajouter:
+
+```shell
+-Dapp.communes-url=
+```
+
 * Lancez tous les tests sans échec:
 
 ```shell
-./mvnw clean integration-test
+./mvnw clean integration-test -Dapp.communes-url=
 ```
 
 avec échec mais sans l'analyse des vulnérabilités:
 
 ```shell
-./mvnw clean verify -Dskip.check=true
+./mvnw clean verify -Dapp.communes-url= -Dskip.check=true
 ```
 
 * Lancez une seule classe de test:
 
 ```shell
-./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT -Dapp.communes-url=
 ```
 
 * Lancez une seule méthode de test:
 
 ```shell
-./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT#<nomdelamethode>
+./mvnw clean integration-test -Dit.test=<nomdelaclasse>IT#<nomdelamethode> -Dapp.communes-url=
 ```
 
 ### Tests manuels

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
@@ -256,6 +258,24 @@ public class DossiersControllerTests {
 				"Spring Framework".getBytes());
 		this.mvc.perform(
 				multipart(this.uri + "/" + this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMairieBetaDetails
+	public void qualifierMairieTest() throws Exception {
+		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + "/qualifier").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
+				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
+				.andExpect(jsonPath("$.statut", equalTo(StatutDossier.QUALIFIE.toString())));
+	}
+
+	@Test
+	@WithDeposantBetaDetails
+	public void qualifierDposantInterditTest() throws Exception {
+		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + "/qualifier").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isForbidden());
 	}
 

@@ -9,13 +9,16 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerDossiersService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxQualifierDossierService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,8 @@ public class DossiersController {
 	@Autowired
 	private TxConsulterDossierService consulterDossierService;
 	@Autowired
+	private TxQualifierDossierService qualifierDossierService;
+	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;
 
@@ -51,8 +56,8 @@ public class DossiersController {
 	private JsonDossierFactory jsonDossierFactory;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantForbiddenException,
-			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+	public Optional<JsonDossier> consulter(@PathVariable String id)
+			throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		Optional<Dossier> dossier = this.consulterDossierService.execute(id);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
@@ -87,6 +92,17 @@ public class DossiersController {
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
 		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(),
 				file.getOriginalFilename(), file.getContentType(), file.getSize());
+	}
+
+	@PostMapping("/{id}/qualifier")
+	public Optional<JsonDossier> qualifier(@PathVariable String id)
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+			MairieForbiddenException, DossierNotFoundException {
+		Optional<Dossier> dossier = this.qualifierDossierService.execute(id);
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
 	}
 
 }

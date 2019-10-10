@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
@@ -234,5 +235,23 @@ public class DossiersControllerIT {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.forbiddenToken).multiPart("file", this.dp1).expect().statusCode(403).when()
 				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+	}
+
+	@Test
+	public void qualifierMairieTest() throws Exception {
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.mairieAccessToken).expect().statusCode(200).when()
+				.post("/{id}/qualifier", this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(StatutDossier.QUALIFIE.toString(), jsonDossier.getStatut());
+	}
+
+	@Test
+	public void qualifierDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.post("/{id}/qualifier", this.dossier.identity().toString());
 	}
 }
