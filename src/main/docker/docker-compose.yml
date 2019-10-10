@@ -17,7 +17,7 @@ services:
       - minio
       - keycloak
     volumes:
-      - ./target/failsafe-reports:/target/failsafe-reports
+      - api-data:~/
     networks:
       - api
     command: mvn clean verify -Dskip.check=true
@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_PASS: postgres
     volumes:
-      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - db-data/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     networks:
       - api
   
@@ -47,7 +47,7 @@ services:
       KEYCLOAK_IMPORT: /tmp/realm-rieau-test.json
     volumes:
       # -  ./export:/tmp/export # used into export realm only
-      -  ./realm-rieau-test.json:/tmp/realm-rieau-test.json:ro
+      -  keycloak-data/realm-rieau-test.json:/tmp/realm-rieau-test.json:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
       interval: 30s
@@ -77,3 +77,6 @@ services:
 
 volumes:
   minio-data:
+  api-data:
+  db-data:
+  keycloak-data:
