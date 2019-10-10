@@ -22,3 +22,11 @@ logging.level.root = info
 logging.level.com.github.mtesmct.rieau = info
 # logging.level.org.springframework.security = warn
 # logging.level.org.hibernate.type=trace
+
+# Communes
+app.communes-url=
+
+# Proxy
+app.proxy-host=
+app.proxy-port=
+app.proxy-scheme=

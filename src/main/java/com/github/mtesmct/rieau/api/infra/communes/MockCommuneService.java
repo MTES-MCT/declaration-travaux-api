@@ -5,9 +5,11 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
 import com.github.mtesmct.rieau.api.domain.services.CommuneService;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnExpression("T(org.springframework.util.StringUtils).isEmpty('${app.communes-url:}')")
 public class MockCommuneService implements CommuneService {
 
     @Override

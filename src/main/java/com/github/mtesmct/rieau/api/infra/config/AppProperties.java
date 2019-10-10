@@ -23,4 +23,8 @@ public class AppProperties {
     private String yearFormat;
     private String fichiersDir;
     private String corsAllowedOrigins;
+    private String communesUrl;
+    private String proxyHost;
+    private String proxyScheme;
+    private Integer proxyPort;
 }

@@ -61,3 +61,11 @@ server.tomcat.accesslog.buffered = false
 server.tomcat.accesslog.suffix =
 server.tomcat.accesslog.file-date-format =
 server.tomcat.accesslog.pattern = "[ACCESS] %{org.apache.catalina.AccessLog.RemoteAddr}r %l %t %D %F %B %S vcap_request_id:%{X-Vcap-Request-Id}i"
+
+# Communes
+app.communes-url=https://geo.api.gouv.fr/communes?codePostal={codePostal}&fields=nom,code,codeDepartement,codeRegion&format=json&geometry=centre
+
+# Proxy
+app.proxy-host=
+app.proxy-port=
+app.proxy-scheme=
