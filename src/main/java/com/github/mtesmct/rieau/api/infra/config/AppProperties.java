@@ -27,6 +27,5 @@ public class AppProperties {
     private Integer httpTimeout;
     private String proxyHost;
     private String proxyScheme;
-    @NotNull
     private Integer proxyPort;
 }

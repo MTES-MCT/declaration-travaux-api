@@ -43,6 +43,9 @@ public class KeycloakUserInfoService implements UserInfoService {
                 AccessToken accessToken = keycloakSecurityContext.getToken();
                 if (accessToken == null)
                         throw new UserInfoServiceException("accessToken is null");
+                log.debug("accessToken.type={}", accessToken.getType());
+                log.debug("accessToken.profile={}", accessToken.getProfile());
+                log.debug("accessToken.scope={}", accessToken.getScope());
                 Sexe sexe = null;
                 if (accessToken.getGender() != null)
                         sexe = Sexe.valueOf(accessToken.getGender());
@@ -50,7 +53,8 @@ public class KeycloakUserInfoService implements UserInfoService {
                 Map<String, Object> otherClaims = accessToken.getOtherClaims();
                 log.debug("otherClaims={}", otherClaims);
                 if (token.getAccount().getRoles().contains(Roles.MAIRIE)) {
-                        if (!otherClaims.containsKey("codePostal") || (String) accessToken.getOtherClaims().get("codePostal") == null
+                        if (!otherClaims.containsKey("codePostal")
+                                        || (String) accessToken.getOtherClaims().get("codePostal") == null
                                         || ((String) accessToken.getOtherClaims().get("codePostal")).isBlank())
                                 throw new UserInfoServiceException(
                                                 "L'utilisateur doit avoir un code postal de renseigné dans son profil {"

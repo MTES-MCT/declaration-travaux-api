@@ -30,4 +30,13 @@ public class AuthorizationService {
         if (!this.authenticationService.isBeta())
             throw new UserForbiddenException(new String[]{Roles.BETA});
 	}
+
+	public void isDeposantAndBetaAuthorized() throws AuthRequiredException, UserForbiddenException {
+        if (!this.authenticationService.isAuthenticaed())
+            throw new AuthRequiredException();
+        if (!this.authenticationService.isDeposant())
+            throw new UserForbiddenException(new String[]{Roles.DEPOSANT});
+        if (!this.authenticationService.isBeta())
+            throw new UserForbiddenException(new String[]{Roles.BETA});
+    }
 }

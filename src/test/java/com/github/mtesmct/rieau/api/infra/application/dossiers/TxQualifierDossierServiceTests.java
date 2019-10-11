@@ -89,7 +89,7 @@ public class TxQualifierDossierServiceTests {
             throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
             MairieForbiddenException, DossierNotFoundException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        Optional<Dossier> dossierQualifie = this.qualifierDossierService.execute(this.dossier.identity().toString());
+        Optional<Dossier> dossierQualifie = this.qualifierDossierService.execute(this.dossier.identity());
         assertTrue(dossierQualifie.isPresent());
         assertEquals(this.dossier.identity(), dossierQualifie.get().identity());
         assertEquals(StatutDossier.QUALIFIE, dossierQualifie.get().statut());
@@ -101,13 +101,13 @@ public class TxQualifierDossierServiceTests {
             throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
             MairieForbiddenException, DossierNotFoundException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
-        assertThrows(MairieForbiddenException.class, () -> this.qualifierDossierService.execute(this.otherDossier.identity().toString()));
+        assertThrows(MairieForbiddenException.class, () -> this.qualifierDossierService.execute(this.otherDossier.identity()));
     }
     
     @Test
     @WithDeposantBetaDetails
     public void executeDeposantInterditTest() throws Exception {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        assertThrows(UserForbiddenException.class, () -> this.qualifierDossierService.execute(this.dossier.identity().toString()));
+        assertThrows(UserForbiddenException.class, () -> this.qualifierDossierService.execute(this.dossier.identity()));
     }
 }

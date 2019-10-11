@@ -54,13 +54,6 @@ jobs:
             set -x
             docker-compose -f src/main/docker/docker-compose.yml build  
       - run:
-          name: Copy conf to remote containers
-          command: |
-            set -x
-            docker cp ./init-user-db.sh db:/docker-entrypoint-initdb.d/init-user-db.sh
-            docker cp ./realm-rieau-test.json keycloak:/tmp/realm-rieau-test.json:ro
-            docker cp ~/. api:~/
-      - run:
           name: Execute tests
           command: |
             set -x

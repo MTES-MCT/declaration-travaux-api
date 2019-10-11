@@ -3,6 +3,7 @@ package com.github.mtesmct.rieau.api.infra.application.dossiers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.junit.jupiter.api.Test;
@@ -107,5 +109,15 @@ public class TxImporterCerfaServiceTests {
         assertTrue(dossier.get().projet().localisation().lotissement());
         assertEquals(1, dossier.get().projet().localisation().parcellesCadastrales().size());
         assertEquals("000-LV-0040", dossier.get().projet().localisation().parcellesCadastrales().get(0).toFlatString());
+    }
+
+    @Test
+    @WithMairieBetaDetails
+    public void executeMairieInterditTest() throws IOException, DossierImportException, AuthRequiredException,
+            UserForbiddenException, UserInfoServiceException {
+        File file = new File("src/test/fixtures/dummy.pdf");
+        assertThrows(UserForbiddenException.class, () -> this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
+                "application/pdf", file.length()));
+
     }
 }

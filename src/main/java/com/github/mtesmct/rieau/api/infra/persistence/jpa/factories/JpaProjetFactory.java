@@ -16,10 +16,7 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Component
-@Slf4j
 public class JpaProjetFactory {
 
     @Autowired
@@ -41,9 +38,7 @@ public class JpaProjetFactory {
             throw new NullPointerException("La localisation du projet ne peut pas être nulle.");
         JpaAdresse jpaAdresse = this.jpaAdresseFactory.toJpa(projet.localisation().adresse());
         String parcelles = projet.localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(joining()));
-        log.debug("parcelles={}", parcelles);
         JpaProjet jpaProjet = new JpaProjet(jpaDossier, jpaNature, jpaAdresse, parcelles, projet.localisation().lotissement());
-        log.debug("jpaProjet={}", jpaProjet);
         return jpaProjet;
     }
 

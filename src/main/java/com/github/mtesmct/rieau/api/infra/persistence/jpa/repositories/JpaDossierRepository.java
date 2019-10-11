@@ -72,6 +72,24 @@ public class JpaDossierRepository implements DossierRepository {
         return dossiers;
     }
 
+    
+    @Override
+    public Optional<Dossier> findByFichierId(String fichierId) {
+        Optional<JpaDossier> jpaDossier = this.jpaSpringDossierRepository.findOneByPiecesJointesIdFichierId(fichierId);
+        Optional<Dossier> dossier = Optional.empty();
+        if (jpaDossier.isPresent()) {
+            Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.get().getId());
+            if (jpaProjet.isEmpty())
+                throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
+            try {
+                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get(), jpaProjet.get()));
+            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+                log.debug("{}", e);
+            }
+        }
+        return dossier;
+    }
+
     @Override
     public List<Dossier> findByCommune(String commune) {
         List<Dossier> dossiers = new ArrayList<Dossier>();
@@ -107,11 +125,6 @@ public class JpaDossierRepository implements DossierRepository {
             log.debug("{}", e);
         }
         return dossier;
-    }
-
-    @Override
-    public boolean isDeposantOwner(String deposantId, String fichierId) {
-        return this.jpaSpringDossierRepository.existsByDeposantIdAndPiecesJointesIdFichierId(deposantId, fichierId);
     }
 
     private void savePieceJointe(JpaDossier jpaDossier, PieceJointe pieceJointe) {

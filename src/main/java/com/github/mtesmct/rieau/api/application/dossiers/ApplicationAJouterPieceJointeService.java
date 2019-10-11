@@ -53,7 +53,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
     public Optional<PieceJointe> execute(DossierId id, String numero, InputStream is, String nom, String mimeType, long taille)
             throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException {
-        this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
+        this.authorizationService.isDeposantAndBetaAuthorized();
         if (numero.equals("0"))
             throw new AjouterPieceJointeException(new NumeroPieceJointeException());
         Optional<PieceJointe> pieceJointe = Optional.empty();
@@ -65,7 +65,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
                 throw new AjouterPieceJointeException(new FichierNotFoundException(fichier.identity().toString()));
             Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
             if (dossier.isEmpty())
-                throw new AjouterPieceJointeException(new DossierNotFoundException(id.toString()));
+                throw new AjouterPieceJointeException(new DossierNotFoundException(id));
             if (!dossier.get().deposant().identity().equals(this.authenticationService.user().get().identity()))
                 throw new AjouterPieceJointeException(
                         new DeposantForbiddenException(this.authenticationService.user().get()));

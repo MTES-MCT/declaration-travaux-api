@@ -46,10 +46,8 @@ keycloak.principal-attribute=preferred_username
 keycloak.realm = rieau
 keycloak.auth-server-url = http://localhost:8080/auth
 keycloak.ssl-required = external
-keycloak.resource = rieau-api
-keycloak.credentials.secret = secret
+keycloak.resource = rieau
 keycloak.use-resource-role-mappings = true
-keycloak.bearer-only = true
 app.cors-allowed-origins=http://localhost:3000
 
 # HTTP server

@@ -9,6 +9,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
@@ -34,10 +35,10 @@ public class ApplicationQualifierDossierService implements QualifierDossierServi
     }
 
     @Override
-    public Optional<Dossier> execute(String id) throws DossierNotFoundException, MairieForbiddenException,
+    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, MairieForbiddenException,
             AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         this.authorizationService.isMairieAndBetaAuthorized();
-        Optional<Dossier> dossier = this.dossierRepository.findById(id);
+        Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
         if (dossier.isEmpty())
             throw new DossierNotFoundException(id);
         Optional<Personne> user = this.authenticationService.user();

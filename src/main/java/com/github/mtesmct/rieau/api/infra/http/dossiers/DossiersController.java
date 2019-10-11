@@ -98,7 +98,7 @@ public class DossiersController {
 	public Optional<JsonDossier> qualifier(@PathVariable String id)
 			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
 			MairieForbiddenException, DossierNotFoundException {
-		Optional<Dossier> dossier = this.qualifierDossierService.execute(id);
+		Optional<Dossier> dossier = this.qualifierDossierService.execute(new DossierId(id));
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
 			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));

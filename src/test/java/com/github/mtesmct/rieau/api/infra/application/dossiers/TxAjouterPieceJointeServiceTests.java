@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
@@ -24,6 +26,7 @@ import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +38,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxAjouterPieceJointeServiceTests {
     @Autowired
@@ -84,5 +86,15 @@ public class TxAjouterPieceJointeServiceTests {
                 new FileInputStream(file), file.getName(), "application/pdf", file.length());
         assertTrue(pieceJointe.isPresent());
         assertEquals(pieceJointe.get().code().type(), TypesDossier.PCMI);
+    }
+
+    @Test
+    @WithMairieBetaDetails
+    public void executeMairieInterditTest() throws IOException, AjouterPieceJointeException, AuthRequiredException,
+            UserForbiddenException, UserInfoServiceException, CommuneNotFoundException {
+                File file = new File("src/test/fixtures/dummy.pdf");
+        assertThrows(UserForbiddenException.class, () -> this.ajouterPieceJointe.execute(new DossierId("none"), "1",
+        new FileInputStream(file), file.getName(), "application/pdf", file.length()));
+
     }
 }

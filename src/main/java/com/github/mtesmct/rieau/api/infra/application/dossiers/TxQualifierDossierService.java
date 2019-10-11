@@ -9,6 +9,7 @@ import com.github.mtesmct.rieau.api.application.dossiers.ApplicationQualifierDos
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.QualifierDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class TxQualifierDossierService implements QualifierDossierService {
     private ApplicationQualifierDossierService applicationQualifierDossierService;
 
     @Override
-    public Optional<Dossier> execute(String id) throws DossierNotFoundException, MairieForbiddenException,
+    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, MairieForbiddenException,
             AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         return this.applicationQualifierDossierService.execute(id);
     }

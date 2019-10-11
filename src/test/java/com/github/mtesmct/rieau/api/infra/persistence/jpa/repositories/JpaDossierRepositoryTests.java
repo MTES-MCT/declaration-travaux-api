@@ -78,16 +78,17 @@ public class JpaDossierRepositoryTests {
 
 	@Autowired
 	private JpaPersonneFactory jpaPersonneFactory;
-    @Autowired
-    private JpaProjetFactory jpaProjetFactory;
+	@Autowired
+	private JpaProjetFactory jpaProjetFactory;
 
 	private JpaPersonne jpaPersonne;
 
 	@BeforeEach
 	public void setUp() throws CommuneNotFoundException {
 		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email(), "44100");
-		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true, true);
-		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3","4","5"));
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+				new ParcelleCadastrale("0", "1", "2"), true, true);
+		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3", "4", "5"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());
 		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), TypesDossier.DP,
 				projet);
@@ -111,15 +112,19 @@ public class JpaDossierRepositoryTests {
 		assertEquals(this.dossier.dateDepot(), jpaDossier.getDateDepot());
 		JpaProjet jpaProjet = this.entityManager.find(JpaProjet.class, jpaDossier.getId());
 		assertNotNull(jpaProjet);
-		assertEquals(this.dossier.projet().nature().nouvelleConstruction(), jpaProjet.getNature().isConstructionNouvelle());
+		assertEquals(this.dossier.projet().nature().nouvelleConstruction(),
+				jpaProjet.getNature().isConstructionNouvelle());
 		assertEquals(this.dossier.projet().localisation().lotissement(), jpaProjet.isLotissement());
 		assertEquals(this.dossier.projet().localisation().adresse().numero(), jpaProjet.getAdresse().getNumero());
 		assertEquals(this.dossier.projet().localisation().adresse().voie(), jpaProjet.getAdresse().getVoie());
 		assertEquals(this.dossier.projet().localisation().adresse().lieuDit(), jpaProjet.getAdresse().getLieuDit());
-		assertEquals(this.dossier.projet().localisation().adresse().commune().codePostal(), jpaProjet.getAdresse().getCodePostal());
+		assertEquals(this.dossier.projet().localisation().adresse().commune().codePostal(),
+				jpaProjet.getAdresse().getCodePostal());
 		assertEquals(this.dossier.projet().localisation().adresse().bp(), jpaProjet.getAdresse().getBp());
 		assertEquals(this.dossier.projet().localisation().adresse().cedex(), jpaProjet.getAdresse().getCedex());
-		assertEquals(this.dossier.projet().localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(this.jpaProjetFactory.joining())), jpaProjet.getParcelles());
+		assertEquals(this.dossier.projet().localisation().parcellesCadastrales().stream()
+				.map(ParcelleCadastrale::toFlatString).collect(Collectors.joining(this.jpaProjetFactory.joining())),
+				jpaProjet.getParcelles());
 	}
 
 	@Test
@@ -169,6 +174,7 @@ public class JpaDossierRepositoryTests {
 		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
 		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
 	}
+
 	@Test
 	public void findByCommuneTest() throws Exception {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
@@ -188,29 +194,21 @@ public class JpaDossierRepositoryTests {
 	}
 
 	@Test
-	public void isDeposantOwnerTest() throws Exception {
+	public void findByFichierIdTest() throws Exception {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
 				new Date(this.dateService.now().getTime()),
 				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
-		String fichierId = "fichier-1";
-		JpaPieceJointe pieceJointe = new JpaPieceJointe(
-				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), fichierId));
-		jpaDossier.addPieceJointe(pieceJointe);
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
-		assertTrue(this.repository.isDeposantOwner(this.deposantBeta.identity().toString(), fichierId));
-	}
-
-	@Test
-	public void isDeposantNotOwnerTest() throws Exception {
-		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
-				new Date(this.dateService.now().getTime()),
-				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
-		String fichierId = "fichier-1";
-		JpaPieceJointe pieceJointe = new JpaPieceJointe(
-				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), fichierId));
-		jpaDossier.addPieceJointe(pieceJointe);
-		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
-		assertFalse(this.repository.isDeposantOwner(this.autreDeposantBeta.identity().toString(), fichierId));
+		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
+				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
+		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
+		JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "fichierId"));
+		jpaPieceJointe = this.entityManager.persistAndFlush(jpaPieceJointe);
+		Optional<Dossier> dossier = this.repository.findByFichierId("fichierId");
+		assertTrue(dossier.isPresent());
+		assertEquals(jpaDossier.getDossierId(), dossier.get().identity().toString());
+		assertEquals(jpaProjet.getAdresse().getCodePostal(), dossier.get().projet().localisation().adresse().commune().codePostal());
+		assertEquals(this.jpaPersonne.getPersonneId(), dossier.get().deposant().identity().toString());
 	}
 
 }

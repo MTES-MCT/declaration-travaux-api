@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
@@ -31,8 +32,9 @@ public class FichiersController {
     private TxLireFichierService lireFichierService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Resource> lireFichier(@PathVariable String id) throws FichierNotFoundException,
-            UserForbiddenException, AuthRequiredException, UserInfoServiceException, UserNotOwnerException {
+    public ResponseEntity<Resource> lireFichier(@PathVariable String id)
+            throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
+            UserNotOwnerException, DossierNotFoundException {
         Optional<Fichier> fichier = this.lireFichierService.execute(new FichierId(id));
         if (fichier.isEmpty())
             return ResponseEntity.notFound().build();

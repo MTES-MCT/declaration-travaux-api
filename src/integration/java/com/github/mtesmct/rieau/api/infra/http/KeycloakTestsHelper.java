@@ -22,21 +22,17 @@ public class KeycloakTestsHelper {
 	private String authServerUrl;
 	@Value("${keycloak.ssl-required}")
 	private String sslRequired;
-	@Value("${keycloak.credentials.secret}")
-	private String credentialsSecret;
 	@Value("${keycloak.resource}")
 	private String resource;
 	@Value("${keycloak.realm}")
 	private String realm;
-	@Value("${keycloak.bearer-only}")
-	private boolean bearerOnly;
 	@Value("${keycloak.use-resource-role-mappings}")
 	private boolean useResourceRoleMappings;
 
 	public String getAccessToken(String userName, String userPassword)
 			throws URISyntaxException, ClientProtocolException, IOException, JSONException {
 		String accessToken = given().formParam("username", userName).formParam("password", userPassword)
-				.formParam("client_id", this.resource).formParam("client_secret", this.credentialsSecret)
+				.formParam("client_id", this.resource)
 				.formParam("grant_type", OAuth2Constants.PASSWORD)
 				.post("/auth/realms/{realm}/protocol/openid-connect/token", this.realm).then().assertThat()
 				.statusCode(200).extract().jsonPath().getString("access_token");

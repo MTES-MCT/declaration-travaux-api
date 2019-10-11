@@ -8,11 +8,14 @@ import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.PersonneId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
@@ -41,17 +44,23 @@ public class ApplicationLireFichierService implements LireFichierService {
     }
 
     @Override
-    public Optional<Fichier> execute(FichierId id)
+    public Optional<Fichier> execute(FichierId fichierId)
             throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException {
+            UserNotOwnerException, DossierNotFoundException {
         this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         Optional<Fichier> fichier = Optional.empty();
-        PersonneId userId = this.authenticationService.user().get().identity();
-        if (!this.dossierRepository.isDeposantOwner(userId.toString(), id.toString())) {
-            throw new UserNotOwnerException(userId.toString(),
-                    id.toString());
+        Personne user = this.authenticationService.user().get();
+        Optional<Dossier> dossier = this.dossierRepository.findByFichierId(fichierId.toString());
+        if (dossier.isEmpty())
+                throw new DossierNotFoundException(fichierId);
+        if (this.authenticationService.isDeposant() && !dossier.get().deposant().equals(user)) {
+            throw new UserNotOwnerException(user.identity().toString(),
+            fichierId.toString());
         }
-        fichier = this.fichierService.findById(id);
+        if (this.authenticationService.isMairie() && !dossier.get().projet().localisation().adresse().commune().equals(user.adresse().commune())) {
+            throw new MairieForbiddenException(user);
+        }
+        fichier = this.fichierService.findById(fichierId);
         return fichier;
     }
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.application.fichiers.ApplicationLireFichierService;
@@ -25,7 +26,7 @@ public class TxLireFichierService implements LireFichierService {
 
     @Override
     public Optional<Fichier> execute(FichierId id) throws FichierNotFoundException, UserForbiddenException,
-            AuthRequiredException, UserInfoServiceException, UserNotOwnerException {
+            AuthRequiredException, UserInfoServiceException, UserNotOwnerException, DossierNotFoundException {
         return this.lireFichierService.execute(id);
     }
 

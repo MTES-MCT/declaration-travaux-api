@@ -21,6 +21,7 @@ import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.fichiers.FichiersController;
 
@@ -67,6 +68,7 @@ public class FichiersControllerIT {
 	@LocalServerPort
 	private int serverPort;
 	private String accessToken;
+	private String mairieAccessToken;
 	private String invalidToken = "invalid-token";
 
 	@BeforeEach
@@ -82,6 +84,8 @@ public class FichiersControllerIT {
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 		this.accessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
 				WithDeposantBetaDetails.ID);
+		this.mairieAccessToken = this.keycloakTestsHelper.getAccessToken(WithMairieBetaDetails.ID,
+				WithMairieBetaDetails.ID);
 	}
 
 	@Test
@@ -115,5 +119,29 @@ public class FichiersControllerIT {
 						WithAutreDeposantBetaDetails.ID))
 				.multiPart("file", this.cerfa).expect().statusCode(403).when()
 				.get("/{id}", this.fichier.identity().toString());
+	}
+
+	@Test
+	public void lireMairieTest() throws Exception {
+		InputStream inputStream = given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.mairieAccessToken).multiPart("file", this.cerfa).expect().statusCode(200)
+				.when().get("/{id}", this.fichier.identity().toString()).asInputStream();
+		assertTrue(this.keycloakTestsHelper.isEqual(new FileInputStream(this.cerfa), inputStream));
+	}
+
+	@Test
+	public void lireMairieNonLocaliseeTest() throws Exception {
+		File otherFile = new File("src/test/fixtures/dummy.pdf");
+		Fichier otherFichier = this.fichierFactory.creer(otherFile, "application/pdf");
+		fichierService.save(otherFichier);
+		Projet projet = this.projetFactory.creer("2", "rue des Fleurs", "ZI", "44500", "BP 1", "Cedex 02",
+				new ParcelleCadastrale("1", "2", "3"), true, true);
+		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
+		dossier.ajouterCerfa(otherFichier.identity());
+		dossier = this.dossierRepository.save(dossier);
+		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.mairieAccessToken)
+				.multiPart("file", otherFile).expect().statusCode(403).when()
+				.get("/{id}", otherFichier.identity().toString());
 	}
 }

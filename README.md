@@ -128,8 +128,7 @@ Prérequis: la stack lancée avec docker-compose.
 KC_REALM=rieau
 KC_USERNAME=jean.martin
 KC_PASSWORD=
-KC_CLIENT=rieau-api
-KC_CLIENT_SECRET=
+KC_CLIENT=rieau
 KC_URL="http://localhost:8080/auth"
 KC_RESPONSE=$( \
    curl -k -v \
@@ -137,7 +136,6 @@ KC_RESPONSE=$( \
         -d "password=$KC_PASSWORD" \
         -d 'grant_type=password' \
         -d "client_id=$KC_CLIENT" \
-        -d "client_secret=$KC_CLIENT_SECRET" \
         "$KC_URL/realms/$KC_REALM/protocol/openid-connect/token" \
     | jq .
 )

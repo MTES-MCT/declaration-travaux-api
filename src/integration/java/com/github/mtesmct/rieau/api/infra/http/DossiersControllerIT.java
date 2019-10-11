@@ -204,9 +204,15 @@ public class DossiersControllerIT {
 	}
 
 	@Test
-	public void ajouterCerfainterditTest() throws Exception {
+	public void ajouterCerfaInconnuInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.forbiddenToken).multiPart("file", this.cerfa).expect().statusCode(403).when().post();
+	}
+
+	@Test
+	public void ajouterCerfaMairieInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.mairieAccessToken).multiPart("file", this.cerfa).expect().statusCode(403).when().post();
 	}
 
 	@Test
@@ -231,9 +237,15 @@ public class DossiersControllerIT {
 	}
 
 	@Test
-	public void ajouterPieceJointeInterditTest() throws Exception {
+	public void ajouterPieceJointeInconnuInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.forbiddenToken).multiPart("file", this.dp1).expect().statusCode(403).when()
+				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+	}
+	@Test
+	public void ajouterPieceJointeMairieInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(403).when()
 				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
 	}
 

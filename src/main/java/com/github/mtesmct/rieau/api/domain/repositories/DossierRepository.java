@@ -10,5 +10,5 @@ public interface DossierRepository {
     public List<Dossier> findByCommune(String commune);
     public Dossier save(Dossier dossier);
     public Optional<Dossier> findById(String id);
-    public boolean isDeposantOwner(String deposantId, String fichierId);
+	public Optional<Dossier> findByFichierId(String fichierId);
 }
