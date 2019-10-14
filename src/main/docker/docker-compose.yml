@@ -17,7 +17,7 @@ services:
       - minio
       - keycloak
     volumes:
-      - ./target/failsafe-reports:/tmp/target/failsafe-reports
+      - ./:~/
     networks:
       - api
     command: mvn clean verify -Dapp.communes-url= -Dskip.check=true
