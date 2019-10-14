@@ -45,19 +45,18 @@ jobs:
     machine:
       image: circleci/classic:latest
     steps:
-      - checkout
       - attach_workspace:
           at: '~/'
-      - run:
-          name: Build remote container stack
-          command: |
-            set -x
-            docker-compose -f src/main/docker/docker-compose.yml build  
       - run:
           name: Execute tests
           command: |
             set -x
-            docker-compose -f src/main/docker/docker-compose.yml up --abort-on-container-exit --exit-code-from keycloak     
+            docker-compose -f src/main/docker/docker-compose.ci.yml up --build -d --abort-on-container-exit --exit-code-from api     
+            sleep 30 ; docker-compose -f src/main/docker/docker-compose.ci.yml logs
+      - run:
+          name: Test the app -> try to connect to the app through HTTP 5000 port
+          command: |
+            test $(docker run --network container:api appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5000/dossiers) = 403
       - run:
           name: Copy result tests to primary container
           command: |

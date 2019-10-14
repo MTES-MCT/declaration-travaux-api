@@ -17,7 +17,8 @@ services:
       - minio
       - keycloak
     volumes:
-      - ./:/home/circleci/rieau-api/
+      - ./src:/home/circleci/rieau-api/src
+      - ./pom.xml:/home/circleci/rieau-api/pom.xml:ro
     networks:
       - api
     command: mvn clean verify -Dapp.communes-url= -Dskip.check=true
@@ -31,7 +32,7 @@ services:
     environment:
       POSTGRES_PASS: postgres
     volumes:
-      - ./src/main/docker/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     networks:
       - api
   
@@ -47,7 +48,7 @@ services:
       KEYCLOAK_IMPORT: /tmp/realm-rieau-test.json
     volumes:
       # -  ./export:/tmp/export # used into export realm only
-      -  ./src/main/docker/realm-rieau-test.json:/tmp/realm-rieau-test.json:ro
+      -  ./realm-rieau-test.json:/tmp/realm-rieau-test.json:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
       interval: 30s

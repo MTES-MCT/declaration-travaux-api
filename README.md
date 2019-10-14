@@ -27,7 +27,7 @@ Ce dernier bouchonne la persistence des fichiers en filesystem, des données en 
 Sinon, par défaut c'est l'environnement d'intégration qui est activé. Ce dernier intègre la persistence des fichiers avec un serveur Minio, des données avec une base PostgreSQL et l'authentification avec un serveur Oauth2/OIDC Keycloak. Ces derniers doivent être lancés en préalable avec une stack docker-compose en phase de développement:
 
 ```shell
-docker-compose -f src/main/docker/docker-compose.yml up --build -d
+docker-compose -f src/main/docker/docker-compose.test.yml up --build -d
 ```
 
 Exporter le realm de test avec les users:
