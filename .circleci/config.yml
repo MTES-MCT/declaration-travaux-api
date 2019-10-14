@@ -51,8 +51,7 @@ jobs:
           name: Execute tests
           command: |
             set -x
-            docker-compose -f src/main/docker/docker-compose.ci.yml up --build -d --abort-on-container-exit --exit-code-from api     
-            sleep 30 ; docker-compose -f src/main/docker/docker-compose.ci.yml logs
+            docker-compose -f src/main/docker/docker-compose.ci.yml up --build --abort-on-container-exit --exit-code-from api
       - run:
           name: Test the app -> try to connect to the app through HTTP 5000 port
           command: |
