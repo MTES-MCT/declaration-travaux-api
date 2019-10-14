@@ -62,7 +62,7 @@ jobs:
           name: Copy result tests to primary container
           command: |
             set -x
-            docker cp api:/tmp/target/failsafe-reports target/failsafe-reports
+            docker cp api:/home/circleci/rieau-api/target/failsafe-reports target/failsafe-reports
       - store_test_results:
           path: target/failsafe-reports
       
