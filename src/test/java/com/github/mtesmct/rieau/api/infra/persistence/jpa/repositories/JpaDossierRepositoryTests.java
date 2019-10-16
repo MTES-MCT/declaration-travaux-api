@@ -190,7 +190,11 @@ public class JpaDossierRepositoryTests {
 				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
-				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "0")));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "1"), "1")));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "2"), "2")));
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);

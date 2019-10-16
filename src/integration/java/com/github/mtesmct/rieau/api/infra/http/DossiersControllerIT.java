@@ -258,8 +258,8 @@ public class DossiersControllerIT {
 		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
 		assertFalse(jsonDossier.getStatuts().isEmpty());
 		assertEquals(2, jsonDossier.getStatuts().size());
-		assertEquals(EnumStatuts.DEPOSE, jsonDossier.getStatuts().get(0).getStatut());
-		assertEquals(EnumStatuts.QUALIFIE, jsonDossier.getStatuts().get(1).getStatut());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
 	}
 
 	@Test

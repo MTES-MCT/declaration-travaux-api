@@ -47,7 +47,6 @@ services:
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: /tmp/realm-rieau-test.json
     volumes:
-      # -  ./export:/tmp/export # used into export realm only
       -  ./realm-rieau-test.json:/tmp/realm-rieau-test.json:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
