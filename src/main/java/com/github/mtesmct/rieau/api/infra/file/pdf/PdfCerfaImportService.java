@@ -13,7 +13,7 @@ import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundExcept
 import com.github.mtesmct.rieau.api.application.dossiers.NombrePagesCerfaException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.StringExtractService;
 
@@ -107,7 +107,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 	}
 
 	@Override
-	public Set<String> keys(TypesDossier type) {
+	public Set<String> keys(EnumTypes type) {
 		return this.cerfaFormMapper.nomsChamps(type);
 	}
 

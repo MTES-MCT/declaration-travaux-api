@@ -36,7 +36,7 @@ public class ApplicationConsulterDossierService implements ConsulterDossierServi
 
     @Override
     public Optional<Dossier> execute(String id) throws DeposantForbiddenException, AuthRequiredException,
-            UserForbiddenException, UserInfoServiceException {
+            UserForbiddenException, UserInfoServiceException, MairieForbiddenException {
         this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id);
         Optional<Personne> user = this.authenticationService.user();

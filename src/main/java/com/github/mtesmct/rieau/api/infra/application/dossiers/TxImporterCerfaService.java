@@ -10,6 +10,10 @@ import com.github.mtesmct.rieau.api.application.dossiers.ApplicationImporterCerf
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.ImporterCerfaService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +28,8 @@ public class TxImporterCerfaService implements ImporterCerfaService {
 
     @Override
     public Optional<Dossier> execute(InputStream is, String nom, String mimeType, long taille)
-            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
         return this.applicationImporterCerfaService.execute(is, nom, mimeType, taille);
     }
 

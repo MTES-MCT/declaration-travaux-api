@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class CerfaFormMapper {
         champsFormPCMI.put("numeroCadastre", "topmostSubform[0].Page3[0].T2N_numero[0]");
         champsFormPCMI.put("nouvelleConstruction", "topmostSubform[0].Page4[0].C2ZA1_nouvelle[0]");
         champsFormPCMI.put("lotissement", "topmostSubform[0].Page3[0].T3I_lotoui[0]");
-        this.champsForm.put(TypesDossier.PCMI.toString(), champsFormPCMI);
+        this.champsForm.put(EnumTypes.PCMI.toString(), champsFormPCMI);
         Map<String, String> champsFormDPMI = new HashMap<String, String>();
         champsFormDPMI = new HashMap<String, String>();
         champsFormDPMI.put("numeroVoie", "topmostSubform[0].Page3[0].T2Q_numero[0]");
@@ -45,16 +45,16 @@ public class CerfaFormMapper {
         champsFormDPMI.put("numeroCadastre", "topmostSubform[0].Page3[0].T2N_numero[0]");
         champsFormDPMI.put("nouvelleConstruction", "topmostSubform[0].Page3[0].C2ZA1_nouvelle[0]");
         champsFormDPMI.put("lotissement", "topmostSubform[0].Page3[0].T2J_lotissement[0]");
-        this.champsForm.put(TypesDossier.DP.toString(), champsFormDPMI);
+        this.champsForm.put(EnumTypes.DPMI.toString(), champsFormDPMI);
     }
 
-    public String toNomChamp(TypesDossier type, String attribut) {
+    public String toNomChamp(EnumTypes type, String attribut) {
         String nomChamp = this.champsForm.get(type.toString()).get(attribut);
         log.debug("nomChamp(type={}, attribut={})={}", type, attribut, nomChamp);
         return nomChamp;
     }
 
-    public Set<String> nomsChamps(TypesDossier type) {
+    public Set<String> nomsChamps(EnumTypes type) {
         Set<String> nomsChamps = this.champsForm.get(type.toString()).keySet();
         log.debug("nomChamps(type={})={}", type, nomsChamps);
         return nomsChamps;

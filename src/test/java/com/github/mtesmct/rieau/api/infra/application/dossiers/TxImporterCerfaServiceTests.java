@@ -17,8 +17,12 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
@@ -38,38 +42,39 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @WithDeposantBetaDetails
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxImporterCerfaServiceTests {
-    @Autowired
-    private TxImporterCerfaService importerCerfaService;
+        @Autowired
+        private TxImporterCerfaService importerCerfaService;
 
-    @Autowired
-    @Qualifier("dateTimeConverter")
-    private DateConverter dateConverter;
+        @Autowired
+        @Qualifier("dateTimeConverter")
+        private DateConverter dateConverter;
 
-    @Autowired
-    private DateService dateService;
-    @Autowired
-    @Qualifier("deposantBeta")
-    private Personne deposantBeta;
+        @Autowired
+        private DateService dateService;
+        @Autowired
+        @Qualifier("deposantBeta")
+        private Personne deposantBeta;
 
-    @Test
-    @WithDeposantBetaDetails
-    public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
-            UserForbiddenException, UserInfoServiceException {
+        @Test
+        @WithDeposantBetaDetails
+        public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
+                        UserForbiddenException, UserInfoServiceException, StatutForbiddenException,
+                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
                 "application/pdf", file.length());
         assertTrue(dossier.isPresent());
         assertTrue(dossier.get().identity().toString().startsWith(
-                TypesDossier.DP + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                EnumTypes.DPMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
-        assertEquals(TypesDossier.DP, dossier.get().type().type());
-        assertEquals(StatutDossier.DEPOSE, dossier.get().statut());
-        assertEquals(this.dateService.now(), dossier.get().dateDepot());
+        assertEquals(EnumTypes.DPMI, dossier.get().type().type());
+        assertTrue(dossier.get().statutActuel().isPresent());
+        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().statut());
         assertNotNull(dossier.get().piecesAJoindre());
         assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
-        assertEquals(new CodePieceJointe(TypesDossier.DP, "0"), dossier.get().cerfa().code());
+        assertEquals(new CodePieceJointe(EnumTypes.DPMI, "0"), dossier.get().cerfa().code());
         assertFalse(dossier.get().projet().nature().nouvelleConstruction());
         assertEquals("1", dossier.get().projet().localisation().adresse().numero());
         assertEquals("Route de Kerrivaud", dossier.get().projet().localisation().adresse().voie());
@@ -84,22 +89,23 @@ public class TxImporterCerfaServiceTests {
     @Test
     @WithDeposantBetaDetails
     public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
-            UserForbiddenException, UserInfoServiceException {
+            UserForbiddenException, UserInfoServiceException, StatutForbiddenException,
+                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
         Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
                 "application/pdf", file.length());
         assertTrue(dossier.isPresent());
         assertTrue(dossier.get().identity().toString().startsWith(
-                TypesDossier.PCMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                EnumTypes.PCMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
-        assertEquals(TypesDossier.PCMI, dossier.get().type().type());
-        assertEquals(StatutDossier.DEPOSE, dossier.get().statut());
-        assertEquals(this.dateService.now(), dossier.get().dateDepot());
+        assertEquals(EnumTypes.PCMI, dossier.get().type().type());
+        assertTrue(dossier.get().statutActuel().isPresent());
+        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().statut());
         assertNotNull(dossier.get().piecesAJoindre());
         assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());
         assertNotNull(dossier.get().cerfa().fichierId());
-        assertEquals(new CodePieceJointe(TypesDossier.PCMI, "0"), dossier.get().cerfa().code());
+        assertEquals(new CodePieceJointe(EnumTypes.PCMI, "0"), dossier.get().cerfa().code());
         assertTrue(dossier.get().projet().nature().nouvelleConstruction());
         assertEquals("1", dossier.get().projet().localisation().adresse().numero());
         assertEquals("Rue des Dervallières", dossier.get().projet().localisation().adresse().voie());

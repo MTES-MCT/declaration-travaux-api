@@ -5,10 +5,10 @@ import java.util.Objects;
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class CodePieceJointe implements ValueObject<CodePieceJointe> {
-    private TypesDossier type;
+    private EnumTypes type;
     private String numero;
 
-    public TypesDossier type(){
+    public EnumTypes type(){
       return this.type;
     }
     public String numero(){
@@ -42,7 +42,7 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
       return "CodePieceJointe={ type={" + Objects.toString(this.type) + ", numero={"+this.numero + "} }";
     }
 
-    public CodePieceJointe(final TypesDossier type, final String numero) {
+    public CodePieceJointe(final EnumTypes type, final String numero) {
         if (type == null)
             throw new NullPointerException("Le type de la pièce jointe ne peut pas être nul");
         this.type = type;

@@ -9,6 +9,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundExceptio
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.infra.InfraPackageScan;
 
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,6 @@ public class ControllersExceptionsAdvice {
   public MairieForbiddenException handleMairieForbiddenException(MairieForbiddenException e) {
     return e;
   }
-
   @ExceptionHandler({ FichierNotFoundException.class })
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public FichierNotFoundException handleFichierNotFoundException(FichierNotFoundException e) {
@@ -60,6 +61,19 @@ public class ControllersExceptionsAdvice {
   public DossierNotFoundException handleDossierNotFoundException(DossierNotFoundException e) {
     return e;
   }
+
+  @ExceptionHandler({ TypeStatutNotFoundException.class })
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public TypeStatutNotFoundException handleStatutNotFoundException(TypeStatutNotFoundException e) {
+    return e;
+  }
+
+  @ExceptionHandler({ StatutForbiddenException.class })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public StatutForbiddenException handleStatutForbiddenException(StatutForbiddenException e) {
+    return e;
+  }
+
 
   @ExceptionHandler({ DossierImportException.class })
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

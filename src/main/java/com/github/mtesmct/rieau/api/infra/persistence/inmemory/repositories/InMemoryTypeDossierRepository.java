@@ -1,19 +1,20 @@
 package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class InMemoryTypeDossierRepository implements TypeDossierRepository {
-    private EnumMap<TypesDossier, TypeDossier> types;
+    private EnumMap<EnumTypes, TypeDossier> types;
 
     @Override
     public Optional<TypeDossier> findByCode(String code) {
@@ -24,15 +25,16 @@ public class InMemoryTypeDossierRepository implements TypeDossierRepository {
     }
 
     @Override
-    public Optional<TypeDossier> findByType(TypesDossier type) {
-        return Optional.ofNullable(this.types.get(type));
+    public Optional<TypeDossier> findByType(EnumTypes type) {
+        TypeDossier typeDossier = this.types.get(type);
+        return Optional.ofNullable(typeDossier);
     }
 
     @PostConstruct
     public void initTypes() {        
-        this.types = new EnumMap<>(TypesDossier.class);
-        this.types.put(TypesDossier.PCMI, new TypeDossier(TypesDossier.PCMI,"13406"));
-        this.types.put(TypesDossier.DP, new TypeDossier(TypesDossier.DP,"13703"));
+        this.types = new EnumMap<EnumTypes, TypeDossier>(EnumTypes.class);
+        this.types.put(EnumTypes.PCMI, new TypeDossier(EnumTypes.PCMI,"13406", Arrays.asList(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" })));
+        this.types.put(EnumTypes.DPMI, new TypeDossier(EnumTypes.DPMI,"13703",Arrays.asList(new String[] { "1" })));
     }
 
 }

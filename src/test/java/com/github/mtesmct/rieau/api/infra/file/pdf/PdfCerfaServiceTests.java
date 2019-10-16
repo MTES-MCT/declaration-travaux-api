@@ -11,7 +11,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.NombrePagesCerfaException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
@@ -40,7 +40,7 @@ public class PdfCerfaServiceTests {
         assertTrue(fichierLu.isPresent());
         Map<String, String> valeurs = this.filePdfCerfaService.lire(fichierLu.get());
         assertEquals(12, valeurs.size());
-        assertEquals(TypesDossier.DP.toString(), valeurs.get("type"));
+        assertEquals(EnumTypes.DPMI.toString(), valeurs.get("type"));
         assertEquals("false", valeurs.get("nouvelleConstruction"));
         assertEquals("1", valeurs.get("numeroVoie"));
         assertEquals("Route de Kerrivaud", valeurs.get("voie"));
@@ -61,7 +61,7 @@ public class PdfCerfaServiceTests {
         assertTrue(fichierLu.isPresent());
         Map<String, String> valeurs = this.filePdfCerfaService.lire(fichierLu.get());
         assertEquals(12, valeurs.size());
-        assertEquals(TypesDossier.PCMI.toString(), valeurs.get("type"));
+        assertEquals(EnumTypes.PCMI.toString(), valeurs.get("type"));
         assertEquals("true", valeurs.get("nouvelleConstruction"));
         assertEquals("1", valeurs.get("numeroVoie"));
         assertEquals("Rue des Dervallières", valeurs.get("voie"));

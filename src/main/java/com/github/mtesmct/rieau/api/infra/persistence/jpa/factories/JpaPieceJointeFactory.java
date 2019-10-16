@@ -4,7 +4,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
@@ -29,7 +29,7 @@ public class JpaPieceJointeFactory {
             throw new NullPointerException("L'id de la pièce jointe ne peut pas être nul.");
         if (jpaPieceJointe.getId().getCode() == null)
             throw new NullPointerException("Le code de la pièce jointe ne peut pas être nul.");
-        return new PieceJointe(dossier, new CodePieceJointe(TypesDossier.valueOf(jpaPieceJointe.getId().getCode().getType()),
+        return new PieceJointe(dossier, new CodePieceJointe(EnumTypes.valueOf(jpaPieceJointe.getId().getCode().getType()),
                 jpaPieceJointe.getId().getCode().getNumero()), new FichierId(jpaPieceJointe.getId().getFichierId()));
     }
 }

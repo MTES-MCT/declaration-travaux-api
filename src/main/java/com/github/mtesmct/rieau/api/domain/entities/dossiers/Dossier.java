@@ -14,24 +14,20 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
 public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
-    public StatutDossier statut;
-    public TypeDossier type;
-    private Date dateDepot;
+    private List<Statut> historiqueStatuts;
+    private TypeDossier type;
     private Personne deposant;
     private Projet projet;
     private PieceJointe cerfa;
     private List<PieceJointe> piecesJointes;
-
-    public Date dateDepot() {
-        return this.dateDepot;
-    }
+    private StatutComparator statutComparator;
 
     public Projet projet() {
         return this.projet;
     }
 
-    public StatutDossier statut() {
-        return this.statut;
+    public List<Statut> historiqueStatuts() {
+        return this.historiqueStatuts.stream().sorted(this.statutComparator).collect(Collectors.toList());
     }
 
     public Personne deposant() {
@@ -53,11 +49,11 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public List<String> piecesAJoindre() {
         List<String> liste = new ArrayList<String>();
         if (this.projet.nature().nouvelleConstruction()) {
-            if (this.type.type().equals(TypesDossier.DP))
+            if (this.type.type().equals(EnumTypes.DPMI))
                 liste.add("2");
         }
         if (this.projet.localisation().lotissement()) {
-            if (this.type.type().equals(TypesDossier.PCMI)) {
+            if (this.type.type().equals(EnumTypes.PCMI)) {
                 liste.add("9");
                 liste.add("10");
             }
@@ -67,13 +63,14 @@ public class Dossier implements Entity<Dossier, DossierId> {
                 .collect(Collectors.toList());
     }
 
-    public PieceJointe ajouterCerfa(FichierId fichierId) throws PieceNonAJoindreException {
+    private PieceJointe ajouterCerfa(FichierId fichierId) {
         PieceJointe pieceJointe = new PieceJointe(this, new CodePieceJointe(this.type.type(), "0"), fichierId);
         this.cerfa = pieceJointe;
         return pieceJointe;
     }
 
-    public Optional<PieceJointe> ajouter(String numero, FichierId fichierId) throws AjouterPieceJointeException {
+    public Optional<PieceJointe> ajouterPieceJointe(String numero, FichierId fichierId)
+            throws AjouterPieceJointeException {
         Optional<PieceJointe> pieceJointe = Optional.empty();
         try {
             if (this.type == null)
@@ -82,9 +79,9 @@ public class Dossier implements Entity<Dossier, DossierId> {
                 throw new AjouterPieceJointeException(new NumeroPieceJointeException());
             pieceJointe = Optional
                     .ofNullable(new PieceJointe(this, new CodePieceJointe(this.type.type(), numero), fichierId));
-            if (!pieceJointe.orElseThrow().isAJoindre())
-                throw new AjouterPieceJointeException(new PieceNonAJoindreException(pieceJointe.orElseThrow().code()));
-            this.piecesJointes.add(pieceJointe.orElseThrow());
+            if (!pieceJointe.get().isAJoindre())
+                throw new AjouterPieceJointeException(new PieceNonAJoindreException(pieceJointe.get().code()));
+            this.piecesJointes.add(pieceJointe.get());
         } catch (IllegalArgumentException | NullPointerException | UnsupportedOperationException | ClassCastException
                 | NoSuchElementException e) {
             throw new AjouterPieceJointeException("Ajout de la pièce jointe impossible", e);
@@ -110,8 +107,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
     @Override
     public String toString() {
         return "Dossier={ id={" + Objects.toString(this.id) + "}, deposant={" + Objects.toString(this.deposant)
-                + "}, statut={" + Objects.toString(this.statut) + "}, dateDepot={" + Objects.toString(this.dateDepot)
-                + "}, type={" + Objects.toString(this.type) + "} }";
+                + "}, historiqueStatuts={" + Objects.toString(this.historiqueStatuts) + "}, type={"
+                + Objects.toString(this.type) + "} }";
     }
 
     @Override
@@ -124,31 +121,38 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && Objects.equals(this.id, other.id);
     }
 
-    public Dossier(DossierId id, Personne deposant, StatutDossier statut, Date dateDepot, TypeDossier type,
-            Projet projet) {
+    public Dossier(DossierId id, Personne deposant, TypeDossier type, Projet projet, FichierId fichierIdCerfa) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut pas être nul");
         this.id = id;
         if (deposant == null)
             throw new NullPointerException("Le deposant ne peut pas être nul");
         this.deposant = deposant;
-        if (statut == null)
-            throw new NullPointerException("Le statut du dossier ne peut pas être nul");
-        this.statut = statut;
-        if (dateDepot == null)
-            throw new NullPointerException("La date du dépôt ne peut pas être nulle");
-        this.dateDepot = dateDepot;
         if (type == null)
             throw new NullPointerException("Le type du dossier ne peut pas être nul");
         this.type = type;
         if (projet == null)
             throw new NullPointerException("Le projet du dossier ne peut pas être nul");
         this.projet = projet;
+        if (fichierIdCerfa == null)
+            throw new NullPointerException("Le fichier du CERFA du dossier ne peut pas être nul");
+        this.cerfa = this.ajouterCerfa(fichierIdCerfa);
+        this.historiqueStatuts = new ArrayList<Statut>();
         this.piecesJointes = new ArrayList<PieceJointe>();
+        this.statutComparator = new StatutComparator();
     }
 
-	public void qualifier() {
-        this.statut = StatutDossier.QUALIFIE;
-	}
+    public void ajouterStatut(Date dateDebut, TypeStatut type) throws StatutForbiddenException {
+        Statut statut = new Statut(type, dateDebut);
+        if (!this.historiqueStatuts().isEmpty() && this.historiqueStatuts().contains(statut) && type.statut().unique())
+            throw new StatutForbiddenException(type.statut());
+        if (statutActuel().isPresent() && this.statutComparator.compare(statut, statutActuel().get()) <= 0)
+            throw new StatutForbiddenException(type.statut(), statutActuel().get().type().statut());
+        this.historiqueStatuts.add(statut);
+    }
+
+    public Optional<Statut> statutActuel() {
+        return this.historiqueStatuts.stream().max(this.statutComparator);
+    }
 
 }

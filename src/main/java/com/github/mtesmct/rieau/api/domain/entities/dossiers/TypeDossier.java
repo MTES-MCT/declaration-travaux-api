@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,18 +8,15 @@ import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 public class TypeDossier implements ValueObject<TypeDossier> {
     private String code;
     private List<String> piecesAJoindreObligatoires;
-    private TypesDossier type;
+    private EnumTypes type;
 
-    public TypeDossier(TypesDossier type, String code) {
+    public TypeDossier(EnumTypes type, String code, List<String> piecesAJoindreObligatoires) {
         this.type = type;
         this.code = code;
-        if (type.equals(TypesDossier.PCMI))
-            this.piecesAJoindreObligatoires = Arrays.asList(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" });
-        if (type.equals(TypesDossier.DP))
-            this.piecesAJoindreObligatoires = Arrays.asList(new String[] { "1" });
+        this.piecesAJoindreObligatoires = piecesAJoindreObligatoires;
     }
 
-    public TypesDossier type() {
+    public EnumTypes type() {
         return this.type;
     }
 

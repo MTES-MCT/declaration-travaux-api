@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.entities;
 
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -19,12 +19,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -48,12 +47,14 @@ public class JpaDossier {
     @Column(nullable = false, unique = true)
     @NotNull
     private String dossierId;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 11)
-    private StatutDossier statut;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateDepot;
+
+    /**
+     * Statut minimal = DEPOSE
+     */
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dossier", orphanRemoval = true)
+    @OrderBy("dateDebut")
+    @Size(min = 1)
+    private Set<JpaStatut> statuts;
     @Embedded
     @NotNull
     @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "deposant_id")),
@@ -62,14 +63,23 @@ public class JpaDossier {
     @Column(nullable = false, length = 4)
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TypesDossier type;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "id.dossier", orphanRemoval = true)
+    private EnumTypes type;
+
+    /**
+     * Piece jointe minimale = CERFA
+     */
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "id.dossier", orphanRemoval = true)
     @OrderBy("createdOn")
+    @Size(min = 1)
     private Set<JpaPieceJointe> piecesJointes;
 
     public void addPieceJointe(JpaPieceJointe pieceJointe) {
         pieceJointe.getId().setDossier(this);
         this.piecesJointes.add(pieceJointe);
+    }
+    public void addStatut(JpaStatut statut) {
+        statut.setDossier(this);
+        this.statuts.add(statut);
     }
 
     @Override
@@ -87,17 +97,21 @@ public class JpaDossier {
         return Objects.hash(this.dossierId);
     }
 
-    public JpaDossier(@NotNull String dossierId, @NotNull StatutDossier statut, Date dateDepot,
-            @NotNull JpaDeposant deposant, @NotNull TypesDossier type) {
+    public JpaDossier(@NotNull String dossierId,
+            @NotNull JpaDeposant deposant, @NotNull EnumTypes type) {
         this();
         this.dossierId = dossierId;
-        this.statut = statut;
-        this.dateDepot = dateDepot;
         this.deposant = deposant;
         this.type = type;
     }
 
     public JpaDossier() {
         this.piecesJointes = new LinkedHashSet<JpaPieceJointe>();
+        this.statuts = new LinkedHashSet<JpaStatut>();
+    }
+
+    @Transient
+    public Optional<JpaPieceJointe> cerfa(){
+        return this.piecesJointes.stream().filter(pieceJointe -> pieceJointe.isCerfa()).findAny();
     }
 }

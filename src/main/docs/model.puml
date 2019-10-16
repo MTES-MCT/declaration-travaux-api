@@ -5,7 +5,7 @@ class Personne {
     - email
 }
 class Dossier {
-    - dateDepot
+    - dateDebut
 }
 class PieceJointe {
     - file

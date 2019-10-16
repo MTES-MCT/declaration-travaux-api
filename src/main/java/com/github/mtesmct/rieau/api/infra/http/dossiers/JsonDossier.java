@@ -9,20 +9,19 @@ import lombok.Getter;
 public class JsonDossier {
     private String id;
     private String type;
-    private String statut;
-    private String date;
+    private List<JsonStatut> statuts = new ArrayList<JsonStatut>();
+    private JsonStatut statutActuel;
     private JsonPieceJointe cerfa;
     private List<JsonPieceJointe> piecesJointes = new ArrayList<JsonPieceJointe>();
     private List<String> piecesAJoindre = new ArrayList<String>();
     private JsonProjet projet;
 
-    public JsonDossier(String id, String type, String statut, String date, JsonPieceJointe cerfa, JsonProjet projet) {
+    public JsonDossier(String id, String type, JsonPieceJointe cerfa, JsonProjet projet, JsonStatut statutActuel) {
         this.id = id;
         this.type = type;
-        this.statut = statut;
-        this.date = date;
         this.cerfa = cerfa;
         this.projet = projet;
+        this.statutActuel = statutActuel;
     }
 
     public void addPieceJointe(JsonPieceJointe pieceJointe){
@@ -31,6 +30,10 @@ public class JsonDossier {
 
     public void addPieceJointe(String numero){
         this.piecesAJoindre.add(numero);
+    }
+
+    public void addStatut(JsonStatut statut){
+        this.statuts.add(statut);
     }
 
 }

@@ -4,13 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.regex.PatternSyntaxException;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
@@ -31,12 +29,10 @@ public class JpaProjetFactoryTests {
     private JpaProjetFactory jpaProjetFactory;
     @Autowired
     private ProjetFactory projetFactory;
-    @Autowired
-    private DateService dateService;
 
     @Test
     public void toJpaTest() throws CommuneNotFoundException {
-        JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
+        JpaDossier jpaDossier = new JpaDossier("0", new JpaDeposant("toto", "toto@fai.fr"), EnumTypes.DPMI);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true, true);
         JpaProjet jpaProjet = this.jpaProjetFactory.toJpa(jpaDossier, projet);
@@ -51,7 +47,7 @@ public class JpaProjetFactoryTests {
 
     @Test
     public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
-        JpaDossier jpaDossier = new JpaDossier("0", StatutDossier.DEPOSE, this.dateService.now(), new JpaDeposant("toto", "toto@fai.fr"), TypesDossier.DP);
+        JpaDossier jpaDossier = new JpaDossier("0", new JpaDeposant("toto", "toto@fai.fr"), EnumTypes.DPMI);
         JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01"), "0-1-2,1-2-3", true);
         Projet projet = this.jpaProjetFactory.fromJpa(jpaProjet);
         assertEquals(jpaProjet.getAdresse().getNumero(), projet.localisation().adresse().numero());

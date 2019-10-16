@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import java.io.File;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -16,13 +17,17 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
@@ -67,19 +72,26 @@ public class TxConsulterDossierServiceTests {
     private Personne instructeurNonBeta;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private FichierService fichierService;
+    @Autowired
+    private FichierFactory fichierFactory;
 
     @BeforeEach
     public void setUp() throws Exception {
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true, true);
-        this.dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
+        File cerfaFile = new File("src/test/fixtures/dummy.pdf");
+        Fichier cerfaFichier = this.fichierFactory.creer(cerfaFile, "application/pdf");
+        this.fichierService.save(cerfaFichier);
+        this.dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, cerfaFichier.identity());
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.dossier);
         this.dossier = this.dossierRepository.save(this.dossier);
         assertNotNull(this.dossier);
         assertNotNull(this.dossier.identity());
         assertNotNull(this.dossier.deposant());
         assertTrue(this.dossier.pieceJointes().isEmpty());
-        this.otherDossier = this.dossierFactory.creer(this.instructeurNonBeta, TypesDossier.DP, projet);
+        this.otherDossier = this.dossierFactory.creer(this.instructeurNonBeta, EnumTypes.DPMI, projet, cerfaFichier.identity());
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.otherDossier);
         this.otherDossier = this.dossierRepository.save(this.otherDossier);
         assertNotNull(this.otherDossier);
@@ -90,8 +102,8 @@ public class TxConsulterDossierServiceTests {
 
     @Test
     @WithDeposantBetaDetails
-    public void executeDeposantTest()
-            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+    public void executeDeposantTest() throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException,
+            UserInfoServiceException, MairieForbiddenException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
         assertTrue(dossierTrouve.isPresent());
@@ -100,14 +112,14 @@ public class TxConsulterDossierServiceTests {
 
     @Test
     @WithMairieBetaDetails
-    public void executeMairieTest()
-            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+    public void executeMairieTest() throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException,
+            UserInfoServiceException, MairieForbiddenException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
         assertTrue(dossierTrouve.isPresent());
         assertEquals(this.dossier, dossierTrouve.get());
     }
-    
+
     @Test
     @WithDeposantBetaDetails
     public void executeDeposantAutreDossierTestInterdit() throws Exception {
@@ -116,6 +128,7 @@ public class TxConsulterDossierServiceTests {
         Optional<Personne> user = this.authenticationService.user();
         assertTrue(user.isPresent());
         assertFalse(this.otherDossier.deposant().equals(user.get()));
-        assertThrows(DeposantForbiddenException.class, () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
+        assertThrows(DeposantForbiddenException.class,
+                () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
     }
 }

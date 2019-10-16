@@ -69,7 +69,7 @@ public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeS
             if (!dossier.get().deposant().identity().equals(this.authenticationService.user().get().identity()))
                 throw new AjouterPieceJointeException(
                         new DeposantForbiddenException(this.authenticationService.user().get()));
-            pieceJointe = dossier.get().ajouter(numero, fichier.identity());
+            pieceJointe = dossier.get().ajouterPieceJointe(numero, fichier.identity());
             this.dossierRepository.save(dossier.get());
             fichierLu.get().fermer();
         } catch (IOException e) {

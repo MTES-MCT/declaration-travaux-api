@@ -7,6 +7,7 @@ import java.util.regex.PatternSyntaxException;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
@@ -14,6 +15,7 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaStatut;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaDossierFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
 
@@ -37,20 +39,22 @@ public class JpaDossierRepository implements DossierRepository {
 
     @Override
     public Optional<Dossier> findById(String id) {
-        Optional<JpaDossier> jpaDossier = this.jpaSpringDossierRepository.findBySimpleNaturalId(id);
+        List<JpaDossier> jpaDossiers = this.jpaSpringDossierRepository.findAllByDossierId(id);
         Optional<Dossier> dossier = Optional.empty();
-        if (jpaDossier.isPresent()) {
-            Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.get().getId());
+        if (!jpaDossiers.isEmpty()) {
+            JpaDossier jpaDossier = jpaDossiers.get(0);
+            Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.getId());
             if (jpaProjet.isEmpty())
                 throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
             try {
-                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get(), jpaProjet.get()));
+                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier, jpaProjet.get()));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {
                 log.debug("{}", e);
             }
         }
         return dossier;
     }
+
 
     private JpaProjet findJpaProjet(JpaDossier jpaDossier) {
         Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.getId());
@@ -72,7 +76,6 @@ public class JpaDossierRepository implements DossierRepository {
         return dossiers;
     }
 
-    
     @Override
     public Optional<Dossier> findByFichierId(String fichierId) {
         Optional<JpaDossier> jpaDossier = this.jpaSpringDossierRepository.findOneByPiecesJointesIdFichierId(fichierId);
@@ -107,13 +110,16 @@ public class JpaDossierRepository implements DossierRepository {
     public Dossier save(Dossier dossier) {
         JpaDossier jpaDossierAfter = this.jpaDossierFactory.toJpa(dossier);
         JpaProjet jpaProjetAfter = this.jpaProjetFactory.toJpa(jpaDossierAfter, dossier.projet());
-        Optional<JpaDossier> jpaDossierBefore = this.jpaSpringDossierRepository
-                .findBySimpleNaturalId(dossier.identity().toString());
-        if (jpaDossierBefore.isPresent()) {
-            jpaDossierAfter.setId(jpaDossierBefore.get().getId());
+        List<JpaDossier> jpaDossiersBefore = this.jpaSpringDossierRepository
+                .findAllByDossierId(dossier.identity().toString());
+        if (!jpaDossiersBefore.isEmpty()) {
+            JpaDossier jpaDossierBefore = jpaDossiersBefore.get(0);
+            jpaDossierAfter.setId(jpaDossierBefore.getId());
             jpaProjetAfter.setDossier(jpaDossierAfter);
             if (!dossier.pieceJointes().isEmpty())
-                dossier.pieceJointes().forEach(pieceJointe -> savePieceJointe(jpaDossierBefore.get(), pieceJointe));
+                dossier.pieceJointes().forEach(pieceJointe -> savePieceJointe(jpaDossierBefore, pieceJointe));
+            if (!dossier.historiqueStatuts().isEmpty())
+                dossier.historiqueStatuts().forEach(statut -> saveStatut(jpaDossierBefore, statut));
         }
         jpaDossierAfter = this.jpaSpringDossierRepository.save(jpaDossierAfter);
         jpaProjetAfter.setDossier(jpaDossierAfter);
@@ -137,6 +143,10 @@ public class JpaDossierRepository implements DossierRepository {
         jpaDossier.addPieceJointe(new JpaPieceJointe(new JpaPieceJointeId(jpaDossier,
                 new JpaCodePieceJointe(pieceJointe.code().type().toString(), pieceJointe.code().numero()),
                 pieceJointe.fichierId().toString())));
+    }
+
+    private void saveStatut(JpaDossier jpaDossier, Statut statut) {
+        jpaDossier.addStatut(new JpaStatut(jpaDossier, statut.type().statut(), statut.dateDebut()));
     }
 
 }

@@ -11,7 +11,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -78,8 +78,7 @@ public class FichiersControllerIT {
 		fichierService.save(fichier);
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
 				new ParcelleCadastrale("0", "1", "2"), true, true);
-		Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
-		dp.ajouterCerfa(fichier.identity());
+		Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
 		dp = this.dossierRepository.save(dp);
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 		this.accessToken = this.keycloakTestsHelper.getAccessToken(WithDeposantBetaDetails.ID,
@@ -136,8 +135,7 @@ public class FichiersControllerIT {
 		fichierService.save(otherFichier);
 		Projet projet = this.projetFactory.creer("2", "rue des Fleurs", "ZI", "44500", "BP 1", "Cedex 02",
 				new ParcelleCadastrale("1", "2", "3"), true, true);
-		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
-		dossier.ajouterCerfa(otherFichier.identity());
+		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
 		dossier = this.dossierRepository.save(dossier);
 		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.mairieAccessToken)

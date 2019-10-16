@@ -10,10 +10,15 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
@@ -56,8 +61,8 @@ public class DossiersController {
 	private JsonDossierFactory jsonDossierFactory;
 
 	@GetMapping("/{id}")
-	public Optional<JsonDossier> consulter(@PathVariable String id)
-			throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantForbiddenException,
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException {
 		Optional<Dossier> dossier = this.consulterDossierService.execute(id);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
@@ -81,7 +86,8 @@ public class DossiersController {
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterCerfa(@RequestParam("file") MultipartFile file) throws IOException, DossierImportException,
-			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException, StatutForbiddenException,
+			TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
 		this.importerCerfaService.execute(file.getInputStream(), file.getOriginalFilename(), file.getContentType(),
 				file.getSize());
 	}
@@ -89,15 +95,15 @@ public class DossiersController {
 	@PostMapping(path = "/{id}/piecesjointes/{numero}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
 			@RequestParam("file") MultipartFile file) throws IOException, DeposantForbiddenException,
-			AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException, AjouterPieceJointeException {
 		this.ajouterPieceJointeService.execute(new DossierId(id), numero, file.getInputStream(),
 				file.getOriginalFilename(), file.getContentType(), file.getSize());
 	}
 
 	@PostMapping("/{id}/qualifier")
 	public Optional<JsonDossier> qualifier(@PathVariable String id)
-			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
-			MairieForbiddenException, DossierNotFoundException {
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException,
+			DossierNotFoundException, TypeStatutNotFoundException, StatutForbiddenException {
 		Optional<Dossier> dossier = this.qualifierDossierService.execute(new DossierId(id));
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())

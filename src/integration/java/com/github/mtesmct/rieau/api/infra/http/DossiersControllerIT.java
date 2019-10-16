@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -88,8 +88,7 @@ public class DossiersControllerIT {
 		fichierService.save(fichier);
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
 				new ParcelleCadastrale("0", "1", "2"), true, true);
-		dossier = dossierFactory.creer(deposantBeta, TypesDossier.DP, projet);
-		dossier.ajouterCerfa(fichier.identity());
+		dossier = dossierFactory.creer(deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
 		dossier = dossierRepository.save(dossier);
 		assertNotNull(dossier);
 		assertNotNull(dossier.identity());
@@ -183,7 +182,7 @@ public class DossiersControllerIT {
 		assertTrue(dossierLu.isPresent());
 		assertNotNull(dossierLu.get().cerfa());
 		assertNotNull(dossierLu.get().cerfa().code());
-		assertEquals(TypesDossier.DP, dossierLu.get().cerfa().code().type());
+		assertEquals(EnumTypes.DPMI, dossierLu.get().cerfa().code().type());
 		assertFalse(dossierLu.get().projet().nature().nouvelleConstruction());
 		assertFalse(dossierLu.get().projet().localisation().lotissement());
 		assertIterableEquals(Arrays.asList(new String[] { "1" }), dossierLu.get().piecesAJoindre());
@@ -226,7 +225,7 @@ public class DossiersControllerIT {
 		assertFalse(dossierLu.get().pieceJointes().isEmpty());
 		assertEquals(1, dossierLu.get().pieceJointes().size());
 		assertEquals("1", dossierLu.get().pieceJointes().get(0).code().numero());
-		assertEquals(TypesDossier.DP, dossierLu.get().pieceJointes().get(0).code().type());
+		assertEquals(EnumTypes.DPMI, dossierLu.get().pieceJointes().get(0).code().type());
 	}
 
 	@Test
@@ -257,7 +256,10 @@ public class DossiersControllerIT {
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
 		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
-		assertEquals(StatutDossier.QUALIFIE.toString(), jsonDossier.getStatut());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(2, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE, jsonDossier.getStatuts().get(0).getStatut());
+		assertEquals(EnumStatuts.QUALIFIE, jsonDossier.getStatuts().get(1).getStatut());
 	}
 
 	@Test

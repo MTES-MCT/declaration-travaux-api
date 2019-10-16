@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @Primary
 public class SystemDateService implements DateService {
 
-    private Date date;
     @Autowired
     @Qualifier("dateTimeConverter")
     private DateConverter dateTimeConverter;
@@ -26,21 +25,17 @@ public class SystemDateService implements DateService {
 
     @Override
     public Date now() {
-        return this.date;
-    }
-
-    public SystemDateService() {
-        this.date = new Date();
+        return new Date(System.nanoTime());
     }
 
     @Override
     public String nowText() {
-        return this.dateTimeConverter.format(this.date);
+        return this.dateTimeConverter.format(now());
     }
 
     @Override
     public String year() {
-        return this.yearConverter.format(this.date);
+        return this.yearConverter.format(now());
     }
 
     @Override

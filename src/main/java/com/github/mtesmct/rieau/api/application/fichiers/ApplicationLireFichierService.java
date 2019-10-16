@@ -46,7 +46,7 @@ public class ApplicationLireFichierService implements LireFichierService {
     @Override
     public Optional<Fichier> execute(FichierId fichierId)
             throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException, DossierNotFoundException {
+            UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
         this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
         Optional<Fichier> fichier = Optional.empty();
         Personne user = this.authenticationService.user().get();

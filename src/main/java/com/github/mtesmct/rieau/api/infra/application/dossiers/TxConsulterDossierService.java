@@ -9,6 +9,7 @@ import com.github.mtesmct.rieau.api.application.dossiers.ApplicationConsulterDos
 import com.github.mtesmct.rieau.api.application.dossiers.ConsulterDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public class TxConsulterDossierService implements ConsulterDossierService {
     private ApplicationConsulterDossierService applicationConsulterDossierService;
 
     @Override
-    public Optional<Dossier> execute(String id)
-            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+    public Optional<Dossier> execute(String id) throws DeposantForbiddenException, AuthRequiredException,
+            UserForbiddenException, UserInfoServiceException, MairieForbiddenException {
         return this.applicationConsulterDossierService.execute(id);
     }    
 }

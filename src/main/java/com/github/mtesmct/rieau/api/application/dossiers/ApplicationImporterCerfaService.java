@@ -15,8 +15,12 @@ import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -72,7 +76,8 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
 
     @Override
     public Optional<Dossier> execute(InputStream is, String nom, String mimeType, long taille)
-            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+            throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
         Dossier dossier;
         try {
             this.authorizationService.isDeposantAndBetaAuthorized();
@@ -86,7 +91,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
             if (type == null)
                 throw new DossierImportException("Aucun type de dossier reconnu dans le fichier pdf pour le code");
             Personne deposant = this.authenticationService.user().get();
-            for (String nomChamp : this.cerfaImportService.keys(TypesDossier.valueOf(type))) {
+            for (String nomChamp : this.cerfaImportService.keys(EnumTypes.valueOf(type))) {
                 if (Objects.equals(nomChamp, "codePostal") && Objects.equals(valeurs.get(nomChamp), "null"))
                     throw new DossierImportException("Le champ code postal ne peut pas être vide",
                             new FormValueCerfaNotFoundException(nomChamp));
@@ -106,8 +111,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
             }
             if (projet.isEmpty())
                 throw new DossierImportException(new ProjetNotFoundException());
-            dossier = this.dossierFactory.creer(deposant, TypesDossier.valueOf(type), projet.get());
-            dossier.ajouterCerfa(fichier.identity());
+            dossier = this.dossierFactory.creer(deposant, EnumTypes.valueOf(type), projet.get(), fichier.identity());
             dossier = this.dossierRepository.save(dossier);
             fichierLu.get().fermer();
         } catch (FichierServiceException | CerfaImportException | IOException | NullPointerException e) {

@@ -1,6 +1,6 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-public class AjouterPieceJointeException extends RuntimeException {
+public class AjouterPieceJointeException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public AjouterPieceJointeException(Throwable cause) {

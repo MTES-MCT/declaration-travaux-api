@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
-public class DeposantForbiddenException extends RuntimeException {
+public class DeposantForbiddenException extends Exception {
     private static final long serialVersionUID = 1L;
 
     private static String message(Personne user) {

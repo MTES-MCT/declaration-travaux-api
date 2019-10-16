@@ -19,8 +19,12 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -65,21 +69,21 @@ public class TxLireFichierTests {
     private Personne deposantBeta;
 
     @BeforeEach
-    public void setup() throws IOException, CommuneNotFoundException {
+    public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,
+            PieceNonAJoindreException, TypeDossierNotFoundException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         fichier = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(fichier);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true, true);
-        Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
-        dp.ajouterCerfa(fichier.identity());
+        Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
         dp = this.dossierRepository.save(dp);
     }
 
     @Test
     @WithDeposantBetaDetails
     public void lireDeposantTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
-            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException {
+            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
         Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
         assertTrue(fichierLu.isPresent());
     }
@@ -87,7 +91,7 @@ public class TxLireFichierTests {
     @Test
     @WithMairieBetaDetails
     public void lireMairieTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
-            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException {
+            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
         Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
         assertTrue(fichierLu.isPresent());
     }
@@ -96,14 +100,14 @@ public class TxLireFichierTests {
     @WithMairieBetaDetails
     public void lireMairieNonLocaliseeTest()
             throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException, DossierNotFoundException, FileNotFoundException, CommuneNotFoundException {
+            UserNotOwnerException, DossierNotFoundException, FileNotFoundException, CommuneNotFoundException,
+            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
         File file = new File("src/test/fixtures/dummy.pdf");
         Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(fichier);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44500", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true, true);
-        Dossier dp = this.dossierFactory.creer(this.deposantBeta, TypesDossier.DP, projet);
-        dp.ajouterCerfa(fichier.identity());
+        Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
         dp = this.dossierRepository.save(dp);
         MairieForbiddenException exception = assertThrows(MairieForbiddenException.class,
                 () -> lireFichierService.execute(fichier.identity()));

@@ -5,22 +5,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Date;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypesDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
+import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
@@ -31,6 +39,7 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaStatut;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonneFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
 
@@ -62,8 +71,6 @@ public class JpaDossierRepositoryTests {
 	private DateConverter dateConverter;
 
 	@Autowired
-	private DateService dateService;
-	@Autowired
 	private DossierFactory dossierFactory;
 	@Autowired
 	private ProjetFactory projetFactory;
@@ -83,15 +90,28 @@ public class JpaDossierRepositoryTests {
 
 	private JpaPersonne jpaPersonne;
 
+	@Autowired
+	private DateService dateService;
+	@Autowired
+	private FichierService fichierService;
+	@Autowired
+	private FichierFactory fichierFactory;
+
 	@BeforeEach
-	public void setUp() throws CommuneNotFoundException {
+	public void setUp() throws CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,
+			TypeDossierNotFoundException, FileNotFoundException {
 		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email(), "44100");
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
 				new ParcelleCadastrale("0", "1", "2"), true, true);
 		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3", "4", "5"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());
-		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), TypesDossier.DP,
-				projet);
+		File cerfaFile = new File("src/test/fixtures/dummy.pdf");
+		Fichier cerfaFichier = this.fichierFactory.creer(cerfaFile, "application/pdf");
+		this.fichierService.save(cerfaFichier);
+		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), EnumTypes.DPMI,
+				projet, cerfaFichier.identity());
+		assertFalse(this.dossier.historiqueStatuts().isEmpty());
+		assertEquals(1, this.dossier.historiqueStatuts().size());
 		assertEquals(this.dossier.deposant().identity().toString(), this.deposantBeta.identity().toString());
 		assertEquals(this.dossier.deposant().email(), jpaPersonne.getEmail());
 	}
@@ -107,9 +127,12 @@ public class JpaDossierRepositoryTests {
 		assertTrue(optionalJpaDossier.isPresent());
 		JpaDossier jpaDossier = optionalJpaDossier.get();
 		assertEquals(this.dossier.identity().toString(), jpaDossier.getDossierId());
-		assertEquals(this.dossier.statut(), jpaDossier.getStatut());
+		assertFalse(jpaDossier.getStatuts().isEmpty());
+		assertTrue(this.dossier.statutActuel().isPresent());
+		assertEquals(1, jpaDossier.getStatuts().size());
+		JpaStatut jpaStatut = jpaDossier.getStatuts().iterator().next();
+		assertEquals(this.dossier.statutActuel().get().type().statut(), jpaStatut.getStatut());
 		assertEquals(this.dossier.type().type(), jpaDossier.getType());
-		assertEquals(this.dossier.dateDepot(), jpaDossier.getDateDepot());
 		JpaProjet jpaProjet = this.entityManager.find(JpaProjet.class, jpaDossier.getId());
 		assertNotNull(jpaProjet);
 		assertEquals(this.dossier.projet().nature().nouvelleConstruction(),
@@ -129,20 +152,24 @@ public class JpaDossierRepositoryTests {
 
 	@Test
 	public void findByIdTest() throws Exception {
-		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
-				new Date(this.dateService.now().getTime()),
-				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
+				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
 		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
 		Optional<Dossier> dossier = this.repository.findById(jpaDossier.getDossierId());
 		assertTrue(dossier.isPresent());
-		assertEquals(jpaDossier.getDossierId(), dossier.get().identity().toString());
-		assertEquals(jpaDossier.getStatut(), dossier.get().statut());
-		assertEquals(jpaDossier.getType(), dossier.get().type().type());
-		assertEquals(jpaDossier.getDateDepot(), dossier.get().dateDepot());
-		assertEquals(jpaDossier.getDateDepot(), dossier.get().dateDepot());
+		assertEquals(dossier.get().identity().toString(), jpaDossier.getDossierId());
+		assertFalse(jpaDossier.getStatuts().isEmpty());
+		assertEquals(1, jpaDossier.getStatuts().size());
+		JpaStatut jpaStatut = jpaDossier.getStatuts().iterator().next();
+		assertEquals(dossier.get().statutActuel().get().type().statut(), jpaStatut.getStatut());
+		assertEquals(dossier.get().statutActuel().get().dateDebut(), jpaStatut.getDateDebut());
+		assertEquals(dossier.get().type().type(), jpaDossier.getType());
 		assertEquals(jpaProjet.getNature().isConstructionNouvelle(),
 				dossier.get().projet().nature().nouvelleConstruction());
 		assertEquals(jpaProjet.getAdresse().getNumero(), dossier.get().projet().localisation().adresse().numero());
@@ -159,55 +186,73 @@ public class JpaDossierRepositoryTests {
 
 	@Test
 	public void findByDeposantTest() throws Exception {
-		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
-				new Date(this.dateService.now().getTime()),
-				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
+				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
 		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
 		List<Dossier> dossiers = this.repository.findByDeposantId(this.deposantBeta.identity().toString());
 		assertFalse(dossiers.isEmpty());
-		assertEquals(dossiers.size(), 1);
-		assertEquals(dossiers.get(0).identity().toString(), jpaDossier.getDossierId());
-		assertEquals(dossiers.get(0).statut(), jpaDossier.getStatut());
-		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
-		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
+		assertEquals(1, dossiers.size());
+		assertEquals(jpaDossier.getDossierId(), dossiers.get(0).identity().toString());
+		assertEquals(jpaDossier.getType(), dossiers.get(0).type().type());
+		assertFalse(dossiers.get(0).historiqueStatuts().isEmpty());
+		assertEquals(1, dossiers.get(0).historiqueStatuts().size());
+		Statut statut = dossiers.get(0).historiqueStatuts().iterator().next();
+		JpaStatut jpaStatut = jpaDossier.getStatuts().iterator().next();
+		assertEquals(jpaStatut.getStatut(), statut.type().statut());
+		assertEquals(jpaStatut.getDateDebut(), jpaStatut.getDateDebut());
 	}
 
 	@Test
 	public void findByCommuneTest() throws Exception {
-		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
-				new Date(this.dateService.now().getTime()),
-				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
+				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
 		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
 		List<Dossier> dossiers = this.repository.findByCommune("codePostal");
 		assertFalse(dossiers.isEmpty());
-		assertEquals(dossiers.size(), 1);
-		assertEquals(dossiers.get(0).identity().toString(), jpaDossier.getDossierId());
-		assertEquals(dossiers.get(0).statut(), jpaDossier.getStatut());
-		assertEquals(dossiers.get(0).type().type(), jpaDossier.getType());
-		assertEquals(dossiers.get(0).dateDepot(), jpaDossier.getDateDepot());
+		assertEquals(1, dossiers.size());
+		Dossier dossier = dossiers.get(0);
+		assertEquals(jpaDossier.getDossierId(), dossier.identity().toString());
+		assertEquals(jpaDossier.getType(), dossier.type().type());
+		assertFalse(jpaDossier.getStatuts().isEmpty());
+		assertEquals(1, jpaDossier.getStatuts().size());
+		JpaStatut jpaStatut = jpaDossier.getStatuts().iterator().next();
+		assertTrue(dossier.statutActuel().isPresent());
+		assertEquals(jpaStatut.getStatut(), dossier.statutActuel().get().type().statut());
+		assertEquals(jpaStatut.getDateDebut(), dossier.statutActuel().get().dateDebut());
 	}
 
 	@Test
 	public void findByFichierIdTest() throws Exception {
-		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), StatutDossier.DEPOSE,
-				new Date(this.dateService.now().getTime()),
-				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), TypesDossier.DP);
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
+				new JpaDeposant(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
-		JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(TypesDossier.DP.toString(), "1"), "fichierId"));
+		JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "1"), "fichierId"));
 		jpaPieceJointe = this.entityManager.persistAndFlush(jpaPieceJointe);
 		Optional<Dossier> dossier = this.repository.findByFichierId("fichierId");
 		assertTrue(dossier.isPresent());
 		assertEquals(jpaDossier.getDossierId(), dossier.get().identity().toString());
-		assertEquals(jpaProjet.getAdresse().getCodePostal(), dossier.get().projet().localisation().adresse().commune().codePostal());
+		assertEquals(jpaProjet.getAdresse().getCodePostal(),
+				dossier.get().projet().localisation().adresse().commune().codePostal());
 		assertEquals(this.jpaPersonne.getPersonneId(), dossier.get().deposant().identity().toString());
 	}
 
