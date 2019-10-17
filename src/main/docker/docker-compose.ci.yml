@@ -17,8 +17,8 @@ services:
       - minio
       - keycloak
     volumes:
-      - ./src:/home/circleci/rieau-api/src
-      - ./pom.xml:/home/circleci/rieau-api/pom.xml:ro
+      - ./src:/home/circleci/src
+      - ./pom.xml:/home/circleci/pom.xml:ro
     networks:
       - api
     command: mvn clean verify -Dapp.communes-url= -Dskip.check=true
