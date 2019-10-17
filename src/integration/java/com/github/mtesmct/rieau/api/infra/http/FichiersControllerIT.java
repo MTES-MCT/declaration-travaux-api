@@ -8,10 +8,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -132,10 +132,10 @@ public class FichiersControllerIT {
 	public void lireMairieNonLocaliseeTest() throws Exception {
 		File otherFile = new File("src/test/fixtures/dummy.pdf");
 		Fichier otherFichier = this.fichierFactory.creer(otherFile, "application/pdf");
-		fichierService.save(otherFichier);
+		this.fichierService.save(otherFichier);
 		Projet projet = this.projetFactory.creer("2", "rue des Fleurs", "ZI", "44500", "BP 1", "Cedex 02",
 				new ParcelleCadastrale("1", "2", "3"), true, true);
-		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
+		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, otherFichier.identity());
 		dossier = this.dossierRepository.save(dossier);
 		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.mairieAccessToken)
