@@ -21,8 +21,7 @@ services:
       - ./pom.xml:/home/circleci/pom.xml:ro
     networks:
       - api
-    # command: mvn clean verify -Dapp.communes-url= -Dskip.check=true
-    command: ls /home/circleci
+    command: (cd /home/circleci; mvn clean verify -Dapp.communes-url= -Dskip.check=true)
 
   db:
     image: postgres:10-alpine
