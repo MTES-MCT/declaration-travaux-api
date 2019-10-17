@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.application.dossiers.ApplicationImporterCerfaService;
+import com.github.mtesmct.rieau.api.application.dossiers.AppImporterCerfaService;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.ImporterCerfaService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TxImporterCerfaService implements ImporterCerfaService {
 
     @Autowired
-    private ApplicationImporterCerfaService applicationImporterCerfaService;
+    private AppImporterCerfaService applicationImporterCerfaService;
 
     @Override
     public Optional<Dossier> execute(InputStream is, String nom, String mimeType, long taille)

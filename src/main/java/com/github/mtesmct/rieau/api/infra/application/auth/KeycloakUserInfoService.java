@@ -1,6 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
@@ -30,6 +31,18 @@ public class KeycloakUserInfoService implements UserInfoService {
         @Autowired
         private PersonneFactory personneFactory;
 
+        private void checkUserAttribute(KeycloakAuthenticationToken token, AccessToken accessToken,
+                        Map<String, Object> otherClaims, String userRole, String attribute)
+                        throws UserInfoServiceException {
+                if (token.getAccount().getRoles().stream().anyMatch(role -> Objects.equals(role, userRole))) {
+                        if (!otherClaims.containsKey(attribute)
+                                        || (String) accessToken.getOtherClaims().get(attribute) == null
+                                        || ((String) accessToken.getOtherClaims().get(attribute)).isBlank())
+                                throw new UserInfoServiceException("L'utilisateur doit avoir l'attribut " + attribute
+                                                + " de renseigné dans son profil {" + userRole + "}");
+                }
+        }
+
         @Override
         public Personne user() throws UserInfoServiceException {
                 SecurityContext context = SecurityContextHolder.getContext();
@@ -44,7 +57,6 @@ public class KeycloakUserInfoService implements UserInfoService {
                 if (accessToken == null)
                         throw new UserInfoServiceException("accessToken is null");
                 log.debug("accessToken.type={}", accessToken.getType());
-                log.debug("accessToken.profile={}", accessToken.getProfile());
                 log.debug("accessToken.scope={}", accessToken.getScope());
                 Sexe sexe = null;
                 if (accessToken.getGender() != null)
@@ -52,14 +64,8 @@ public class KeycloakUserInfoService implements UserInfoService {
                 Personne user;
                 Map<String, Object> otherClaims = accessToken.getOtherClaims();
                 log.debug("otherClaims={}", otherClaims);
-                if (token.getAccount().getRoles().contains(Roles.MAIRIE)) {
-                        if (!otherClaims.containsKey("codePostal")
-                                        || (String) accessToken.getOtherClaims().get("codePostal") == null
-                                        || ((String) accessToken.getOtherClaims().get("codePostal")).isBlank())
-                                throw new UserInfoServiceException(
-                                                "L'utilisateur doit avoir un code postal de renseigné dans son profil {"
-                                                                + Roles.MAIRIE + "}");
-                }
+                checkUserAttribute(token, accessToken, otherClaims, Roles.MAIRIE, "codePostal");
+                checkUserAttribute(token, accessToken, otherClaims, Roles.INSTRUCTEUR, "codePostal");
                 try {
                         user = this.personneFactory.creer(accessToken.getPreferredUsername(), accessToken.getEmail(),
                                         sexe, accessToken.getFamilyName(), accessToken.getGivenName(),

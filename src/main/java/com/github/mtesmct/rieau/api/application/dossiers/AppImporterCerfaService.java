@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @ApplicationService
 @Slf4j
-public class ApplicationImporterCerfaService implements ImporterCerfaService {
+public class AppImporterCerfaService implements ImporterCerfaService {
     private DossierRepository dossierRepository;
     private DossierFactory dossierFactory;
     private CerfaImportService cerfaImportService;
@@ -44,7 +44,7 @@ public class ApplicationImporterCerfaService implements ImporterCerfaService {
     private FichierService fichierService;
     private ProjetFactory projetFactory;
 
-    public ApplicationImporterCerfaService(AuthenticationService authenticationService,
+    public AppImporterCerfaService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierFactory dossierFactory,
             DossierRepository dossierRepository, CerfaImportService cerfaImportService, FichierFactory fichierFactory,
             FichierService fichierService, ProjetFactory projetFactory) {

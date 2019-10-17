@@ -11,29 +11,29 @@ public class Adresse implements ValueObject<Adresse> {
     private String lieuDit;
     private Commune commune;
     private String bp;
-    private String cedex;    
-    
-    public String numero(){
+    private String cedex;
+
+    public String numero() {
         return this.numero;
     }
-    
-    public String voie(){
+
+    public String voie() {
         return this.voie;
     }
-    
-    public String lieuDit(){
+
+    public String lieuDit() {
         return this.lieuDit;
     }
-    
-    public Commune commune(){
+
+    public Commune commune() {
         return this.commune;
     }
-    
-    public String bp(){
+
+    public String bp() {
         return this.bp;
     }
-    
-    public String cedex(){
+
+    public String cedex() {
         return this.cedex;
     }
 
@@ -59,6 +59,8 @@ public class Adresse implements ValueObject<Adresse> {
         this.numero = numero;
         this.voie = voie;
         this.lieuDit = lieuDit;
+        if (commune == null)
+            throw new NullPointerException("La commune de l'adresse ne peut pas être nulle.");
         this.commune = commune;
         this.bp = bp;
         this.cedex = cedex;

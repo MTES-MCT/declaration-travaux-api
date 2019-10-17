@@ -144,10 +144,15 @@ public class Dossier implements Entity<Dossier, DossierId> {
 
     public void ajouterStatut(Date dateDebut, TypeStatut type) throws StatutForbiddenException {
         Statut statut = new Statut(type, dateDebut);
+        if (statutActuel().isEmpty() && !Objects.equals(type.statut(), EnumStatuts.DEPOSE))
+            throw new StatutForbiddenException();
         if (!this.historiqueStatuts().isEmpty() && this.historiqueStatuts().contains(statut) && type.statut().unique())
             throw new StatutForbiddenException(type.statut());
-        if (statutActuel().isPresent() && this.statutComparator.compare(statut, statutActuel().get()) <= 0)
-            throw new StatutForbiddenException(type.statut(), statutActuel().get().type().statut());
+        if (statutActuel().isPresent()) {
+            int statutComparedToActuel = this.statutComparator.compare(statut, statutActuel().get());
+            if (statutComparedToActuel <= 0 || statutComparedToActuel > 1)
+                throw new StatutForbiddenException(type.statut(), statutActuel().get().type().statut());
+        }
         this.historiqueStatuts.add(statut);
     }
 

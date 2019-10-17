@@ -14,13 +14,15 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeE
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxDeclarerIncompletDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerDossiersService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxQualifierDossierService;
@@ -42,6 +44,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class DossiersController {
 
 	public static final String ROOT_URI = "/dossiers";
+	public static final String PIECES_JOINTES_URI = "/piecesjointes";
+	public static final String QUALIFIER_URI = "/qualifier";
+	public static final String DECLARER_INCOMPLET_URI = "/declarer-incomplet";
 
 	@Autowired
 	private TxImporterCerfaService importerCerfaService;
@@ -53,6 +58,8 @@ public class DossiersController {
 	private TxConsulterDossierService consulterDossierService;
 	@Autowired
 	private TxQualifierDossierService qualifierDossierService;
+	@Autowired
+	private TxDeclarerIncompletDossierService declarerIncompletDossierService;
 	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;
@@ -92,7 +99,7 @@ public class DossiersController {
 				file.getSize());
 	}
 
-	@PostMapping(path = "/{id}/piecesjointes/{numero}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(path = "/{id}" + PIECES_JOINTES_URI + "/{numero}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void ajouterPieceJointe(@PathVariable String id, @PathVariable String numero,
 			@RequestParam("file") MultipartFile file) throws IOException, DeposantForbiddenException,
 			AuthRequiredException, UserForbiddenException, UserInfoServiceException, AjouterPieceJointeException {
@@ -100,11 +107,22 @@ public class DossiersController {
 				file.getOriginalFilename(), file.getContentType(), file.getSize());
 	}
 
-	@PostMapping("/{id}/qualifier")
+	@PostMapping("/{id}" + QUALIFIER_URI)
 	public Optional<JsonDossier> qualifier(@PathVariable String id)
 			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException,
 			DossierNotFoundException, TypeStatutNotFoundException, StatutForbiddenException {
 		Optional<Dossier> dossier = this.qualifierDossierService.execute(new DossierId(id));
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
+	@PostMapping("/{id}" + DECLARER_INCOMPLET_URI)
+	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id) throws AuthRequiredException,
+			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
+			TypeStatutNotFoundException, StatutForbiddenException {
+		Optional<Dossier> dossier = this.declarerIncompletDossierService.execute(new DossierId(id));
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
 			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));

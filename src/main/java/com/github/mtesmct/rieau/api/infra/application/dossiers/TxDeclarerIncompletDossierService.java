@@ -5,12 +5,12 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.application.dossiers.AppQualifierDossierService;
+import com.github.mtesmct.rieau.api.application.dossiers.AppDeclarerIncompletDossierService;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
-import com.github.mtesmct.rieau.api.application.dossiers.QualifierDossierService;
+import com.github.mtesmct.rieau.api.application.dossiers.DeclarerIncompletDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 
@@ -20,15 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class TxQualifierDossierService implements QualifierDossierService {
+public class TxDeclarerIncompletDossierService implements DeclarerIncompletDossierService {
 
     @Autowired
-    private AppQualifierDossierService applicationQualifierDossierService;
+    private AppDeclarerIncompletDossierService applicationIncompletDossierService;
 
     @Override
     public Optional<Dossier> execute(DossierId id)
-            throws DossierNotFoundException, MairieForbiddenException, AuthRequiredException, UserForbiddenException,
+            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
-        return this.applicationQualifierDossierService.execute(id);
+        return this.applicationIncompletDossierService.execute(id);
     }
 }

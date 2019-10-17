@@ -2,6 +2,7 @@ package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
@@ -36,6 +37,12 @@ public class ControllersExceptionsAdvice {
   @ExceptionHandler({ UserNotOwnerException.class })
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public UserNotOwnerException handleUserNotOwnerException(UserNotOwnerException e) {
+    return e;
+  }
+
+  @ExceptionHandler({ UserInfoServiceException.class })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public UserInfoServiceException handleUserInfoServiceException(UserInfoServiceException e) {
     return e;
   }
 

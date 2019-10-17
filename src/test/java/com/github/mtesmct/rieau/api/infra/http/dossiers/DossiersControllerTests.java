@@ -5,15 +5,15 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,26 +27,29 @@ import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
+import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
-import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
@@ -106,16 +109,22 @@ public class DossiersControllerTests {
 	@Autowired
 	@Qualifier("autreDeposantBeta")
 	private Personne autreDeposantBeta;
+	@Autowired
+	private DateService dateService;
+    @Autowired
+    private TypeStatutDossierRepository typeStatutDossierRepository;
 
 	@BeforeEach
-	public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,
-			PieceNonAJoindreException, FichierServiceException, AjouterPieceJointeException, TypeDossierNotFoundException {
+	public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException,
+			TypeStatutNotFoundException, PieceNonAJoindreException, FichierServiceException,
+			AjouterPieceJointeException, TypeDossierNotFoundException {
 		this.uri = DossiersController.ROOT_URI;
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
-		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01", new ParcelleCadastrale("0","1","2"), true, true);
-		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3","4","5"));
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
+				new ParcelleCadastrale("0", "1", "2"), true, true);
+		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3", "4", "5"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());
 		this.dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
 		file = new File("src/test/fixtures/dummy.pdf");
@@ -142,23 +151,27 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.id", equalTo(this.dossier.statutActuel().get().type().statut().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.dateDebut", equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
+				.andExpect(jsonPath("$[0].statutActuel.id",
+						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
+						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$[0].piecesAJoindre", equalTo(this.dossier.piecesAJoindre())));
 	}
+
 	@Test
 	@WithMairieBetaDetails
 	public void listerMairieTest() throws Exception {
 		File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
-		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44500", "BP 44", "Cedex 01", new ParcelleCadastrale("1","2","3"), true, true);
-		projet.localisation().ajouterParcelle(new ParcelleCadastrale("4","5","6"));
+		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44500", "BP 44", "Cedex 01",
+				new ParcelleCadastrale("1", "2", "3"), true, true);
+		projet.localisation().ajouterParcelle(new ParcelleCadastrale("4", "5", "6"));
 		assertEquals(2, projet.localisation().parcellesCadastrales().size());
-		Dossier dossier = this.dossierFactory.creer(this.autreDeposantBeta, EnumTypes.PCMI, projet,fichier.identity());
+		Dossier dossier = this.dossierFactory.creer(this.autreDeposantBeta, EnumTypes.PCMI, projet, fichier.identity());
 		file = new File("src/test/fixtures/dummy.pdf");
 		fichier = this.fichierFactory.creer(file, "application/pdf");
 		this.fichierService.save(fichier);
@@ -170,8 +183,10 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.id", equalTo(this.dossier.statutActuel().get().type().statut().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.dateDebut", equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
+				.andExpect(jsonPath("$[0].statutActuel.id",
+						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
+						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre", hasSize(2)))
@@ -199,41 +214,59 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statutActuel").isNotEmpty())
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(this.dossier.statutActuel().get().type().statut().toString())))
-				.andExpect(jsonPath("$.statutActuel.libelle", equalTo(this.dossier.statutActuel().get().type().statut().libelle())))
-				.andExpect(jsonPath("$.statutActuel.dateDebut", equalTo(this.dateTimeConverter.format(this.dossier.statutActuel().get().dateDebut()))))
-				.andExpect(jsonPath("$.statuts").isArray())
-				.andExpect(jsonPath("$.statuts").isNotEmpty())
+				.andExpect(jsonPath("$.statutActuel.id",
+						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+				.andExpect(jsonPath("$.statutActuel.libelle",
+						equalTo(this.dossier.statutActuel().get().type().statut().libelle())))
+				.andExpect(jsonPath("$.statutActuel.dateDebut",
+						equalTo(this.dateTimeConverter.format(this.dossier.statutActuel().get().dateDebut()))))
+				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
 				.andExpect(jsonPath("$.statuts", hasSize(1)))
-				.andExpect(jsonPath("$.statuts[0].id", equalTo(this.dossier.historiqueStatuts().get(0).type().statut().toString())))
-				.andExpect(jsonPath("$.statuts[0].libelle", equalTo(this.dossier.historiqueStatuts().get(0).type().statut().libelle())))
-				.andExpect(jsonPath("$.statuts[0].dateDebut", equalTo(this.dateTimeConverter.format(this.dossier.historiqueStatuts().get(0).dateDebut()))))
-				.andExpect(jsonPath("$.piecesAJoindre").isArray())
-				.andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$.statuts[0].id",
+						equalTo(this.dossier.historiqueStatuts().get(0).type().statut().toString())))
+				.andExpect(jsonPath("$.statuts[0].libelle",
+						equalTo(this.dossier.historiqueStatuts().get(0).type().statut().libelle())))
+				.andExpect(jsonPath("$.statuts[0].dateDebut",
+						equalTo(this.dateTimeConverter.format(this.dossier.historiqueStatuts().get(0).dateDebut()))))
+				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$.piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())))
 				.andExpect(jsonPath("$.cerfa").isNotEmpty())
 				.andExpect(jsonPath("$.cerfa.type", equalTo(this.dossier.cerfa().code().type().toString())))
 				.andExpect(jsonPath("$.cerfa.numero", equalTo(this.dossier.cerfa().code().numero())))
 				.andExpect(jsonPath("$.cerfa.fichierId", equalTo(this.dossier.cerfa().fichierId().toString())))
-				.andExpect(jsonPath("$.piecesJointes").isArray())
-				.andExpect(jsonPath("$.piecesJointes").isNotEmpty())
+				.andExpect(jsonPath("$.piecesJointes").isArray()).andExpect(jsonPath("$.piecesJointes").isNotEmpty())
 				.andExpect(jsonPath("$.piecesJointes", hasSize(1)))
-				.andExpect(jsonPath("$.piecesJointes[0].type", equalTo(this.dossier.pieceJointes().get(0).code().type().toString())))
-				.andExpect(jsonPath("$.piecesJointes[0].numero", equalTo(this.dossier.pieceJointes().get(0).code().numero())))
-				.andExpect(jsonPath("$.piecesJointes[0].fichierId", equalTo(this.dossier.pieceJointes().get(0).fichierId().toString())))
-				.andExpect(jsonPath("$.projet.nouvelleConstruction", equalTo(this.dossier.projet().nature().nouvelleConstruction())))
-				.andExpect(jsonPath("$.projet.lotissement", equalTo(this.dossier.projet().localisation().lotissement())))
-				.andExpect(jsonPath("$.projet.adresse.commune", equalTo(this.dossier.projet().localisation().adresse().commune().nom())))
-				.andExpect(jsonPath("$.projet.adresse.codePostal", equalTo(this.dossier.projet().localisation().adresse().commune().codePostal())))
-				.andExpect(jsonPath("$.projet.adresse.numero", equalTo(this.dossier.projet().localisation().adresse().numero())))
-				.andExpect(jsonPath("$.projet.adresse.voie", equalTo(this.dossier.projet().localisation().adresse().voie())))
-				.andExpect(jsonPath("$.projet.adresse.lieuDit", equalTo(this.dossier.projet().localisation().adresse().lieuDit())))
-				.andExpect(jsonPath("$.projet.adresse.bp", equalTo(this.dossier.projet().localisation().adresse().bp())))
-				.andExpect(jsonPath("$.projet.adresse.cedex", equalTo(this.dossier.projet().localisation().adresse().cedex())))
-				.andExpect(jsonPath("$.projet.adresse.parcelles").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
+				.andExpect(jsonPath("$.piecesJointes[0].type",
+						equalTo(this.dossier.pieceJointes().get(0).code().type().toString())))
+				.andExpect(jsonPath("$.piecesJointes[0].numero",
+						equalTo(this.dossier.pieceJointes().get(0).code().numero())))
+				.andExpect(jsonPath("$.piecesJointes[0].fichierId",
+						equalTo(this.dossier.pieceJointes().get(0).fichierId().toString())))
+				.andExpect(jsonPath("$.projet.nouvelleConstruction",
+						equalTo(this.dossier.projet().nature().nouvelleConstruction())))
+				.andExpect(
+						jsonPath("$.projet.lotissement", equalTo(this.dossier.projet().localisation().lotissement())))
+				.andExpect(jsonPath("$.projet.adresse.commune",
+						equalTo(this.dossier.projet().localisation().adresse().commune().nom())))
+				.andExpect(jsonPath("$.projet.adresse.codePostal",
+						equalTo(this.dossier.projet().localisation().adresse().commune().codePostal())))
+				.andExpect(jsonPath("$.projet.adresse.numero",
+						equalTo(this.dossier.projet().localisation().adresse().numero())))
+				.andExpect(jsonPath("$.projet.adresse.voie",
+						equalTo(this.dossier.projet().localisation().adresse().voie())))
+				.andExpect(jsonPath("$.projet.adresse.lieuDit",
+						equalTo(this.dossier.projet().localisation().adresse().lieuDit())))
+				.andExpect(
+						jsonPath("$.projet.adresse.bp", equalTo(this.dossier.projet().localisation().adresse().bp())))
+				.andExpect(jsonPath("$.projet.adresse.cedex",
+						equalTo(this.dossier.projet().localisation().adresse().cedex())))
+				.andExpect(jsonPath("$.projet.adresse.parcelles").isArray())
+				.andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$.projet.adresse.parcelles", hasSize(2)))
-				.andExpect(jsonPath("$.projet.adresse.parcelles", containsInAnyOrder(this.dossier.projet().localisation().parcellesCadastrales().stream().map(ParcelleCadastrale::toFlatString).toArray(String[]::new))));
+				.andExpect(jsonPath("$.projet.adresse.parcelles",
+						containsInAnyOrder(this.dossier.projet().localisation().parcellesCadastrales().stream()
+								.map(ParcelleCadastrale::toFlatString).toArray(String[]::new))));
 	}
 
 	@Test
@@ -274,8 +307,9 @@ public class DossiersControllerTests {
 				"Spring Framework".getBytes());
 		Mockito.when(this.mockAjouterPieceJointeService.execute(any(), anyString(), any(), anyString(), anyString(),
 				anyLong())).thenReturn(this.pieceJointe);
-		this.mvc.perform(
-				multipart(this.uri + "/" + this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile))
+		this.mvc.perform(multipart(
+				this.uri + "/" + this.dossier.identity().toString() + DossiersController.PIECES_JOINTES_URI + "/1")
+						.file(multipartFile))
 				.andExpect(status().isOk());
 	}
 
@@ -284,17 +318,18 @@ public class DossiersControllerTests {
 	public void ajouterPieceJointeInterditTest() throws Exception {
 		MockMultipartFile multipartFile = new MockMultipartFile("file", "test.pdf", "application/pdf",
 				"Spring Framework".getBytes());
-		this.mvc.perform(
-				multipart(this.uri + "/" + this.dossier.identity().toString() + "/piecesjointes/1").file(multipartFile))
+		this.mvc.perform(multipart(
+				this.uri + "/" + this.dossier.identity().toString() + DossiersController.PIECES_JOINTES_URI + "1")
+						.file(multipartFile))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithMairieBetaDetails
 	public void qualifierMairieTest() throws Exception {
-		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + "/qualifier").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$").isNotEmpty())
+		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.QUALIFIER_URI)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.QUALIFIE.toString())));
@@ -302,8 +337,34 @@ public class DossiersControllerTests {
 
 	@Test
 	@WithDeposantBetaDetails
-	public void qualifierDposantInterditTest() throws Exception {
-		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + "/qualifier").accept(MediaType.APPLICATION_JSON))
+	public void qualifierDeposantInterditTest() throws Exception {
+		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.QUALIFIER_URI)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithInstructeurNonBetaDetails
+	public void declarerIncompletInstructeurTest() throws Exception {
+        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
+        assertTrue(typeStatut.isPresent());
+        this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
+        this.dossier = this.dossierRepository.save(this.dossier);
+		this.mvc.perform(
+				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
+				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
+				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INCOMPLET.toString())));
+	}
+
+	@Test
+	@WithMairieBetaDetails
+	public void declarerIncompletMairieInterditTest() throws Exception {
+		this.mvc.perform(
+				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
+						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isForbidden());
 	}
 

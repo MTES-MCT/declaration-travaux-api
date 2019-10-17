@@ -22,14 +22,14 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 @ApplicationService
-public class ApplicationAJouterPieceJointeService implements AjouterPieceJointeService {
+public class AppAjouterPieceJointeService implements AjouterPieceJointeService {
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
     private FichierService fichierService;
     private FichierFactory fichierFactory;
 
-    public ApplicationAJouterPieceJointeService(AuthenticationService authenticationService,
+    public AppAjouterPieceJointeService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository,
             FichierFactory fichierFactory, FichierService fichierService) {
         if (authenticationService == null)

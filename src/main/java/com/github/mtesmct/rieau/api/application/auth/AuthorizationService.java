@@ -39,4 +39,11 @@ public class AuthorizationService {
         if (!this.authenticationService.isBeta())
             throw new UserForbiddenException(new String[]{Roles.BETA});
     }
+
+	public void isInstructeurAuthorized() throws AuthRequiredException, UserForbiddenException {
+        if (!this.authenticationService.isAuthenticaed())
+            throw new AuthRequiredException();
+        if (!this.authenticationService.isInstructeur())
+            throw new UserForbiddenException(new String[]{Roles.INSTRUCTEUR});
+    }
 }

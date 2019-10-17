@@ -10,18 +10,18 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 
 @ApplicationService
-public class ApplicationQualifierDossierService implements QualifierDossierService {
+public class AppDeclarerIncompletDossierService implements DeclarerIncompletDossierService {
 
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
@@ -29,7 +29,7 @@ public class ApplicationQualifierDossierService implements QualifierDossierServi
     private TypeStatutDossierRepository statutDossierRepository;
     private DateService dateService;
 
-    public ApplicationQualifierDossierService(AuthenticationService authenticationService,
+    public AppDeclarerIncompletDossierService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository,
             TypeStatutDossierRepository statutDossierRepository, DateService dateService) {
         if (authenticationService == null)
@@ -51,24 +51,24 @@ public class ApplicationQualifierDossierService implements QualifierDossierServi
 
     @Override
     public Optional<Dossier> execute(DossierId id)
-            throws DossierNotFoundException, MairieForbiddenException, AuthRequiredException, UserForbiddenException,
+            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
-        this.authorizationService.isMairieAndBetaAuthorized();
+        this.authorizationService.isInstructeurAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
         if (dossier.isEmpty())
             throw new DossierNotFoundException(id);
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
-        if (this.authenticationService.isMairie() && !dossier.isEmpty()
+        if (this.authenticationService.isInstructeur() && !dossier.isEmpty()
                 && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
-            throw new MairieForbiddenException(user.get());
-        Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
+            throw new InstructeurForbiddenException(user.get());
+        Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INCOMPLET);
         if (typeStatut.isEmpty())
-            throw new TypeStatutNotFoundException(EnumStatuts.DEPOSE);
+            throw new TypeStatutNotFoundException(EnumStatuts.INCOMPLET);
         dossier.get().ajouterStatut(this.dateService.now(), typeStatut.get());
-        Dossier dossierQualifie = this.dossierRepository.save(dossier.get());
-        dossier = Optional.ofNullable(dossierQualifie);
+        Dossier dossierIncomplet = this.dossierRepository.save(dossier.get());
+        dossier = Optional.ofNullable(dossierIncomplet);
         return dossier;
     }
 }

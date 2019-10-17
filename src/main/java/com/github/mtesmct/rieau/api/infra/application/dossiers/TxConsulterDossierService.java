@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.application.dossiers.ApplicationConsulterDossierService;
+import com.github.mtesmct.rieau.api.application.dossiers.AppConsulterDossierService;
 import com.github.mtesmct.rieau.api.application.dossiers.ConsulterDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TxConsulterDossierService implements ConsulterDossierService {
 
     @Autowired
-    private ApplicationConsulterDossierService applicationConsulterDossierService;
+    private AppConsulterDossierService applicationConsulterDossierService;
 
     @Override
     public Optional<Dossier> execute(String id) throws DeposantForbiddenException, AuthRequiredException,

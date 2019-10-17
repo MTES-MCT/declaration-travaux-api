@@ -2,8 +2,6 @@ package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
 import java.util.Objects;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-
 public class StatutForbiddenException extends Exception {
     private static final long serialVersionUID = 1L;
 
@@ -11,8 +9,21 @@ public class StatutForbiddenException extends Exception {
         return "Le statut de dossier {" + Objects.toString(statutDossier) + "} n'est pas consécutif au statut actuel {"
                 + Objects.toString(statutActuel) + "}";
     }
+
     public static String messageDejaPresent(EnumStatuts statutDossier) {
         return "Le statut de dossier {" + Objects.toString(statutDossier) + "} est déjà présent dans l'historique }";
+    }
+
+    public static String messagePremierStatut() {
+        return "Le 1er statut à ajouter ne peut être que {" + EnumStatuts.DEPOSE + "}";
+    }
+
+    public StatutForbiddenException() {
+        super(messagePremierStatut());
+    }
+
+    public StatutForbiddenException(Throwable cause) {
+        super(messagePremierStatut(), cause);
     }
 
     public StatutForbiddenException(EnumStatuts statutDossier) {
@@ -28,6 +39,6 @@ public class StatutForbiddenException extends Exception {
     }
 
     public StatutForbiddenException(EnumStatuts statutDossier, EnumStatuts statutActuel, Throwable cause) {
-        super(messageNonConsecutif(statutDossier,statutActuel), cause);
+        super(messageNonConsecutif(statutDossier, statutActuel), cause);
     }
 }

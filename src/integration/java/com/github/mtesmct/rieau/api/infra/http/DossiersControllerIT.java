@@ -18,11 +18,14 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -62,6 +65,10 @@ public class DossiersControllerIT {
 	private FichierFactory fichierFactory;
 	@Autowired
 	private ProjetFactory projetFactory;
+	@Autowired
+	private DateService dateService;
+    @Autowired
+    private TypeStatutDossierRepository typeStatutDossierRepository;
 
 	private Dossier dossier;
 
@@ -78,7 +85,7 @@ public class DossiersControllerIT {
 	private int serverPort;
 	private String deposantAccessToken;
 	private String mairieAccessToken;
-	private String forbiddenToken;
+	private String instructeurAccessToken;
 	private String invalidToken = "invalid-token";
 
 	@BeforeEach
@@ -101,7 +108,7 @@ public class DossiersControllerIT {
 				WithDeposantBetaDetails.ID);
 		this.mairieAccessToken = this.keycloakTestsHelper.getAccessToken(WithMairieBetaDetails.ID,
 				WithMairieBetaDetails.ID);
-		this.forbiddenToken = this.keycloakTestsHelper.getAccessToken(WithInstructeurNonBetaDetails.ID,
+		this.instructeurAccessToken = this.keycloakTestsHelper.getAccessToken(WithInstructeurNonBetaDetails.ID,
 				WithInstructeurNonBetaDetails.ID);
 	}
 
@@ -134,7 +141,7 @@ public class DossiersControllerIT {
 	@Test
 	public void listerInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.forbiddenToken).expect().statusCode(403).when().get();
+				.oauth2(this.instructeurAccessToken).expect().statusCode(403).when().get();
 	}
 
 	@Test
@@ -167,7 +174,7 @@ public class DossiersControllerIT {
 	@Test
 	public void consulterInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.forbiddenToken).expect().statusCode(403).when()
+				.oauth2(this.instructeurAccessToken).expect().statusCode(403).when()
 				.get("/{id}", this.dossier.identity().toString());
 	}
 
@@ -205,7 +212,7 @@ public class DossiersControllerIT {
 	@Test
 	public void ajouterCerfaInconnuInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.forbiddenToken).multiPart("file", this.cerfa).expect().statusCode(403).when().post();
+				.oauth2(this.instructeurAccessToken).multiPart("file", this.cerfa).expect().statusCode(403).when().post();
 	}
 
 	@Test
@@ -218,7 +225,7 @@ public class DossiersControllerIT {
 	public void ajouterPieceJointeTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.deposantAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
-				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+				.post("/{id}"+DossiersController.PIECES_JOINTES_URI+"/{numero}", this.dossier.identity().toString(), "1");
 		Optional<Dossier> dossierLu = this.dossierRepository.findById(dossier.identity().toString());
 		assertTrue(dossierLu.isPresent());
 		assertNotNull(dossierLu.get().pieceJointes());
@@ -232,27 +239,27 @@ public class DossiersControllerIT {
 	public void ajouterPieceJointeNonAuthentifieTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.invalidToken).multiPart("file", this.dp1).expect().statusCode(401).when()
-				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+				.post("/{id}"+DossiersController.PIECES_JOINTES_URI+"/{numero}", this.dossier.identity().toString(), "1");
 	}
 
 	@Test
 	public void ajouterPieceJointeInconnuInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.forbiddenToken).multiPart("file", this.dp1).expect().statusCode(403).when()
-				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+				.oauth2(this.instructeurAccessToken).multiPart("file", this.dp1).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.PIECES_JOINTES_URI+"/{numero}", this.dossier.identity().toString(), "1");
 	}
 	@Test
 	public void ajouterPieceJointeMairieInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(403).when()
-				.post("/{id}/piecesjointes/{numero}", this.dossier.identity().toString(), "1");
+				.post("/{id}"+DossiersController.PIECES_JOINTES_URI+"/{numero}", this.dossier.identity().toString(), "1");
 	}
 
 	@Test
 	public void qualifierMairieTest() throws Exception {
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
 				.preemptive().oauth2(this.mairieAccessToken).expect().statusCode(200).when()
-				.post("/{id}/qualifier", this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.post("/{id}"+DossiersController.QUALIFIER_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
 		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
@@ -266,6 +273,33 @@ public class DossiersControllerIT {
 	public void qualifierDeposantInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
 				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
-				.post("/{id}/qualifier", this.dossier.identity().toString());
+				.post("/{id}"+DossiersController.QUALIFIER_URI, this.dossier.identity().toString());
+	}
+
+	@Test
+	public void declarerIncompletInstructeurTest() throws Exception {
+        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
+        assertTrue(typeStatut.isPresent());
+        this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
+        this.dossier = this.dossierRepository.save(this.dossier);
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(3, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+	}
+
+	@Test
+	public void declarerIncompletDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString());
 	}
 }
