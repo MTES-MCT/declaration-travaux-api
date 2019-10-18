@@ -46,6 +46,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -278,12 +279,12 @@ public class DossiersControllerIT {
 
 	@Test
 	public void declarerIncompletInstructeurTest() throws Exception {
-        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
+        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findById(EnumStatuts.QUALIFIE);
         assertTrue(typeStatut.isPresent());
         this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
         this.dossier = this.dossierRepository.save(this.dossier);
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
+				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).param("message", "Le dossier est incomplet car le plan de masse est illisible").expect().statusCode(200).when()
 				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
@@ -294,12 +295,14 @@ public class DossiersControllerIT {
 		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
 		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
 		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
 	}
 
 	@Test
 	public void declarerIncompletDeposantInterditTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.preemptive().oauth2(this.deposantAccessToken).param("message", "Le dossier est incomplet car le plan de masse est illisible").expect().statusCode(403).when()
 				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString());
 	}
 }

@@ -6,5 +6,5 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 
 public interface TypeStatutDossierRepository {
-    public Optional<TypeStatut> findByStatut(EnumStatuts statut);
+    public Optional<TypeStatut> findById(EnumStatuts id);
 }

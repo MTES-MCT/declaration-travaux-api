@@ -15,6 +15,7 @@ public class JsonDossier {
     private List<JsonPieceJointe> piecesJointes = new ArrayList<JsonPieceJointe>();
     private List<String> piecesAJoindre = new ArrayList<String>();
     private JsonProjet projet;
+    private List<JsonMessage> messages = new ArrayList<JsonMessage>();
 
     public JsonDossier(String id, String type, JsonPieceJointe cerfa, JsonProjet projet, JsonStatut statutActuel) {
         this.id = id;
@@ -34,6 +35,10 @@ public class JsonDossier {
 
     public void addStatut(JsonStatut statut){
         this.statuts.add(statut);
+    }
+
+    public void addMessage(JsonMessage message){
+        this.messages.add(message);
     }
 
 }

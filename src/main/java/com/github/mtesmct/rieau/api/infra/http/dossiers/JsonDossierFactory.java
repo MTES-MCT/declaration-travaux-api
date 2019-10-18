@@ -3,6 +3,7 @@ package com.github.mtesmct.rieau.api.infra.http.dossiers;
 import java.util.Objects;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
@@ -22,6 +23,8 @@ public class JsonDossierFactory {
     private JsonProjetFactory jsonProjetFactory;
     @Autowired
     private JsonStatutFactory jsonStatutFactory;
+    @Autowired
+    private JsonMessageFactory jsonMessageFactory;
 
     public JsonDossier toJson(Dossier dossier) {
         if (dossier == null)
@@ -33,6 +36,7 @@ public class JsonDossierFactory {
         dossier.pieceJointes().forEach(pieceJointe -> this.ajouterPieceJointe(jsonDossier, pieceJointe));
         dossier.piecesAJoindre().forEach(numero -> this.ajouterPieceAJoindre(jsonDossier, numero));
         dossier.historiqueStatuts().forEach((statut) -> this.ajouterStatut(jsonDossier, statut));
+        dossier.messages().forEach((message) -> this.ajouterMessage(jsonDossier, message));
 
         return jsonDossier;
     }
@@ -47,5 +51,9 @@ public class JsonDossierFactory {
 
     private void ajouterStatut(JsonDossier jsonDossier, Statut statut) {
         jsonDossier.addStatut(this.jsonStatutFactory.toJson(statut));
+    }
+
+    private void ajouterMessage(JsonDossier jsonDossier, Message message) {
+        jsonDossier.addMessage(this.jsonMessageFactory.toJson(message));
     }
 }

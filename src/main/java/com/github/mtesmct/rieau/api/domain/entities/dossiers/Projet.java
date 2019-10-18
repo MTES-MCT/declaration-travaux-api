@@ -28,6 +28,16 @@ public class Projet implements ValueObject<Projet> {
     }
 
     @Override
+    public boolean equals(final Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        final Projet other = (Projet) object;
+        return this.hasSameValuesAs(other);
+    }
+
+    @Override
     public String toString() {
         return "Projet={ nature={" + Objects.toString(this.nature) + "}, localisation={"
                 + Objects.toString(this.localisation) + "} }";

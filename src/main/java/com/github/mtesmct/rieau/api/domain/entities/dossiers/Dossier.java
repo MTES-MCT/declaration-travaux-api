@@ -21,6 +21,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private PieceJointe cerfa;
     private List<PieceJointe> piecesJointes;
     private StatutComparator statutComparator;
+    private List<Message> messages;
 
     public Projet projet() {
         return this.projet;
@@ -45,6 +46,11 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public List<PieceJointe> pieceJointes() {
         return this.piecesJointes;
     }
+
+    public List<Message> messages() {
+        return this.messages;
+    }
+
 
     public List<String> piecesAJoindre() {
         List<String> liste = new ArrayList<String>();
@@ -139,25 +145,30 @@ public class Dossier implements Entity<Dossier, DossierId> {
         this.cerfa = this.ajouterCerfa(fichierIdCerfa);
         this.historiqueStatuts = new ArrayList<Statut>();
         this.piecesJointes = new ArrayList<PieceJointe>();
+        this.messages = new ArrayList<Message>();
         this.statutComparator = new StatutComparator();
     }
 
     public void ajouterStatut(Date dateDebut, TypeStatut type) throws StatutForbiddenException {
         Statut statut = new Statut(type, dateDebut);
-        if (statutActuel().isEmpty() && !Objects.equals(type.statut(), EnumStatuts.DEPOSE))
+        if (statutActuel().isEmpty() && !Objects.equals(type.identity(), EnumStatuts.DEPOSE))
             throw new StatutForbiddenException();
-        if (!this.historiqueStatuts().isEmpty() && this.historiqueStatuts().contains(statut) && type.statut().unique())
-            throw new StatutForbiddenException(type.statut());
+        if (!this.historiqueStatuts().isEmpty() && this.historiqueStatuts().contains(statut) && type.unique())
+            throw new StatutForbiddenException(type.identity());
         if (statutActuel().isPresent()) {
             int statutComparedToActuel = this.statutComparator.compare(statut, statutActuel().get());
             if (statutComparedToActuel <= 0 || statutComparedToActuel > 1)
-                throw new StatutForbiddenException(type.statut(), statutActuel().get().type().statut());
+                throw new StatutForbiddenException(type.identity(), statutActuel().get().type().identity());
         }
         this.historiqueStatuts.add(statut);
     }
 
     public Optional<Statut> statutActuel() {
         return this.historiqueStatuts.stream().max(this.statutComparator);
+    }
+
+    public void ajouterMessage(Message message) {
+        this.messages.add(message);
     }
 
 }

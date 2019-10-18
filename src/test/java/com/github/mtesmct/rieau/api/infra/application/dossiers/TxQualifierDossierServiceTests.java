@@ -105,7 +105,7 @@ public class TxQualifierDossierServiceTests {
         assertTrue(dossierQualifie.isPresent());
         assertEquals(this.dossier.identity(), dossierQualifie.get().identity());
         assertTrue(dossierQualifie.get().statutActuel().isPresent());
-        assertEquals(EnumStatuts.QUALIFIE, dossierQualifie.get().statutActuel().get().type().statut());
+        assertEquals(EnumStatuts.QUALIFIE, dossierQualifie.get().statutActuel().get().type().identity());
     }
 
     @Test

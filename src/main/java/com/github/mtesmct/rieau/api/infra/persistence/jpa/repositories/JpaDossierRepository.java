@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
@@ -15,9 +16,10 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaStatut;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaDossierFactory;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaMessageFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaStatutFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -34,6 +36,10 @@ public class JpaDossierRepository implements DossierRepository {
     private JpaDossierFactory jpaDossierFactory;
     @Autowired
     private JpaProjetFactory jpaProjetFactory;
+    @Autowired
+    private JpaStatutFactory jpaStatutFactory;
+    @Autowired
+    private JpaMessageFactory jpaMessageFactory;
     @Autowired
     private JpaProjetRepository jpaProjetRepository;
 
@@ -106,6 +112,26 @@ public class JpaDossierRepository implements DossierRepository {
         return dossiers;
     }
 
+    private void savePieceJointe(JpaDossier jpaDossier, PieceJointe pieceJointe) {
+        if (pieceJointe.fichierId() == null)
+            throw new NullPointerException("Le fichier id de la pièce jointe est nul");
+        if (pieceJointe.code() == null)
+            throw new NullPointerException("Le code de la pièce jointe est nul");
+        if (pieceJointe.code().type() == null)
+            throw new NullPointerException("Le type du code de la pièce jointe est nul");
+        jpaDossier.addPieceJointe(new JpaPieceJointe(new JpaPieceJointeId(jpaDossier,
+                new JpaCodePieceJointe(pieceJointe.code().type().toString(), pieceJointe.code().numero()),
+                pieceJointe.fichierId().toString())));
+    }
+
+    private void saveStatut(JpaDossier jpaDossier, Statut statut) {
+        jpaDossier.addStatut(this.jpaStatutFactory.toJpa(jpaDossier, statut));
+    }
+
+    private void saveMessage(JpaDossier jpaDossier, Message message) {
+        jpaDossier.addMessage(this.jpaMessageFactory.toJpa(jpaDossier, message));
+    }
+
     @Override
     public Dossier save(Dossier dossier) {
         JpaDossier jpaDossierAfter = this.jpaDossierFactory.toJpa(dossier);
@@ -120,6 +146,8 @@ public class JpaDossierRepository implements DossierRepository {
                 dossier.pieceJointes().forEach(pieceJointe -> savePieceJointe(jpaDossierBefore, pieceJointe));
             if (!dossier.historiqueStatuts().isEmpty())
                 dossier.historiqueStatuts().forEach(statut -> saveStatut(jpaDossierBefore, statut));
+            if (!dossier.messages().isEmpty())
+                dossier.messages().forEach(message -> saveMessage(jpaDossierBefore, message));
         }
         jpaDossierAfter = this.jpaSpringDossierRepository.save(jpaDossierAfter);
         jpaProjetAfter.setDossier(jpaDossierAfter);
@@ -131,22 +159,6 @@ public class JpaDossierRepository implements DossierRepository {
             log.debug("{}", e);
         }
         return dossier;
-    }
-
-    private void savePieceJointe(JpaDossier jpaDossier, PieceJointe pieceJointe) {
-        if (pieceJointe.fichierId() == null)
-            throw new NullPointerException("Le fichier id de la pièce jointe est nul");
-        if (pieceJointe.code() == null)
-            throw new NullPointerException("Le code de la pièce jointe est nul");
-        if (pieceJointe.code().type() == null)
-            throw new NullPointerException("Le type du code de la pièce jointe est nul");
-        jpaDossier.addPieceJointe(new JpaPieceJointe(new JpaPieceJointeId(jpaDossier,
-                new JpaCodePieceJointe(pieceJointe.code().type().toString(), pieceJointe.code().numero()),
-                pieceJointe.fichierId().toString())));
-    }
-
-    private void saveStatut(JpaDossier jpaDossier, Statut statut) {
-        jpaDossier.addStatut(new JpaStatut(jpaDossier, statut.type().statut(), statut.dateDebut()));
     }
 
 }

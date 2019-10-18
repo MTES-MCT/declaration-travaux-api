@@ -24,18 +24,14 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 import org.junit.jupiter.api.AfterEach;
@@ -65,10 +61,6 @@ public class DossierTests {
         @Autowired
         @Qualifier("deposantBeta")
         private Personne deposantBeta;
-        @Autowired
-        private DateService dateService;
-        @Autowired
-        private TypeStatutDossierRepository statutDossierRepository;
 
         private Dossier dossierDP;
         private Dossier dossierPCMI;
@@ -91,7 +83,7 @@ public class DossierTests {
                 log.debug("{}", this.dossierDP.historiqueStatuts());
                 assertFalse(this.dossierDP.historiqueStatuts().isEmpty());
                 assertEquals(1, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.DEPOSE, this.dossierDP.statutActuel().get().type().statut());
+                assertEquals(EnumStatuts.DEPOSE, this.dossierDP.statutActuel().get().type().identity());
                 assertEquals(2, this.dossierDP.piecesAJoindre().size());
                 assertTrue(this.dossierDP.piecesAJoindre().contains("1"));
                 file = new File("src/test/fixtures/dummy.pdf");
@@ -139,7 +131,7 @@ public class DossierTests {
                 assertNotNull(this.dossierPCMI);
                 assertNotNull(this.dossierPCMI.piecesAJoindre());
                 assertTrue(this.dossierPCMI.statutActuel().isPresent());
-                assertEquals(EnumStatuts.DEPOSE, this.dossierPCMI.statutActuel().get().type().statut());
+                assertEquals(EnumStatuts.DEPOSE, this.dossierPCMI.statutActuel().get().type().identity());
                 assertNotNull(this.dossierPCMI.cerfa());
                 assertNotNull(this.dossierPCMI.cerfa().code());
                 assertTrue(this.dossierPCMI.cerfa().code().isCerfa());
@@ -195,102 +187,6 @@ public class DossierTests {
                 assertTrue(pjDP1.get().isAJoindre());
                 assertEquals(this.dossierDP.pieceJointes().size(), 1);
                 assertTrue(this.dossierDP.pieceJointes().contains(pjDP1.get()));
-        }
-
-        @Test
-        public void qualifierDossier() throws StatutForbiddenException {
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                log.debug("{}", this.dossierDP.historiqueStatuts());
-                assertEquals(2, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.QUALIFIE, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void requalifierDossierInterdit() throws StatutForbiddenException {
-                this.qualifierDossier();
-                Optional<TypeStatut> typeQualifie = this.statutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
-                assertTrue(typeQualifie.isPresent());
-                assertFalse(this.dossierDP.historiqueStatuts().isEmpty());
-                assertEquals(2, this.dossierDP.historiqueStatuts().size());
-                assertTrue(this.dossierDP.historiqueStatuts()
-                                .contains(new Statut(typeQualifie.get(), this.dateService.now())));
-                StatutForbiddenException exception = assertThrows(StatutForbiddenException.class,
-                                () -> this.dossierDP.ajouterStatut(this.dateService.now(), typeQualifie.get()));
-                assertEquals(StatutForbiddenException.messageDejaPresent(EnumStatuts.QUALIFIE), exception.getMessage());
-        }
-
-        @Test
-        public void declarerIncompletInterditDossier() throws StatutForbiddenException {
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INCOMPLET);
-                assertTrue(typeStatut.isPresent());
-                StatutForbiddenException exception = assertThrows(StatutForbiddenException.class,
-                                () -> this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get()));
-                assertEquals(StatutForbiddenException.messageNonConsecutif(EnumStatuts.INCOMPLET, this.dossierDP.statutActuel().get().type().statut()), exception.getMessage());
-        }
-
-        @Test
-        public void instruireDossier() throws StatutForbiddenException {
-                this.requalifierDossierInterdit();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INSTRUCTION);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                log.debug("{}", this.dossierDP.historiqueStatuts());
-                assertEquals(3, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.INSTRUCTION, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void declarerIncompletDossier() throws StatutForbiddenException {
-                this.instruireDossier();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INCOMPLET);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                log.debug("{}", this.dossierDP.historiqueStatuts());
-                assertEquals(4, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.INCOMPLET, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void reinstruireDossier() throws StatutForbiddenException {
-                this.declarerIncompletDossier();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INSTRUCTION);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                log.debug("{}", this.dossierDP.historiqueStatuts());
-                assertEquals(5, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.INSTRUCTION, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void declarerCompletDossier() throws StatutForbiddenException {
-                this.reinstruireDossier();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.COMPLET);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                assertEquals(6, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.COMPLET, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void ouvrirConsultationsDossier() throws StatutForbiddenException {
-                this.declarerCompletDossier();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.CONSULTATIONS);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                assertEquals(7, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.CONSULTATIONS, this.dossierDP.statutActuel().get().type().statut());
-        }
-
-        @Test
-        public void deciderDossier() throws StatutForbiddenException {
-                this.ouvrirConsultationsDossier();
-                Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.DECISION);
-                assertTrue(typeStatut.isPresent());
-                this.dossierDP.ajouterStatut(this.dateService.now(), typeStatut.get());
-                assertEquals(8, this.dossierDP.historiqueStatuts().size());
-                assertEquals(EnumStatuts.DECISION, this.dossierDP.statutActuel().get().type().statut());
         }
 
 }

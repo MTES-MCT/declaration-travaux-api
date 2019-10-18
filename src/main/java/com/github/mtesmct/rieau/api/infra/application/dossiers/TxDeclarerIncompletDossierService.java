@@ -26,9 +26,9 @@ public class TxDeclarerIncompletDossierService implements DeclarerIncompletDossi
     private AppDeclarerIncompletDossierService applicationIncompletDossierService;
 
     @Override
-    public Optional<Dossier> execute(DossierId id)
+    public Optional<Dossier> execute(DossierId id, String message)
             throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
-        return this.applicationIncompletDossierService.execute(id);
+        return this.applicationIncompletDossierService.execute(id, message);
     }
 }

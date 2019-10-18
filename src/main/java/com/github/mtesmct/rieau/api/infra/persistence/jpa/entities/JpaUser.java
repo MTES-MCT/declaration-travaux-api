@@ -15,7 +15,7 @@ import lombok.Setter;
 @Embeddable
 @Getter
 @Setter
-public class JpaDeposant {
+public class JpaUser {
     @Column(nullable = false)
     @NotNull
     private String id;
@@ -24,13 +24,13 @@ public class JpaDeposant {
     @Email(regexp = Personne.EMAIL_REGEXP)
     private String email;
 
-    public JpaDeposant(@NotNull String id,
+    public JpaUser(@NotNull String id,
             @NotNull @Email(regexp = Personne.EMAIL_REGEXP) String email) {
         this.id = id;
         this.email = email;
     }
 
-    public JpaDeposant() {
+    public JpaUser() {
     }
 
     @Override
@@ -39,7 +39,7 @@ public class JpaDeposant {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-            JpaDeposant jpaDeposant = (JpaDeposant) o;
+            JpaUser jpaDeposant = (JpaUser) o;
         return Objects.equals(this.id, jpaDeposant.id) && Objects.equals(this.email, jpaDeposant.email);
     }
 

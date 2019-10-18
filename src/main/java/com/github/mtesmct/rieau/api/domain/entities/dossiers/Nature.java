@@ -23,6 +23,16 @@ public class Nature implements ValueObject<Nature> {
     }
 
     @Override
+    public boolean equals(final Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        final Nature other = (Nature) object;
+        return this.hasSameValuesAs(other);
+    }
+
+    @Override
     public String toString() {
         return "Nature={ nouvelle construction={" + Objects.toString(this.nouvelleConstruction) + "} }";
     }

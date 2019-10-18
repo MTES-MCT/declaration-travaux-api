@@ -119,10 +119,10 @@ public class DossiersController {
 	}
 
 	@PostMapping("/{id}" + DECLARER_INCOMPLET_URI)
-	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id) throws AuthRequiredException,
+	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestParam String message) throws AuthRequiredException,
 			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
 			TypeStatutNotFoundException, StatutForbiddenException {
-		Optional<Dossier> dossier = this.declarerIncompletDossierService.execute(new DossierId(id));
+		Optional<Dossier> dossier = this.declarerIncompletDossierService.execute(new DossierId(id), message);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
 			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));

@@ -16,7 +16,7 @@ public class JsonStatutFactory {
     public JsonStatut toJson(Statut statut) {
         JsonStatut jsonStatut = null;
         if (statut != null) {
-            jsonStatut = new JsonStatut(statut.type().statut().toString(), statut.type().statut().libelle(), statut.type().joursDelais(), this.dateTimeConverter.format(statut.dateDebut()));
+            jsonStatut = new JsonStatut(statut.type().identity().toString(), statut.type().libelle(), statut.type().joursDelais(), this.dateTimeConverter.format(statut.dateDebut()));
         }
         return jsonStatut;
     }

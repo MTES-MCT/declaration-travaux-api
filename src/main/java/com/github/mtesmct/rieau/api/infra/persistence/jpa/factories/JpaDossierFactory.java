@@ -8,6 +8,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeE
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
@@ -18,11 +19,12 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundE
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaMessage;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaStatut;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,11 +42,13 @@ public class JpaDossierFactory {
     private JpaProjetFactory jpaProjetFactory;
     @Autowired
     private JpaStatutFactory jpaStatutFactory;
+    @Autowired
+    private JpaMessageFactory jpaMessageFactory;
 
     public JpaDossier toJpa(Dossier dossier) {
         if (dossier.deposant() == null)
             throw new NullPointerException("Le déposant ne peut pas être nul.");
-        JpaDeposant jpaDeposant = new JpaDeposant(dossier.deposant().identity().toString(), dossier.deposant().email());
+        JpaUser jpaDeposant = new JpaUser(dossier.deposant().identity().toString(), dossier.deposant().email());
         JpaDossier jpaDossier = new JpaDossier(dossier.identity().toString(), jpaDeposant, dossier.type().type());
         if (dossier.cerfa() != null)
             jpaDossier.addPieceJointe(this.jpaPieceJointeFactory.toJpa(jpaDossier, dossier.cerfa()));
@@ -54,6 +58,9 @@ public class JpaDossierFactory {
         if (!dossier.historiqueStatuts().isEmpty())
             dossier.historiqueStatuts()
                     .forEach(statut -> jpaDossier.addStatut(this.jpaStatutFactory.toJpa(jpaDossier, statut)));
+        if (!dossier.messages().isEmpty())
+            dossier.messages()
+                    .forEach(message -> jpaDossier.addMessage(this.jpaMessageFactory.toJpa(jpaDossier, message)));
         return jpaDossier;
     }
 
@@ -88,6 +95,8 @@ public class JpaDossierFactory {
                     log.warn("Erreur {} de transformation du statut {}", e.getMessage(), Objects.toString(jpaStatut));
                 }
             });
+        if (!jpaDossier.getMessages().isEmpty())
+            jpaDossier.getMessages().forEach(jpaMessage -> this.ajouterMessage(dossier, jpaMessage));
         return dossier;
     }
 
@@ -106,8 +115,15 @@ public class JpaDossierFactory {
     private void ajouterStatut(Dossier dossier, JpaStatut jpaStatut)
             throws StatutForbiddenException, TypeStatutNotFoundException {
         Statut statut = this.jpaStatutFactory.fromJpa(jpaStatut);
-        if (statut != null) {
+        if (statut == null)
+            throw new NullPointerException("Le statut ne peut pas être nul.");
             dossier.ajouterStatut(statut.dateDebut(), statut.type());
-        }
+    }
+
+    private void ajouterMessage(Dossier dossier, JpaMessage jpaMessage) {
+        Message message = this.jpaMessageFactory.fromJpa(jpaMessage);
+        if (message == null)
+            throw new NullPointerException("Le message ne peut pas être nul.");
+        dossier.ajouterMessage(message);
     }
 }

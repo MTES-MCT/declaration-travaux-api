@@ -35,18 +35,16 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreExc
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
+import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
@@ -107,12 +105,13 @@ public class DossiersControllerTests {
 	@Qualifier("deposantBeta")
 	private Personne deposantBeta;
 	@Autowired
+	@Qualifier("instructeurNonBeta")
+	private Personne instructeur;
+	@Autowired
 	@Qualifier("autreDeposantBeta")
 	private Personne autreDeposantBeta;
 	@Autowired
-	private DateService dateService;
-    @Autowired
-    private TypeStatutDossierRepository typeStatutDossierRepository;
+	private StatutService statutService;
 
 	@BeforeEach
 	public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException,
@@ -152,7 +151,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.id",
-						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
 						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
@@ -184,7 +183,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.id",
-						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
 						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
@@ -215,17 +214,17 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statutActuel").isNotEmpty())
 				.andExpect(jsonPath("$.statutActuel.id",
-						equalTo(this.dossier.statutActuel().get().type().statut().toString())))
+						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
 				.andExpect(jsonPath("$.statutActuel.libelle",
-						equalTo(this.dossier.statutActuel().get().type().statut().libelle())))
+						equalTo(this.dossier.statutActuel().get().type().libelle())))
 				.andExpect(jsonPath("$.statutActuel.dateDebut",
 						equalTo(this.dateTimeConverter.format(this.dossier.statutActuel().get().dateDebut()))))
 				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
 				.andExpect(jsonPath("$.statuts", hasSize(1)))
 				.andExpect(jsonPath("$.statuts[0].id",
-						equalTo(this.dossier.historiqueStatuts().get(0).type().statut().toString())))
+						equalTo(this.dossier.historiqueStatuts().get(0).type().identity().toString())))
 				.andExpect(jsonPath("$.statuts[0].libelle",
-						equalTo(this.dossier.historiqueStatuts().get(0).type().statut().libelle())))
+						equalTo(this.dossier.historiqueStatuts().get(0).type().libelle())))
 				.andExpect(jsonPath("$.statuts[0].dateDebut",
 						equalTo(this.dateTimeConverter.format(this.dossier.historiqueStatuts().get(0).dateDebut()))))
 				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
@@ -328,6 +327,8 @@ public class DossiersControllerTests {
 	@WithMairieBetaDetails
 	public void qualifierMairieTest() throws Exception {
 		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.QUALIFIER_URI)
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content("{ \"message\": \"Le dossier est incomplet car le plan de masse est illisible\"}")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
@@ -345,26 +346,39 @@ public class DossiersControllerTests {
 	@Test
 	@WithInstructeurNonBetaDetails
 	public void declarerIncompletInstructeurTest() throws Exception {
-        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
-        assertTrue(typeStatut.isPresent());
-        this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
-        this.dossier = this.dossierRepository.save(this.dossier);
+        this.statutService.qualifier(this.dossier);
+        this.statutService.instruire(this.dossier);
+		this.dossier = this.dossierRepository.save(this.dossier);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8).param("message", message))
 				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INCOMPLET.toString())));
+				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INCOMPLET.toString())))
+				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
+				.andExpect(jsonPath("$.statuts", hasSize(4)))
+				.andExpect(jsonPath("$.messages").isArray()).andExpect(jsonPath("$.messages").isNotEmpty())
+				.andExpect(jsonPath("$.messages", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.id",
+						equalTo(this.instructeur.identity().toString())))
+				.andExpect(jsonPath("$.messages[0].auteur.email",
+						equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].contenu",
+						equalTo(message)));
 	}
 
 	@Test
 	@WithMairieBetaDetails
 	public void declarerIncompletMairieInterditTest() throws Exception {
+        this.statutService.qualifier(this.dossier);
+        this.statutService.instruire(this.dossier);
+        this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8).param("message", "Le dossier est incomplet car le plan de masse est illisible"))
 				.andExpect(status().isForbidden());
 	}
 

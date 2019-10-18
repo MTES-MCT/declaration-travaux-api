@@ -69,7 +69,7 @@ public class TxImporterCerfaServiceTests {
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
         assertEquals(EnumTypes.DPMI, dossier.get().type().type());
         assertTrue(dossier.get().statutActuel().isPresent());
-        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().statut());
+        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().identity());
         assertNotNull(dossier.get().piecesAJoindre());
         assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());
@@ -100,7 +100,7 @@ public class TxImporterCerfaServiceTests {
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
         assertEquals(EnumTypes.PCMI, dossier.get().type().type());
         assertTrue(dossier.get().statutActuel().isPresent());
-        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().statut());
+        assertEquals(EnumStatuts.DEPOSE, dossier.get().statutActuel().get().type().identity());
         assertNotNull(dossier.get().piecesAJoindre());
         assertEquals(this.deposantBeta.identity().toString(), dossier.get().deposant().identity().toString());
         assertNotNull(dossier.get().cerfa());

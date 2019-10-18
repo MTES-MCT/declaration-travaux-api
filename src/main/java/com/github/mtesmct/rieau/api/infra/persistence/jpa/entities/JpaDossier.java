@@ -59,7 +59,7 @@ public class JpaDossier {
     @NotNull
     @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "deposant_id")),
             @AttributeOverride(name = "email", column = @Column(name = "deposant_email")) })
-    private JpaDeposant deposant;
+    private JpaUser deposant;
     @Column(nullable = false, length = 4)
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -72,6 +72,9 @@ public class JpaDossier {
     @OrderBy("createdOn")
     @Size(min = 1)
     private Set<JpaPieceJointe> piecesJointes;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dossier", orphanRemoval = true)
+    @OrderBy("date")
+    private Set<JpaMessage> messages;
 
     public void addPieceJointe(JpaPieceJointe pieceJointe) {
         pieceJointe.getId().setDossier(this);
@@ -80,6 +83,10 @@ public class JpaDossier {
     public void addStatut(JpaStatut statut) {
         statut.setDossier(this);
         this.statuts.add(statut);
+    }
+    public void addMessage(JpaMessage message) {
+        message.setDossier(this);
+        this.messages.add(message);
     }
 
     @Override
@@ -98,7 +105,7 @@ public class JpaDossier {
     }
 
     public JpaDossier(@NotNull String dossierId,
-            @NotNull JpaDeposant deposant, @NotNull EnumTypes type) {
+            @NotNull JpaUser deposant, @NotNull EnumTypes type) {
         this();
         this.dossierId = dossierId;
         this.deposant = deposant;
@@ -108,6 +115,7 @@ public class JpaDossier {
     public JpaDossier() {
         this.piecesJointes = new LinkedHashSet<JpaPieceJointe>();
         this.statuts = new LinkedHashSet<JpaStatut>();
+        this.messages = new LinkedHashSet<JpaMessage>();
     }
 
     @Transient

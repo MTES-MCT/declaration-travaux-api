@@ -78,7 +78,7 @@ public class TxAjouterPieceJointeServiceTests {
                 Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet,
                                 cerfaFichier.identity());
                 dp = this.dossierRepository.save(dp);
-                assertEquals(dp.statutActuel().get().type().statut(), EnumStatuts.DEPOSE);
+                assertEquals(dp.statutActuel().get().type().identity(), EnumStatuts.DEPOSE);
                 File file = new File("src/test/fixtures/dummy.pdf");
                 Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(dp.identity(), "1",
                                 new FileInputStream(file), file.getName(), "application/pdf", file.length());
@@ -104,7 +104,7 @@ public class TxAjouterPieceJointeServiceTests {
                 assertTrue(optionalDossier.isPresent());
                 pcmi = optionalDossier.get();
                 assertTrue(pcmi.statutActuel().isPresent());
-                assertEquals(pcmi.statutActuel().get().type().statut(), EnumStatuts.DEPOSE);
+                assertEquals(pcmi.statutActuel().get().type().identity(), EnumStatuts.DEPOSE);
                 File file = new File("src/test/fixtures/dummy.pdf");
                 Optional<PieceJointe> pieceJointe = this.ajouterPieceJointe.execute(pcmi.identity(), "1",
                                 new FileInputStream(file), file.getName(), "application/pdf", file.length());

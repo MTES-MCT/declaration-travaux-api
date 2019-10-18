@@ -40,6 +40,16 @@ public class ParcelleCadastrale implements ValueObject<ParcelleCadastrale> {
     }
 
     @Override
+    public boolean equals(final Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        final ParcelleCadastrale other = (ParcelleCadastrale) object;
+        return this.hasSameValuesAs(other);
+    }
+
+    @Override
     public String toString() {
         return "ParcelleCadastrale={ prefixe={" + this.prefixe + "}, section={" + this.section + "}, numéro={"
                 + this.numero + "} }";

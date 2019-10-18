@@ -49,6 +49,16 @@ public class Adresse implements ValueObject<Adresse> {
     }
 
     @Override
+    public boolean equals(final Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        final Adresse other = (Adresse) object;
+        return this.hasSameValuesAs(other);
+    }
+
+    @Override
     public String toString() {
         return "Adresse={ numero={" + this.numero + "}, voie={" + this.voie + "}, lieu-dit={" + this.lieuDit
                 + "}, commune={" + Objects.toString(this.commune) + "}, bp={" + this.bp + "}, cedex={" + this.cedex

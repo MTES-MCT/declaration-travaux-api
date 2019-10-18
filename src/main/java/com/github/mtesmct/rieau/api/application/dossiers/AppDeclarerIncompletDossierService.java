@@ -10,15 +10,12 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.DateService;
+import com.github.mtesmct.rieau.api.domain.services.StatutService;
 
 @ApplicationService
 public class AppDeclarerIncompletDossierService implements DeclarerIncompletDossierService {
@@ -26,12 +23,11 @@ public class AppDeclarerIncompletDossierService implements DeclarerIncompletDoss
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
-    private TypeStatutDossierRepository statutDossierRepository;
-    private DateService dateService;
+    private StatutService statutService;
 
     public AppDeclarerIncompletDossierService(AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository,
-            TypeStatutDossierRepository statutDossierRepository, DateService dateService) {
+            StatutService statutService) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
@@ -41,16 +37,13 @@ public class AppDeclarerIncompletDossierService implements DeclarerIncompletDoss
         if (dossierRepository == null)
             throw new IllegalArgumentException("Le repository des dossiers ne peut pas être nul.");
         this.dossierRepository = dossierRepository;
-        if (statutDossierRepository == null)
-            throw new IllegalArgumentException("Le repository des statuts des dossiers ne peut pas être nul.");
-        this.statutDossierRepository = statutDossierRepository;
-        if (dateService == null)
-            throw new IllegalArgumentException("Le service des dates ne peut pas être nul.");
-        this.dateService = dateService;
+        if (statutService == null)
+            throw new IllegalArgumentException("Le service des statuts des dossiers ne peut pas être nul.");
+        this.statutService = statutService;
     }
 
     @Override
-    public Optional<Dossier> execute(DossierId id)
+    public Optional<Dossier> execute(DossierId id, String message)
             throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
         this.authorizationService.isInstructeurAuthorized();
@@ -60,13 +53,12 @@ public class AppDeclarerIncompletDossierService implements DeclarerIncompletDoss
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
+        if (user.get().adresse() == null)
+            throw new NullPointerException("L'adresse de l'utilisateur connecté ne peut pas être nulle");
         if (this.authenticationService.isInstructeur() && !dossier.isEmpty()
                 && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
             throw new InstructeurForbiddenException(user.get());
-        Optional<TypeStatut> typeStatut = this.statutDossierRepository.findByStatut(EnumStatuts.INCOMPLET);
-        if (typeStatut.isEmpty())
-            throw new TypeStatutNotFoundException(EnumStatuts.INCOMPLET);
-        dossier.get().ajouterStatut(this.dateService.now(), typeStatut.get());
+        this.statutService.declarerIncomplet(dossier.get(), user.get(), message);
         Dossier dossierIncomplet = this.dossierRepository.save(dossier.get());
         dossier = Optional.ofNullable(dossierIncomplet);
         return dossier;

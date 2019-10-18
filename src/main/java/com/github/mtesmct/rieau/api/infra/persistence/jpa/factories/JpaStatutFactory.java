@@ -19,7 +19,7 @@ public class JpaStatutFactory {
     private TypeStatutDossierRepository statutDossierRepository;
 
     public Statut fromJpa(JpaStatut jpaStatut) throws TypeStatutNotFoundException {
-        Optional<TypeStatut> type = this.statutDossierRepository.findByStatut(jpaStatut.getStatut());
+        Optional<TypeStatut> type = this.statutDossierRepository.findById(jpaStatut.getStatut());
         if (type.isEmpty())
             throw new TypeStatutNotFoundException(jpaStatut.getStatut());            
         Statut statutDossier = new Statut(type.get(), jpaStatut.getDateDebut());
@@ -27,6 +27,6 @@ public class JpaStatutFactory {
     }
 
     public JpaStatut toJpa(JpaDossier jpaDossier, Statut statut) {
-        return new JpaStatut(jpaDossier, statut.type().statut(), statut.dateDebut());
+        return new JpaStatut(jpaDossier, statut.type().identity(), statut.dateDebut());
     }
 }

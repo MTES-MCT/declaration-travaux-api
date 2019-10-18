@@ -12,6 +12,6 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenExce
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 
 public interface DeclarerIncompletDossierService {
-    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, InstructeurForbiddenException,
+    public Optional<Dossier> execute(DossierId id, String message) throws DossierNotFoundException, InstructeurForbiddenException,
             AuthRequiredException, UserForbiddenException, UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException;
 }

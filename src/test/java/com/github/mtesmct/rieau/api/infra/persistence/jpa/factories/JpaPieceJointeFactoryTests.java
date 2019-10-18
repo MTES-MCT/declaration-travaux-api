@@ -24,7 +24,7 @@ import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDeposant;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
@@ -52,7 +52,7 @@ public class JpaPieceJointeFactoryTests {
 
         @Test
         public void toJpaTest() throws CommuneNotFoundException, FileNotFoundException {
-                JpaDossier jpaDossier = new JpaDossier("0", new JpaDeposant("toto", "toto@fai.fr"), EnumTypes.DPMI);
+                JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
                 Optional<TypeDossier> type = this.typeDossierRepository.findByType(EnumTypes.DPMI);
@@ -72,7 +72,7 @@ public class JpaPieceJointeFactoryTests {
 
         @Test
         public void fromJpaTest() throws CommuneNotFoundException, FileNotFoundException {
-                JpaDossier jpaDossier = new JpaDossier("0", new JpaDeposant("toto", "toto@fai.fr"), EnumTypes.DPMI);
+                JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
                 Optional<TypeDossier> type = this.typeDossierRepository.findByType(EnumTypes.DPMI);

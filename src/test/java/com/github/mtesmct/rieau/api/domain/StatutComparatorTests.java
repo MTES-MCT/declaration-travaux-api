@@ -31,10 +31,10 @@ public class StatutComparatorTests {
     @Test
     public void compareQualifieDepose() {
         StatutComparator statutComparator = new StatutComparator();
-        Optional<TypeStatut> typeDepose = this.statutDossierRepository.findByStatut(EnumStatuts.DEPOSE);
+        Optional<TypeStatut> typeDepose = this.statutDossierRepository.findById(EnumStatuts.DEPOSE);
         assertTrue(typeDepose.isPresent());
         Statut statutDepose = new Statut(typeDepose.get(), this.dateService.now());
-        Optional<TypeStatut> typeQualifie = this.statutDossierRepository.findByStatut(EnumStatuts.QUALIFIE);
+        Optional<TypeStatut> typeQualifie = this.statutDossierRepository.findById(EnumStatuts.QUALIFIE);
         assertTrue(typeQualifie.isPresent());
         Statut statutQualifie = new Statut(typeQualifie.get(), this.dateService.now());
         assertTrue(statutComparator.compare(statutDepose, statutQualifie) < 0);
@@ -43,11 +43,11 @@ public class StatutComparatorTests {
     @Test
     public void compareInstructionIncomplet() {
         StatutComparator statutComparator = new StatutComparator();
-        Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findByStatut(EnumStatuts.INSTRUCTION);
+        Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findById(EnumStatuts.INSTRUCTION);
         assertTrue(typeInstruction.isPresent());
         Statut statutInstruction = new Statut(typeInstruction.get(), this.dateService.now());
         log.debug("dateDebut instruction={}", statutInstruction.dateDebut().getTime());
-        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findByStatut(EnumStatuts.INCOMPLET);
+        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
         assertTrue(typeIncomplet.isPresent());
         Statut statutIncomplet = new Statut(typeIncomplet.get(), this.dateService.now());
         log.debug("dateDebut incomplet={}", statutIncomplet.dateDebut().getTime());
