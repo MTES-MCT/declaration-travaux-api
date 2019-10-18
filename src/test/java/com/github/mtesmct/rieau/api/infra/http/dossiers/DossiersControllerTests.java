@@ -215,8 +215,8 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statutActuel").isNotEmpty())
 				.andExpect(jsonPath("$.statutActuel.id",
 						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
-				.andExpect(jsonPath("$.statutActuel.libelle",
-						equalTo(this.dossier.statutActuel().get().type().libelle())))
+				.andExpect(
+						jsonPath("$.statutActuel.libelle", equalTo(this.dossier.statutActuel().get().type().libelle())))
 				.andExpect(jsonPath("$.statutActuel.dateDebut",
 						equalTo(this.dateTimeConverter.format(this.dossier.statutActuel().get().dateDebut()))))
 				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
@@ -346,39 +346,38 @@ public class DossiersControllerTests {
 	@Test
 	@WithInstructeurNonBetaDetails
 	public void declarerIncompletInstructeurTest() throws Exception {
-        this.statutService.qualifier(this.dossier);
-        this.statutService.instruire(this.dossier);
+		this.statutService.qualifier(this.dossier);
+		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8).param("message", message))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.content(message))
 				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INCOMPLET.toString())))
 				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(4)))
-				.andExpect(jsonPath("$.messages").isArray()).andExpect(jsonPath("$.messages").isNotEmpty())
-				.andExpect(jsonPath("$.messages", hasSize(1)))
-				.andExpect(jsonPath("$.messages[0].auteur.id",
-						equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email",
-						equalTo(this.instructeur.email())))
-				.andExpect(jsonPath("$.messages[0].contenu",
-						equalTo(message)));
+				.andExpect(jsonPath("$.statuts", hasSize(4))).andExpect(jsonPath("$.messages").isArray())
+				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
+				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 
 	@Test
 	@WithMairieBetaDetails
 	public void declarerIncompletMairieInterditTest() throws Exception {
-        this.statutService.qualifier(this.dossier);
-        this.statutService.instruire(this.dossier);
-        this.dossier = this.dossierRepository.save(this.dossier);
+		this.statutService.qualifier(this.dossier);
+		this.statutService.instruire(this.dossier);
+		this.dossier = this.dossierRepository.save(this.dossier);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8).param("message", "Le dossier est incomplet car le plan de masse est illisible"))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.content(message))
 				.andExpect(status().isForbidden());
 	}
 

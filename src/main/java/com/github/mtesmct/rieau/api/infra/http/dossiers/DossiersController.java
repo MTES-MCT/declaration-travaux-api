@@ -34,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -119,7 +120,7 @@ public class DossiersController {
 	}
 
 	@PostMapping("/{id}" + DECLARER_INCOMPLET_URI)
-	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestParam String message) throws AuthRequiredException,
+	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestBody String message) throws AuthRequiredException,
 			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
 			TypeStatutNotFoundException, StatutForbiddenException {
 		Optional<Dossier> dossier = this.declarerIncompletDossierService.execute(new DossierId(id), message);

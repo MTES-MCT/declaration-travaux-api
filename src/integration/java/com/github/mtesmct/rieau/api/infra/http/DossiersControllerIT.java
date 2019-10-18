@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -282,9 +284,11 @@ public class DossiersControllerIT {
         Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findById(EnumStatuts.QUALIFIE);
         assertTrue(typeStatut.isPresent());
         this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
-        this.dossier = this.dossierRepository.save(this.dossier);
+		this.dossier = this.dossierRepository.save(this.dossier);
+		Map<String, String> request = new HashMap<>();
+    	request.put("message", "Le dossier est incomplet car le plan de masse est illisible");
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).param("message", "Le dossier est incomplet car le plan de masse est illisible").expect().statusCode(200).when()
+				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(request).expect().statusCode(200).when()
 				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
@@ -301,8 +305,10 @@ public class DossiersControllerIT {
 
 	@Test
 	public void declarerIncompletDeposantInterditTest() throws Exception {
+		Map<String, String> request = new HashMap<>();
+    	request.put("message", "Le dossier est incomplet car le plan de masse est illisible");
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.deposantAccessToken).param("message", "Le dossier est incomplet car le plan de masse est illisible").expect().statusCode(403).when()
+				.preemptive().oauth2(this.deposantAccessToken).body(request).expect().statusCode(403).when()
 				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString());
 	}
 }
