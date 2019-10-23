@@ -8,22 +8,26 @@ import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.services.StatutService;
 
 @ApplicationService
-public class AppConsulterDossierService implements ConsulterDossierService {
+public class AppLancerConsultationsDossierService implements LancerConsultationsDossierService {
 
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
+    private StatutService statutService;
 
-    public AppConsulterDossierService(AuthenticationService authenticationService,
-            AuthorizationService authorizationService, DossierRepository dossierRepository) {
+    public AppLancerConsultationsDossierService(AuthenticationService authenticationService,
+            AuthorizationService authorizationService, DossierRepository dossierRepository,
+            StatutService statutService) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
         this.authenticationService = authenticationService;
@@ -33,30 +37,28 @@ public class AppConsulterDossierService implements ConsulterDossierService {
         if (dossierRepository == null)
             throw new IllegalArgumentException("Le repository des dossiers ne peut pas être nul.");
         this.dossierRepository = dossierRepository;
+        if (statutService == null)
+            throw new IllegalArgumentException("Le service des statuts des dossiers ne peut pas être nul.");
+        this.statutService = statutService;
     }
 
     @Override
-    public Optional<Dossier> execute(String id) throws DeposantForbiddenException, AuthRequiredException,
-            UserForbiddenException, UserInfoServiceException, MairieForbiddenException, InstructeurForbiddenException {
-        this.authorizationService.isUserAuthorized();
-        Optional<Dossier> dossier = this.dossierRepository.findById(id);
+    public Optional<Dossier> execute(DossierId id)
+            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
+            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
+        this.authorizationService.isInstructeurAuthorized();
+        Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
+        if (dossier.isEmpty())
+            throw new DossierNotFoundException(id);
         Optional<Personne> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
-        if (!dossier.isEmpty() && dossier.get().deposant() == null)
-            throw new NullPointerException("Le déposant du dossier ne peut pas être nul");
-        if (this.authenticationService.isDeposant() && !dossier.isEmpty()
-                && !dossier.get().deposant().equals(user.get()))
-            throw new DeposantForbiddenException(user.get());
-        if ((this.authenticationService.isMairie() || this.authenticationService.isInstructeur())
-                && user.get().adresse() == null)
-            throw new NullPointerException("L'adresse de l'utilisateur connecté ne peut pas être nulle");
-        if (this.authenticationService.isMairie() && !dossier.isEmpty()
-                && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
-            throw new MairieForbiddenException(user.get());
         if (this.authenticationService.isInstructeur() && !dossier.isEmpty()
                 && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
             throw new InstructeurForbiddenException(user.get());
+        this.statutService.lancerConsultations(dossier.get());
+        Dossier dossierConsulte = this.dossierRepository.save(dossier.get());
+        dossier = Optional.ofNullable(dossierConsulte);
         return dossier;
     }
 }

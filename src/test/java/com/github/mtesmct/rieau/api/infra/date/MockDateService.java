@@ -29,7 +29,7 @@ public class MockDateService implements DateService {
 
     @Override
     public Date now() {
-        return this.dateTimeConverter.parse(dateString);
+        return this.dateTimeConverter.parse(this.dateString);
     }
 
     @Override

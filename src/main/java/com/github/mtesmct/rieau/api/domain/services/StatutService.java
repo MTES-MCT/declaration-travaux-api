@@ -1,5 +1,7 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
@@ -60,5 +62,13 @@ public class StatutService {
 
     public void prononcerDecision(Dossier dossier) throws StatutForbiddenException, TypeStatutNotFoundException {
         dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.DECISION));
+    }
+
+    public List<TypeStatut> statutsRestants(Dossier dossier){
+        List<TypeStatut> types = new ArrayList<TypeStatut>();
+        if (dossier.statutActuel().isPresent()){
+            types = this.statutDossierRepository.findAllGreaterThan(dossier.statutActuel().get().type());            
+        }
+        return types;
     }
 }

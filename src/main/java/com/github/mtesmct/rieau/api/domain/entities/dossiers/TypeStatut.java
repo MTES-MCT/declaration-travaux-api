@@ -76,5 +76,4 @@ public class TypeStatut implements Entity<TypeStatut, EnumStatuts> {
     public int hashCode() {
         return Objects.hash(this.id);
     }
-
 }

@@ -20,17 +20,24 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreExc
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterMessageDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJointeService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxConsulterDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxDeclarerCompletDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxDeclarerIncompletDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxInstruireDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxLancerConsultationsDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxListerDossiersService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxPrendreDecisionDossierService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxQualifierDossierService;
+import com.github.mtesmct.rieau.api.infra.application.dossiers.TxSupprimerDossierService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +55,11 @@ public class DossiersController {
 	public static final String PIECES_JOINTES_URI = "/piecesjointes";
 	public static final String QUALIFIER_URI = "/qualifier";
 	public static final String DECLARER_INCOMPLET_URI = "/declarer-incomplet";
+	public static final String DECLARER_COMPLET_URI = "/declarer-complet";
+	public static final String INSTRUIRE_URI = "/instruire";
+	public static final String LANCER_CONSULTATIONS_URI = "/lancer-consultations";
+	public static final String PRENDRE_DECISION_URI = "/prendre-decision";
+	public static final String MESSAGES_URI = "/messages";
 
 	@Autowired
 	private TxImporterCerfaService importerCerfaService;
@@ -60,7 +72,19 @@ public class DossiersController {
 	@Autowired
 	private TxQualifierDossierService qualifierDossierService;
 	@Autowired
+	private TxPrendreDecisionDossierService prendreDecisionDossierService;
+	@Autowired
+	private TxInstruireDossierService instruireDossierService;
+	@Autowired
+	private TxLancerConsultationsDossierService lancerConsultationsDossierService;
+	@Autowired
 	private TxDeclarerIncompletDossierService declarerIncompletDossierService;
+	@Autowired
+	private TxDeclarerCompletDossierService declarerCompletDossierService;
+	@Autowired
+	private TxAjouterMessageDossierService ajouterMessageDossierService;
+	@Autowired
+	private TxSupprimerDossierService supprimerDossierService;
 	@Autowired
 	@Qualifier("dateTimeConverter")
 	private DateConverter dateTimeConverter;
@@ -70,7 +94,8 @@ public class DossiersController {
 
 	@GetMapping("/{id}")
 	public Optional<JsonDossier> consulter(@PathVariable String id) throws DeposantForbiddenException,
-			AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException {
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException,
+			InstructeurForbiddenException {
 		Optional<Dossier> dossier = this.consulterDossierService.execute(id);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
@@ -119,10 +144,22 @@ public class DossiersController {
 		return jsonDossier;
 	}
 
+	@PostMapping("/{id}" + INSTRUIRE_URI)
+	public Optional<JsonDossier> instruire(@PathVariable String id)
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, DossierNotFoundException,
+			TypeStatutNotFoundException, StatutForbiddenException, InstructeurForbiddenException {
+		Optional<Dossier> dossier = this.instruireDossierService.execute(new DossierId(id));
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
 	@PostMapping("/{id}" + DECLARER_INCOMPLET_URI)
-	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestBody String message) throws AuthRequiredException,
-			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
-			TypeStatutNotFoundException, StatutForbiddenException {
+	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestBody String message)
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+			InstructeurForbiddenException, DossierNotFoundException, TypeStatutNotFoundException,
+			StatutForbiddenException {
 		Optional<Dossier> dossier = this.declarerIncompletDossierService.execute(new DossierId(id), message);
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
@@ -130,4 +167,58 @@ public class DossiersController {
 		return jsonDossier;
 	}
 
+	@PostMapping("/{id}" + DECLARER_COMPLET_URI)
+	public Optional<JsonDossier> declarerComplet(@PathVariable String id) throws AuthRequiredException,
+			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
+			TypeStatutNotFoundException, StatutForbiddenException {
+		Optional<Dossier> dossier = this.declarerCompletDossierService.execute(new DossierId(id));
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
+	@PostMapping("/{id}" + LANCER_CONSULTATIONS_URI)
+	public Optional<JsonDossier> lancerSupprimerations(@PathVariable String id)
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, DossierNotFoundException,
+			TypeStatutNotFoundException, StatutForbiddenException, InstructeurForbiddenException {
+		Optional<Dossier> dossier = this.lancerConsultationsDossierService.execute(new DossierId(id));
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
+	@PostMapping(path = "/{id}" + PRENDRE_DECISION_URI, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public Optional<JsonDossier> prendreDecision(@PathVariable String id, @RequestParam("file") MultipartFile file)
+			throws IOException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+			AjouterPieceJointeException, DossierNotFoundException, MairieForbiddenException,
+			TypeStatutNotFoundException, StatutForbiddenException {
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		Optional<Dossier> dossier = this.prendreDecisionDossierService.execute(new DossierId(id), file.getInputStream(),
+				file.getOriginalFilename(), file.getContentType(), file.getSize());
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
+	@PostMapping("/{id}" + MESSAGES_URI)
+	public Optional<JsonDossier> ajouterMessage(@PathVariable String id, @RequestBody String message)
+			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+			InstructeurForbiddenException, DossierNotFoundException, TypeStatutNotFoundException,
+			StatutForbiddenException, DeposantForbiddenException {
+		Optional<Dossier> dossier = this.ajouterMessageDossierService.execute(new DossierId(id), message);
+		Optional<JsonDossier> jsonDossier = Optional.empty();
+		if (dossier.isPresent())
+			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
+		return jsonDossier;
+	}
+
+
+	@DeleteMapping("/{id}")
+	public void supprimer(@PathVariable String id) throws DeposantForbiddenException,
+			AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException,
+			InstructeurForbiddenException, DossierNotFoundException {
+		this.supprimerDossierService.execute(id);
+	}
 }

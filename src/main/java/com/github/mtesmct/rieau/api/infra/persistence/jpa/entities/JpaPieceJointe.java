@@ -52,4 +52,9 @@ public class JpaPieceJointe {
     public boolean isCerfa() {
         return this.id!= null && this.id.getCode() != null && this.id.getCode().isCerfa();
     }
+
+    @Transient
+    public boolean isDecision() {
+        return this.id!= null && this.id.getCode() != null && this.id.getCode().isDecision();
+    }
 }

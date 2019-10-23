@@ -122,4 +122,9 @@ public class JpaDossier {
     public Optional<JpaPieceJointe> cerfa(){
         return this.piecesJointes.stream().filter(pieceJointe -> pieceJointe.isCerfa()).findAny();
     }
+
+    @Transient
+    public Optional<JpaPieceJointe> decision(){
+        return this.piecesJointes.stream().filter(pieceJointe -> pieceJointe.isDecision()).findAny();
+    }
 }

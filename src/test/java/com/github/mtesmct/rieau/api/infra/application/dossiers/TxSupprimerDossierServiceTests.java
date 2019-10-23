@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.infra.application.dossiers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,6 +14,7 @@ import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
@@ -48,12 +48,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class TxConsulterDossierServiceTests {
+public class TxSupprimerDossierServiceTests {
     @MockBean
     private DossierRepository dossierRepository;
 
     @Autowired
-    private TxConsulterDossierService consulterDossierService;
+    private TxSupprimerDossierService service;
     @Autowired
     private DossierFactory dossierFactory;
     @Autowired
@@ -93,8 +93,6 @@ public class TxConsulterDossierServiceTests {
         assertNotNull(this.dossier.identity());
         assertNotNull(this.dossier.deposant());
         assertTrue(this.dossier.pieceJointes().isEmpty());
-        projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "75100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true, true);
         this.otherDossier = this.dossierFactory.creer(this.instructeurNonBeta, EnumTypes.DPMI, projet,
                 cerfaFichier.identity());
         Mockito.when(this.dossierRepository.save(any())).thenReturn(this.otherDossier);
@@ -107,59 +105,38 @@ public class TxConsulterDossierServiceTests {
 
     @Test
     @WithDeposantBetaDetails
-    public void executeDeposantTest() throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, MairieForbiddenException, InstructeurForbiddenException {
-        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
-        assertTrue(dossierTrouve.isPresent());
-        assertEquals(this.dossier, dossierTrouve.get());
-    }
-
-    @Test
-    @WithMairieBetaDetails
-    public void executeMairieTest() throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, MairieForbiddenException, InstructeurForbiddenException {
-        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
-        assertTrue(dossierTrouve.isPresent());
-        assertEquals(this.dossier, dossierTrouve.get());
-    }
-
-    @Test
-    @WithInstructeurNonBetaDetails
-    public void executeInstructeurTest() throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, MairieForbiddenException, InstructeurForbiddenException {
-        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
-        Optional<Dossier> dossierTrouve = this.consulterDossierService.execute(this.dossier.identity().toString());
-        assertTrue(dossierTrouve.isPresent());
-        assertEquals(this.dossier, dossierTrouve.get());
+    public void executeDeposantTest()
+            throws DeposantForbiddenException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
+            MairieForbiddenException, InstructeurForbiddenException, DossierNotFoundException {
+                Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
+        this.service.execute(this.dossier.identity().toString());
     }
 
     @Test
     @WithDeposantBetaDetails
-    public void executeDeposantAutreDossierTestInterdit() throws Exception {
+    public void executeDeposantAutreDossierInterdit() throws Exception {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
         assertNotNull(this.otherDossier.deposant());
         Optional<Personne> user = this.authenticationService.user();
         assertTrue(user.isPresent());
         assertFalse(this.otherDossier.deposant().equals(user.get()));
         assertThrows(DeposantForbiddenException.class,
-                () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
+                () -> this.service.execute(this.otherDossier.identity().toString()));
     }
 
     @Test
     @WithInstructeurNonBetaDetails
-    public void executeInstructeurAutreDossierTestInterdit() throws Exception {
-        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
-        assertThrows(InstructeurForbiddenException.class,
-                () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
+    public void executeInstructeurInterdit() throws Exception {
+        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
+        assertThrows(UserForbiddenException.class,
+                () -> this.service.execute(this.dossier.identity().toString()));
     }
 
     @Test
     @WithMairieBetaDetails
-    public void executeMairieAutreDossierTestInterdit() throws Exception {
-        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.otherDossier));
-        assertThrows(MairieForbiddenException.class,
-                () -> this.consulterDossierService.execute(this.otherDossier.identity().toString()));
+    public void executeMairieInterdit() throws Exception {
+        Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
+        assertThrows(UserForbiddenException.class,
+                () -> this.service.execute(this.dossier.identity().toString()));
     }
 }

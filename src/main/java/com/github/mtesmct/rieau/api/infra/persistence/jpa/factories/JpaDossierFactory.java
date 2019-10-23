@@ -61,6 +61,8 @@ public class JpaDossierFactory {
         if (!dossier.messages().isEmpty())
             dossier.messages()
                     .forEach(message -> jpaDossier.addMessage(this.jpaMessageFactory.toJpa(jpaDossier, message)));
+        if (dossier.decision() != null)
+            jpaDossier.addPieceJointe(this.jpaPieceJointeFactory.toJpa(jpaDossier, dossier.decision()));
         return jpaDossier;
     }
 
@@ -97,6 +99,10 @@ public class JpaDossierFactory {
             });
         if (!jpaDossier.getMessages().isEmpty())
             jpaDossier.getMessages().forEach(jpaMessage -> this.ajouterMessage(dossier, jpaMessage));
+        if (jpaDossier.decision().isPresent()) {
+            FichierId fichierIdDecision = new FichierId(jpaDossier.decision().get().getId().getFichierId());
+            dossier.ajouterDecision(fichierIdDecision);
+        }
         return dossier;
     }
 
@@ -104,7 +110,7 @@ public class JpaDossierFactory {
             throws PieceNonAJoindreException, AjouterPieceJointeException {
         PieceJointe pieceJointe = this.jpaPieceJointeFactory.fromJpa(dossier, jpaPieceJointe);
         if (pieceJointe != null) {
-            if (!jpaPieceJointe.isCerfa()) {
+            if (!jpaPieceJointe.isCerfa() && !jpaPieceJointe.isDecision()) {
                 if (pieceJointe.code() == null)
                     throw new NullPointerException("Le code de la pièce jointe ne peut pas être nul.");
                 dossier.ajouterPieceJointe(pieceJointe.code().numero(), pieceJointe.fichierId());
@@ -117,7 +123,7 @@ public class JpaDossierFactory {
         Statut statut = this.jpaStatutFactory.fromJpa(jpaStatut);
         if (statut == null)
             throw new NullPointerException("Le statut ne peut pas être nul.");
-            dossier.ajouterStatut(statut.dateDebut(), statut.type());
+        dossier.ajouterStatut(statut.dateDebut(), statut.type());
     }
 
     private void ajouterMessage(Dossier dossier, JpaMessage jpaMessage) {

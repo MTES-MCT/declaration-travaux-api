@@ -19,6 +19,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
     private Personne deposant;
     private Projet projet;
     private PieceJointe cerfa;
+    private PieceJointe decision;
     private List<PieceJointe> piecesJointes;
     private StatutComparator statutComparator;
     private List<Message> messages;
@@ -39,6 +40,10 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return this.cerfa;
     }
 
+    public PieceJointe decision() {
+        return this.decision;
+    }
+
     public TypeDossier type() {
         return this.type;
     }
@@ -50,7 +55,6 @@ public class Dossier implements Entity<Dossier, DossierId> {
     public List<Message> messages() {
         return this.messages;
     }
-
 
     public List<String> piecesAJoindre() {
         List<String> liste = new ArrayList<String>();
@@ -75,6 +79,12 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return pieceJointe;
     }
 
+    public PieceJointe ajouterDecision(FichierId fichierId) {
+        PieceJointe pieceJointe = new PieceJointe(this, new CodePieceJointe(this.type.type(), "d"), fichierId);
+        this.decision = pieceJointe;
+        return pieceJointe;
+    }
+
     public Optional<PieceJointe> ajouterPieceJointe(String numero, FichierId fichierId)
             throws AjouterPieceJointeException {
         Optional<PieceJointe> pieceJointe = Optional.empty();
@@ -82,6 +92,8 @@ public class Dossier implements Entity<Dossier, DossierId> {
             if (this.type == null)
                 throw new AjouterPieceJointeException(new NullPointerException("Le type du dossier est nul"));
             if (numero.equals("0"))
+                throw new AjouterPieceJointeException(new NumeroPieceJointeException());
+            if (numero.equals("d"))
                 throw new AjouterPieceJointeException(new NumeroPieceJointeException());
             pieceJointe = Optional
                     .ofNullable(new PieceJointe(this, new CodePieceJointe(this.type.type(), numero), fichierId));

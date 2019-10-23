@@ -20,15 +20,13 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
-import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
+import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
@@ -69,15 +67,16 @@ public class DossiersControllerIT {
 	@Autowired
 	private ProjetFactory projetFactory;
 	@Autowired
-	private DateService dateService;
-    @Autowired
-    private TypeStatutDossierRepository typeStatutDossierRepository;
+	private StatutService statutService;
 
 	private Dossier dossier;
 
 	@Autowired
 	@Qualifier("deposantBeta")
 	private Personne deposantBeta;
+	@Autowired
+	@Qualifier("instructeurNonBeta")
+	private Personne instructeur;
 	private Fichier fichier;
 	private File cerfa;
 	private File dp1;
@@ -280,15 +279,12 @@ public class DossiersControllerIT {
 	}
 
 	@Test
-	public void declarerIncompletInstructeurTest() throws Exception {
-        Optional<TypeStatut> typeStatut = this.typeStatutDossierRepository.findById(EnumStatuts.QUALIFIE);
-        assertTrue(typeStatut.isPresent());
-        this.dossier.ajouterStatut(this.dateService.now(), typeStatut.get());
+	public void declarerIncompletInstructeurTest() throws Exception {       
+        this.statutService.qualifier(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
-		Map<String, String> request = new HashMap<>();
-    	request.put("message", "Le dossier est incomplet car le plan de masse est illisible");
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(request).expect().statusCode(200).when()
+				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(message).expect().statusCode(200).when()
 				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
 				.getObject("", JsonDossier.class);
 		assertNotNull(jsonDossier);
@@ -301,14 +297,217 @@ public class DossiersControllerIT {
 		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
 		assertFalse(jsonDossier.getMessages().isEmpty());
 		assertEquals(1, jsonDossier.getMessages().size());
+		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
+		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
+		assertEquals(this.instructeur.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
 	}
 
 	@Test
 	public void declarerIncompletDeposantInterditTest() throws Exception {
+    	String message = "Le dossier est incomplet car le plan de masse est illisible";
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).body(message).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString());
+	}
+	
+	@Test
+	public void instruireInstructeurTest() throws Exception {        
+        this.statutService.qualifier(this.dossier);
+        this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");
+		this.dossier = this.dossierRepository.save(this.dossier);
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.INSTRUIRE_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(4, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(3).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
+	}
+	
+	@Test
+	public void instruireDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.INSTRUIRE_URI, this.dossier.identity().toString());
+	}
+	
+	@Test
+	public void declarerCompletInstructeurTest() throws Exception {        
+        this.statutService.qualifier(this.dossier);        
+        this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");
+        this.statutService.instruire(this.dossier);        
+		this.dossier = this.dossierRepository.save(this.dossier);
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.DECLARER_COMPLET_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(5, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(3).getId());
+		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(4).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
+	}
+	
+	@Test
+	public void declarerCompletDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.DECLARER_COMPLET_URI, this.dossier.identity().toString());
+	}
+	
+	@Test
+	public void lancerConsultationsInstructeurTest() throws Exception {     
+        this.statutService.qualifier(this.dossier);        
+        this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");
+        this.statutService.instruire(this.dossier);      
+        this.statutService.declarerComplet(this.dossier);         
+		this.dossier = this.dossierRepository.save(this.dossier);
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.LANCER_CONSULTATIONS_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.CONSULTATIONS.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(6, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(3).getId());
+		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(4).getId());
+		assertEquals(EnumStatuts.CONSULTATIONS.toString(), jsonDossier.getStatuts().get(5).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
+	}
+	
+	@Test
+	public void lancerConsultationsDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.LANCER_CONSULTATIONS_URI, this.dossier.identity().toString());
+	}
+
+	@Test
+	public void prendreDecisionMairieTest() throws Exception {
+        this.statutService.qualifier(this.dossier);        
+        this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");
+        this.statutService.instruire(this.dossier);      
+        this.statutService.declarerComplet(this.dossier);      
+        this.statutService.lancerConsultations(this.dossier);         
+		this.dossier = this.dossierRepository.save(this.dossier);
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.PRENDRE_DECISION_URI, this.dossier.identity().toString());
+		Optional<Dossier> dossierLu = this.dossierRepository.findById(dossier.identity().toString());
+		assertTrue(dossierLu.isPresent());
+		assertNotNull(dossierLu.get().pieceJointes());
+		assertEquals(EnumStatuts.DECISION, dossierLu.get().statutActuel().get().type().identity());
+		assertNotNull(dossierLu.get().decision());
+	}
+	@Test
+	public void prendreDecisionDeposantInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.deposantAccessToken).multiPart("file", this.dp1).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.PRENDRE_DECISION_URI, this.dossier.identity().toString());
+	}
+
+	@Test
+	public void ajouterMessageInstructeurTest() throws Exception {       
+        this.statutService.qualifier(this.dossier);
+		this.dossier = this.dossierRepository.save(this.dossier);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(message).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.MESSAGES_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(2, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
+		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
+		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
+		assertEquals(this.instructeur.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
+	}
+
+	@Test
+	public void ajouterMessageDeposantTest() throws Exception {       
+        this.statutService.qualifier(this.dossier);
+		this.dossier = this.dossierRepository.save(this.dossier);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).contentType(ContentType.JSON).body(message).expect().statusCode(200).when()
+				.post("/{id}"+DossiersController.MESSAGES_URI, this.dossier.identity().toString()).then().assertThat().and().extract().jsonPath()
+				.getObject("", JsonDossier.class);
+		assertNotNull(jsonDossier);
+		assertEquals(this.dossier.identity().toString(), jsonDossier.getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatutActuel().getId());
+		assertFalse(jsonDossier.getStatuts().isEmpty());
+		assertEquals(2, jsonDossier.getStatuts().size());
+		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
+		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
+		assertFalse(jsonDossier.getMessages().isEmpty());
+		assertEquals(1, jsonDossier.getMessages().size());
+		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
+		assertEquals(this.deposantBeta.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
+		assertEquals(this.deposantBeta.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
+	}
+
+	@Test
+	public void ajouterMessageMairieInterditTest() throws Exception {
 		Map<String, String> request = new HashMap<>();
     	request.put("message", "Le dossier est incomplet car le plan de masse est illisible");
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.deposantAccessToken).body(request).expect().statusCode(403).when()
-				.post("/{id}"+DossiersController.DECLARER_INCOMPLET_URI, this.dossier.identity().toString());
+				.preemptive().oauth2(this.mairieAccessToken).body(request).expect().statusCode(403).when()
+				.post("/{id}"+DossiersController.MESSAGES_URI, this.dossier.identity().toString());
+	}
+
+	@Test
+	public void supprimerDeposantTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.deposantAccessToken).expect().statusCode(200).when()
+				.delete("/{id}", this.dossier.identity().toString());
+		assertTrue(this.dossierRepository.findById(this.dossier.identity().toString()).isEmpty());
+	}
+
+	@Test
+	public void supprimerDeposantAutreDossierInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.deposantAccessToken).expect().statusCode(403).when()
+				.delete("/{id}", this.dossier.identity().toString());
+	}
+
+	@Test
+	public void supprimerInstructeurInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.instructeurAccessToken).expect().statusCode(403).when()
+				.delete("/{id}", this.dossier.identity().toString());
+	}
+
+	@Test
+	public void supprimerMairieInterditTest() throws Exception {
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.mairieAccessToken).expect().statusCode(403).when()
+				.delete("/{id}", this.dossier.identity().toString());
 	}
 }

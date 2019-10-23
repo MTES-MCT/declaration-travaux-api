@@ -10,8 +10,10 @@ public class JsonDossier {
     private String id;
     private String type;
     private List<JsonStatut> statuts = new ArrayList<JsonStatut>();
+    private List<JsonStatut> statutsRestants = new ArrayList<JsonStatut>();
     private JsonStatut statutActuel;
     private JsonPieceJointe cerfa;
+    private JsonPieceJointe decision;
     private List<JsonPieceJointe> piecesJointes = new ArrayList<JsonPieceJointe>();
     private List<String> piecesAJoindre = new ArrayList<String>();
     private JsonProjet projet;
@@ -23,6 +25,9 @@ public class JsonDossier {
         this.cerfa = cerfa;
         this.projet = projet;
         this.statutActuel = statutActuel;
+    }
+    public void setDecision(JsonPieceJointe decision){
+        this.decision = decision;
     }
 
     public void addPieceJointe(JsonPieceJointe pieceJointe){
@@ -39,6 +44,10 @@ public class JsonDossier {
 
     public void addMessage(JsonMessage message){
         this.messages.add(message);
+    }
+
+    public void addStatutRestant(JsonStatut statut){
+        this.statutsRestants.add(statut);
     }
 
 }

@@ -35,6 +35,11 @@ public class JpaCodePieceJointe {
         return this.numero != null && this.numero.equals("0");
     }
 
+    @Transient
+    public boolean isDecision() {
+        return this.numero != null && this.numero.equals("d");
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

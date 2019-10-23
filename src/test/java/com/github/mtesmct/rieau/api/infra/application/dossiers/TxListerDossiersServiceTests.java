@@ -22,6 +22,7 @@ import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
+import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
@@ -90,6 +91,20 @@ public class TxListerDossiersServiceTests {
     @Test
     @WithMairieBetaDetails
     public void executeMairieTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+        assertNotNull(this.listerDossiersService);
+        assertFalse(this.listerDossiersService.execute().isEmpty());
+        assertEquals(this.listerDossiersService.execute().size(), 1);
+        assertNotNull(this.listerDossiersService.execute().get(0));
+        assertEquals(this.listerDossiersService.execute().get(0).identity(), this.dossier.identity());
+        assertTrue(this.listerDossiersService.execute().get(0).statutActuel().isPresent());
+        assertEquals(this.listerDossiersService.execute().get(0).statutActuel(), this.dossier.statutActuel());
+        assertEquals(0, this.listerDossiersService.execute().get(0).statutActuel().get().dateDebut()
+                .compareTo(this.dossier.statutActuel().get().dateDebut()));
+    }
+
+    @Test
+    @WithInstructeurNonBetaDetails
+    public void executeInstructeurTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         assertNotNull(this.listerDossiersService);
         assertFalse(this.listerDossiersService.execute().isEmpty());
         assertEquals(this.listerDossiersService.execute().size(), 1);

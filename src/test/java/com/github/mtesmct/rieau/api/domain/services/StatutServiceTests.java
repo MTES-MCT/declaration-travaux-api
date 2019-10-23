@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
@@ -20,6 +21,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 
@@ -134,6 +136,27 @@ public class StatutServiceTests {
         assertEquals(7, this.dossier.historiqueStatuts().size());
         assertFalse(this.dossier.messages().isEmpty());
         assertEquals(1, this.dossier.messages().size());
+    }
+
+    @Test
+    public void statutsRestantsApresIncomplet() throws StatutForbiddenException, TypeStatutNotFoundException {
+        this.declarerIncomplet();
+        List<TypeStatut> types = this.statutService.statutsRestants(this.dossier);
+        assertFalse(types.isEmpty());
+        assertEquals(4, types.size());
+        assertEquals(EnumStatuts.INSTRUCTION, types.get(0).identity());
+        assertEquals(EnumStatuts.COMPLET, types.get(1).identity());
+        assertEquals(EnumStatuts.CONSULTATIONS, types.get(2).identity());
+        assertEquals(EnumStatuts.DECISION, types.get(3).identity());
+    }
+
+    @Test
+    public void statutsRestantsApresConsulte() throws StatutForbiddenException, TypeStatutNotFoundException {
+        this.lancerConsultations();
+        List<TypeStatut> types = this.statutService.statutsRestants(this.dossier);
+        assertFalse(types.isEmpty());
+        assertEquals(1, types.size());
+        assertEquals(EnumStatuts.DECISION, types.get(0).identity());
     }
 
 }

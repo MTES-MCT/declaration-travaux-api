@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
+import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
@@ -159,6 +161,15 @@ public class JpaDossierRepository implements DossierRepository {
             log.debug("{}", e);
         }
         return dossier;
+    }
+
+    @Override
+    public void delete(String id) throws DossierNotFoundException {
+        List<JpaDossier> jpaDossiers = this.jpaSpringDossierRepository.findAllByDossierId(id);
+        if (jpaDossiers.isEmpty())
+            throw new DossierNotFoundException(new DossierId(id));
+        JpaDossier jpaDossier = jpaDossiers.get(0);
+        this.jpaSpringDossierRepository.delete(jpaDossier);
     }
 
 }

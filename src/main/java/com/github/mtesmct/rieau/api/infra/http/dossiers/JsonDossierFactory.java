@@ -6,6 +6,8 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
+import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class JsonDossierFactory {
     private JsonStatutFactory jsonStatutFactory;
     @Autowired
     private JsonMessageFactory jsonMessageFactory;
+    @Autowired
+    private StatutService statutService;
 
     public JsonDossier toJson(Dossier dossier) {
         if (dossier == null)
@@ -37,6 +41,8 @@ public class JsonDossierFactory {
         dossier.piecesAJoindre().forEach(numero -> this.ajouterPieceAJoindre(jsonDossier, numero));
         dossier.historiqueStatuts().forEach((statut) -> this.ajouterStatut(jsonDossier, statut));
         dossier.messages().forEach((message) -> this.ajouterMessage(jsonDossier, message));
+        if (dossier.decision() != null) jsonDossier.setDecision(this.jsonPieceJointeFactory.toJson(dossier.decision()));
+        this.statutService.statutsRestants(dossier).forEach(type -> this.ajouterStatutRestant(jsonDossier, type));
 
         return jsonDossier;
     }
@@ -51,6 +57,10 @@ public class JsonDossierFactory {
 
     private void ajouterStatut(JsonDossier jsonDossier, Statut statut) {
         jsonDossier.addStatut(this.jsonStatutFactory.toJson(statut));
+    }
+
+    private void ajouterStatutRestant(JsonDossier jsonDossier, TypeStatut type) {
+        jsonDossier.addStatutRestant(this.jsonStatutFactory.toJson(type));
     }
 
     private void ajouterMessage(JsonDossier jsonDossier, Message message) {

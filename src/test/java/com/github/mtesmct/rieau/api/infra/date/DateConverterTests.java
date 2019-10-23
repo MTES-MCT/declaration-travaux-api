@@ -20,16 +20,25 @@ public class DateConverterTests {
     @Autowired
     @Qualifier("dateTimeConverter")
     private DateConverter dateTimeConverter;
+    @Autowired
+    @Qualifier("yearConverter")
+    private DateConverter yearConverter;
 
     @Test
     public void parseDateConverterTest() {
         Date date = this.dateConverter.parse("01/01/2019");
-        assertEquals(this.dateConverter.format(date), "01/01/2019");
+        assertEquals("01/01/2019", this.dateConverter.format(date));
     }
 
     @Test
     public void parseDateTimeConverterTest(){
         Date date = this.dateTimeConverter.parse("01/01/2019 01:02:03");
-        assertEquals(this.dateTimeConverter.format(date), "01/01/2019 01:02:03");
+        assertEquals("01/01/2019 01:02:03", this.dateTimeConverter.format(date));
+    }
+
+    @Test
+    public void yearConverterTest(){
+        Date date = this.dateTimeConverter.parse("01/01/2019 01:02:03");
+        assertEquals("2019", this.yearConverter.format(date));
     }
 }
