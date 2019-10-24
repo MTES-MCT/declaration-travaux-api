@@ -24,31 +24,31 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
 
     @Override
     public boolean isAuthenticaed() {
-        return getAuthentication() != null ? getAuthentication().isAuthenticated() : false;
+        return getAuthentication() != null && getAuthentication().isAuthenticated();
     }
 
     @Override
     public boolean isDeposant() {
-        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.DEPOSANT)).findAny().isPresent() : false;
+        return getAuthentication() != null && getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.DEPOSANT)).findAny().isPresent();
     }
 
     @Override
     public boolean isInstructeur() {
-        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.INSTRUCTEUR)).findAny().isPresent() : false;
+        return getAuthentication() != null && getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.INSTRUCTEUR)).findAny().isPresent();
     }
 
     @Override
     public boolean isMairie() {
-        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.MAIRIE)).findAny().isPresent() : false;
+        return getAuthentication() != null && getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.MAIRIE)).findAny().isPresent();
     }
 
     @Override
     public boolean isBeta() {
-        return getAuthentication() != null ? getAuthentication().getAuthorities().stream()
-                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.BETA)).findAny().isPresent() : false;
+        return getAuthentication() != null && getAuthentication().getAuthorities().stream()
+                .filter(a -> a.getAuthority().equals("ROLE_" + Roles.BETA)).findAny().isPresent();
     }
 
     @Override

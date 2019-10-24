@@ -104,6 +104,7 @@ public class JpaDossierFactoryTests {
                 JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
                                 new JpaAdresse("1", "rue des Fleurs", "ZI les roses", "44100", "BP 1", "Cedex 1"),
                                 "1-2-3,4-5-6", true);
+                jpaDossier.addProjet(jpaProjet);
                 JpaPieceJointe cerfa = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier,
                                 new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "cerfa"));
                 jpaDossier.addPieceJointe(cerfa);
@@ -112,7 +113,7 @@ public class JpaDossierFactoryTests {
                 jpaDossier.addPieceJointe(dp1);
                 jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
                 jpaDossier.addMessage(new JpaMessage(jpaDossier, new JpaUser(this.instructeur.identity().toString(), this.instructeur.email()), this.dateService.now(), "Incomplet!"));
-                Dossier dossier = this.jpaDossierFactory.fromJpa(jpaDossier, jpaProjet);
+                Dossier dossier = this.jpaDossierFactory.fromJpa(jpaDossier);
                 assertEquals(new Personne("toto", "toto@fai.fr"), dossier.deposant());
                 assertEquals(new DossierId("0"), dossier.identity());
                 assertTrue(dossier.statutActuel().isPresent());

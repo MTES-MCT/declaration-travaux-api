@@ -60,8 +60,7 @@ public class JpaProjetFactory {
         if (jpaParcelles.length > 1) {
             for (int i = 1; i < jpaParcelles.length; i++) {
                 parcelle = ParcelleCadastrale.parse(jpaParcelles[i]);
-                if (parcelle.isPresent())
-                    projet.localisation().ajouterParcelle(parcelle.get());
+                parcelle.ifPresent(parcelleCadastrale -> projet.localisation().ajouterParcelle(parcelleCadastrale));
             }
         }
         return projet;

@@ -1,32 +1,25 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.PatternSyntaxException;
-
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaDossierFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaMessageFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaStatutFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.PatternSyntaxException;
 
 @Repository
 @Slf4j
@@ -51,24 +44,13 @@ public class JpaDossierRepository implements DossierRepository {
         Optional<Dossier> dossier = Optional.empty();
         if (!jpaDossiers.isEmpty()) {
             JpaDossier jpaDossier = jpaDossiers.get(0);
-            Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.getId());
-            if (jpaProjet.isEmpty())
-                throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
             try {
-                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier, jpaProjet.get()));
+                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {
-                log.debug("{}", e);
+                log.error("{}", e);
             }
         }
         return dossier;
-    }
-
-
-    private JpaProjet findJpaProjet(JpaDossier jpaDossier) {
-        Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.getId());
-        if (jpaProjet.isEmpty())
-            throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
-        return jpaProjet.get();
     }
 
     @Override
@@ -76,9 +58,9 @@ public class JpaDossierRepository implements DossierRepository {
         List<Dossier> dossiers = new ArrayList<Dossier>();
         this.jpaSpringDossierRepository.findAllByDeposantId(deposantId).forEach(jpaDossier -> {
             try {
-                dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier, findJpaProjet(jpaDossier)));
+                dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {
-                log.debug("{}", e);
+                log.error("{}", e);
             }
         });
         return dossiers;
@@ -89,13 +71,10 @@ public class JpaDossierRepository implements DossierRepository {
         Optional<JpaDossier> jpaDossier = this.jpaSpringDossierRepository.findOneByPiecesJointesIdFichierId(fichierId);
         Optional<Dossier> dossier = Optional.empty();
         if (jpaDossier.isPresent()) {
-            Optional<JpaProjet> jpaProjet = this.jpaProjetRepository.findById(jpaDossier.get().getId());
-            if (jpaProjet.isEmpty())
-                throw new NullPointerException("Le projet du dossier ne peut pas être nul.");
             try {
-                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get(), jpaProjet.get()));
+                dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get()));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {
-                log.debug("{}", e);
+                log.error("{}", e);
             }
         }
         return dossier;
@@ -106,9 +85,9 @@ public class JpaDossierRepository implements DossierRepository {
         List<Dossier> dossiers = new ArrayList<Dossier>();
         this.jpaSpringDossierRepository.findAllByProjetAdresseCodePostal(commune).forEach(jpaDossier -> {
             try {
-                dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier, findJpaProjet(jpaDossier)));
+                dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {
-                log.debug("{}", e);
+                log.error("{}", e);
             }
         });
         return dossiers;
@@ -137,13 +116,12 @@ public class JpaDossierRepository implements DossierRepository {
     @Override
     public Dossier save(Dossier dossier) {
         JpaDossier jpaDossierAfter = this.jpaDossierFactory.toJpa(dossier);
-        JpaProjet jpaProjetAfter = this.jpaProjetFactory.toJpa(jpaDossierAfter, dossier.projet());
         List<JpaDossier> jpaDossiersBefore = this.jpaSpringDossierRepository
                 .findAllByDossierId(dossier.identity().toString());
         if (!jpaDossiersBefore.isEmpty()) {
             JpaDossier jpaDossierBefore = jpaDossiersBefore.get(0);
             jpaDossierAfter.setId(jpaDossierBefore.getId());
-            jpaProjetAfter.setDossier(jpaDossierAfter);
+            jpaDossierAfter.getProjet().setId(jpaDossierBefore.getProjet().getId());
             if (!dossier.pieceJointes().isEmpty())
                 dossier.pieceJointes().forEach(pieceJointe -> savePieceJointe(jpaDossierBefore, pieceJointe));
             if (!dossier.historiqueStatuts().isEmpty())
@@ -152,23 +130,21 @@ public class JpaDossierRepository implements DossierRepository {
                 dossier.messages().forEach(message -> saveMessage(jpaDossierBefore, message));
         }
         jpaDossierAfter = this.jpaSpringDossierRepository.save(jpaDossierAfter);
-        jpaProjetAfter.setDossier(jpaDossierAfter);
-        jpaProjetAfter.setId(jpaDossierAfter.getId());
-        jpaProjetAfter = this.jpaProjetRepository.save(jpaProjetAfter);
         try {
-            dossier = this.jpaDossierFactory.fromJpa(jpaDossierAfter, jpaProjetAfter);
+            dossier = this.jpaDossierFactory.fromJpa(jpaDossierAfter);
         } catch (PatternSyntaxException | CommuneNotFoundException e) {
-            log.debug("{}", e);
+            log.error("{}", e);
         }
         return dossier;
     }
 
     @Override
-    public void delete(String id) throws DossierNotFoundException {
-        List<JpaDossier> jpaDossiers = this.jpaSpringDossierRepository.findAllByDossierId(id);
+    public void delete(DossierId id) throws DossierNotFoundException {
+        List<JpaDossier> jpaDossiers = this.jpaSpringDossierRepository.findAllByDossierId(id.toString());
         if (jpaDossiers.isEmpty())
-            throw new DossierNotFoundException(new DossierId(id));
+            throw new DossierNotFoundException(id);
         JpaDossier jpaDossier = jpaDossiers.get(0);
+        jpaDossier.removeAllChildren();
         this.jpaSpringDossierRepository.delete(jpaDossier);
     }
 

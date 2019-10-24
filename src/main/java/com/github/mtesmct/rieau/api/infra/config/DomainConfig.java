@@ -9,10 +9,11 @@ import com.github.mtesmct.rieau.api.domain.services.DomainService;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ComponentScan.Filter;
 
 @Configuration
 @ComponentScan(basePackageClasses = {DomainPackageScan.class,ApplicationPackageScan.class},
-        includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = {DomainService.class,ApplicationService.class,Factory.class}))
+        includeFilters = @Filter(type = FilterType.ANNOTATION, classes = {DomainService.class,ApplicationService.class,Factory.class}))
 public class DomainConfig {
 
 }

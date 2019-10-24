@@ -151,7 +151,7 @@ public class DossiersControllerTests {
 	@WithDeposantBetaDetails
 	public void listerDeposantTest() throws Exception {
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
@@ -183,7 +183,7 @@ public class DossiersControllerTests {
 		assertTrue(this.pieceJointe.isPresent());
 		dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isArray())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(jsonPath("$[0].id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$[0].type", equalTo(this.dossier.type().type().toString())))
@@ -213,7 +213,7 @@ public class DossiersControllerTests {
 	@WithDeposantBetaDetails
 	public void consulterTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.dossier.identity().toString()).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -299,7 +299,7 @@ public class DossiersControllerTests {
 		Mockito.when(this.mockImporterCerfaService.execute(any(), anyString(), anyString(), anyLong()))
 				.thenThrow(new DossierImportException(new CodeCerfaNotFoundException()));
 		this.mvc.perform(multipart(this.uri).file(multipartFile)).andExpect(status().isInternalServerError())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.message",
 						containsString(CodeCerfaNotFoundException.AUCUN_CODE_CERFA_TROUVE_DANS_LE_FICHIER_PDF)));
 	}
@@ -340,10 +340,10 @@ public class DossiersControllerTests {
 	@WithMairieBetaDetails
 	public void qualifierMairieTest() throws Exception {
 		this.mvc.perform(post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.QUALIFIER_URI)
-				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.contentType(MediaType.APPLICATION_JSON)
 				.content("{ \"message\": \"Le dossier est incomplet car le plan de masse est illisible\"}")
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$").isNotEmpty())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.QUALIFIE.toString())));
@@ -365,9 +365,9 @@ public class DossiersControllerTests {
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -394,7 +394,7 @@ public class DossiersControllerTests {
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_INCOMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
 	}
@@ -409,7 +409,7 @@ public class DossiersControllerTests {
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.INSTRUIRE_URI)
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -431,7 +431,7 @@ public class DossiersControllerTests {
 		this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.INSTRUIRE_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
 	}
@@ -447,7 +447,7 @@ public class DossiersControllerTests {
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_COMPLET_URI)
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -475,7 +475,7 @@ public class DossiersControllerTests {
 		this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_COMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
 	}
@@ -492,7 +492,7 @@ public class DossiersControllerTests {
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.LANCER_CONSULTATIONS_URI)
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -521,7 +521,7 @@ public class DossiersControllerTests {
 		this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.LANCER_CONSULTATIONS_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
 	}
@@ -544,7 +544,7 @@ public class DossiersControllerTests {
 		this.mvc.perform(multipart(
 				this.uri + "/" + this.dossier.identity().toString() + DossiersController.PRENDRE_DECISION_URI)
 						.file(multipartFile))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -577,9 +577,9 @@ public class DossiersControllerTests {
 		String message = "Quel échelle pour le plan de masse?";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.MESSAGES_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -605,9 +605,9 @@ public class DossiersControllerTests {
 		String message = "Echelle 1/10000 ème";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.MESSAGES_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type", equalTo(this.dossier.type().type().toString())))
@@ -634,7 +634,7 @@ public class DossiersControllerTests {
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.MESSAGES_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON_UTF8)
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
 	}
@@ -642,14 +642,14 @@ public class DossiersControllerTests {
 	@Test
 	@WithDeposantBetaDetails
 	public void supprimerDossierDeposantTest() throws Exception {
-		this.mvc.perform(delete(this.uri+ "/" + this.dossier.identity().toString())).andExpect(status().isOk());
+		this.mvc.perform(delete(this.uri+ "/{id}", this.dossier.identity().toString())).andExpect(status().isOk());
 		assertTrue(this.dossierRepository.findById(this.deposantBeta.identity().toString()).isEmpty());
 	}
 
 	@Test
 	@WithInstructeurNonBetaDetails
 	public void supprimerDossierInstructeurInterditTest() throws Exception {
-		this.mvc.perform(delete(this.uri+ "/" + this.dossier.identity().toString())).andExpect(status().isForbidden());
+		this.mvc.perform(delete(this.uri+ "/{id}", this.dossier.identity().toString())).andExpect(status().isForbidden());
 	}
 
 }

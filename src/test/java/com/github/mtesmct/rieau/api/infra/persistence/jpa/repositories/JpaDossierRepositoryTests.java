@@ -3,6 +3,7 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -181,10 +182,10 @@ public class JpaDossierRepositoryTests {
 		jpaDossier.addMessage(new JpaMessage(jpaDossier, user, this.dateService.now(), contenu));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
-		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
-		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
+		jpaDossier.addProjet(jpaProjet);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		Optional<Dossier> dossier = this.repository.findById(jpaDossier.getDossierId());
 		assertTrue(dossier.isPresent());
 		assertEquals(dossier.get().identity().toString(), jpaDossier.getDossierId());
@@ -223,10 +224,10 @@ public class JpaDossierRepositoryTests {
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "1"), "1")));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "2"), "2")));
-		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
-		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
+		jpaDossier.addProjet(jpaProjet);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		List<Dossier> dossiers = this.repository.findByDeposantId(this.deposantBeta.identity().toString());
 		assertFalse(dossiers.isEmpty());
 		assertEquals(1, dossiers.size());
@@ -247,10 +248,10 @@ public class JpaDossierRepositoryTests {
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
-		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
-		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
+		jpaDossier.addProjet(jpaProjet);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		List<Dossier> dossiers = this.repository.findByCommune("codePostal");
 		assertFalse(dossiers.isEmpty());
 		assertEquals(1, dossiers.size());
@@ -272,14 +273,14 @@ public class JpaDossierRepositoryTests {
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
-		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
 				new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
-		jpaProjet = this.entityManager.persistAndFlush(jpaProjet);
 		JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "1"), "fichierId"));
-		jpaPieceJointe = this.entityManager.persistAndFlush(jpaPieceJointe);
+		jpaDossier.addProjet(jpaProjet);
+		jpaDossier.addPieceJointe(jpaPieceJointe);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
 		Optional<Dossier> dossier = this.repository.findByFichierId("fichierId");
 		assertTrue(dossier.isPresent());
 		assertEquals(jpaDossier.getDossierId(), dossier.get().identity().toString());
@@ -287,5 +288,28 @@ public class JpaDossierRepositoryTests {
 				dossier.get().projet().localisation().adresse().commune().codePostal());
 		assertEquals(this.jpaPersonne.getPersonneId(), dossier.get().deposant().identity().toString());
 	}
+
+	@Test
+	public void deleteTest() throws Exception {
+		JpaUser user = new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail());
+		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
+				user, EnumTypes.DPMI);
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.QUALIFIE, this.dateService.now()));
+		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.INSTRUCTION, this.dateService.now()));
+		JpaStatut jpaStatutActuel = new JpaStatut(jpaDossier, EnumStatuts.INCOMPLET, this.dateService.now());
+		jpaDossier.addStatut(jpaStatutActuel);
+		String contenu = "Incomplet!";
+		jpaDossier.addMessage(new JpaMessage(jpaDossier, user, this.dateService.now(), contenu));
+		jpaDossier.addPieceJointe(new JpaPieceJointe(
+				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
+		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
+		new JpaAdresse("numero", "voie", "lieuDit", "codePostal", "bp", "cedex"), "1-2-3,4-5-6", true);
+		jpaDossier.addProjet(jpaProjet);
+		jpaDossier = this.entityManager.persistAndFlush(jpaDossier);
+		this.repository.delete(this.dossier.identity());
+		assertNull(this.entityManager.find(JpaDossier.class, jpaDossier.getId()));
+	}
+
 
 }

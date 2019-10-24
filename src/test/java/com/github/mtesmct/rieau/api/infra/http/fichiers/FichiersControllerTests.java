@@ -87,7 +87,7 @@ public class FichiersControllerTests {
 	@WithDeposantBetaDetails
 	public void lireTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
-				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				MediaType.APPLICATION_JSON, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_PDF))
 				.andExpect(jsonPath("$").isNotEmpty());
@@ -96,7 +96,7 @@ public class FichiersControllerTests {
 	@Test
 	public void lireNonAuthentifieTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
-				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				MediaType.APPLICATION_JSON, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isForbidden());
 	}
 
@@ -104,7 +104,7 @@ public class FichiersControllerTests {
 	@WithInstructeurNonBetaDetails
 	public void lireInterditTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
-				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				MediaType.APPLICATION_JSON, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isForbidden());
 	}
 
@@ -112,9 +112,9 @@ public class FichiersControllerTests {
 	@WithAutreDeposantBetaDetails
 	public void lireNonProprietaireTest() throws Exception {
 		this.mvc.perform(get(this.uri + "/" + this.fichier.identity().toString()).accept(MediaType.APPLICATION_PDF,
-				MediaType.APPLICATION_JSON_UTF8, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
+				MediaType.APPLICATION_JSON, MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.IMAGE_GIF))
 				.andExpect(status().isForbidden())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isNotEmpty())
 				.andExpect(jsonPath("$.message",
 						containsString(UserNotOwnerException.message(this.autreDeposantBeta.identity().toString(), this.fichier.identity().toString()))));
