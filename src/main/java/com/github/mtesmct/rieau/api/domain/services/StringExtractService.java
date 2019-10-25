@@ -5,8 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.github.mtesmct.rieau.api.domain.services.DomainService;
-
 @DomainService
 public class StringExtractService {
     public Optional<String> extract(String regexp, String text, int indexGroup) throws PatternSyntaxException {

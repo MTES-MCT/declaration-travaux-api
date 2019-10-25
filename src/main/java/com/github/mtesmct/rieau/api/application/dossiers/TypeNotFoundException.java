@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+
+import java.util.Objects;
 
 public class TypeNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;

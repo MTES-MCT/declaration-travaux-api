@@ -1,43 +1,8 @@
 package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -54,7 +19,7 @@ import com.github.mtesmct.rieau.api.infra.application.dossiers.TxAjouterPieceJoi
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxImporterCerfaService;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.TxPrendreDecisionDossierService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,10 +37,25 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Slf4j
 public class DossiersControllerTests {
 
 	@Autowired
@@ -83,8 +63,7 @@ public class DossiersControllerTests {
 	@Autowired
 	private DossierRepository dossierRepository;
 	@Autowired
-	@Qualifier("dateTimeConverter")
-	private DateConverter dateTimeConverter;
+	private DateConverter<LocalDateTime> dateConverter;
 	@Autowired
 	private DossierFactory dossierFactory;
 	@Autowired
@@ -150,6 +129,11 @@ public class DossiersControllerTests {
 	@Test
 	@WithDeposantBetaDetails
 	public void listerDeposantTest() throws Exception {
+		log.debug("statutActueldateDebut.toString()={}", this.dossier.statutActuel().get().dateDebut());
+		String statutActuelDateDebut = this.dateConverter.formatDateTime((this.dossier.statutActuel().get().dateDebut()));
+		log.debug("statutActuelDateDebut={}", statutActuelDateDebut);
+		String statutActuelAnneeDateDebut = this.dateConverter.formatYear((this.dossier.statutActuel().get().dateDebut()));
+		log.debug("statutActuelAnneeDateDebut={}", statutActuelAnneeDateDebut);
 		this.mvc.perform(get(this.uri).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$").isNotEmpty()).andExpect(jsonPath("$", hasSize(1)))
@@ -159,7 +143,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].statutActuel.id",
 						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
-						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
+						equalTo(statutActuelDateDebut)))
 				.andExpect(jsonPath("$[0].statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
@@ -193,7 +177,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].statutActuel.id",
 						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
 				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
-						equalTo(this.dateTimeConverter.format((this.dossier.statutActuel().get().dateDebut())))))
+						equalTo(this.dateConverter.formatDateTime((this.dossier.statutActuel().get().dateDebut())))))
 				.andExpect(jsonPath("$[0].statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
@@ -230,7 +214,7 @@ public class DossiersControllerTests {
 				.andExpect(
 						jsonPath("$.statutActuel.libelle", equalTo(this.dossier.statutActuel().get().type().libelle())))
 				.andExpect(jsonPath("$.statutActuel.dateDebut",
-						equalTo(this.dateTimeConverter.format(this.dossier.statutActuel().get().dateDebut()))))
+						equalTo(this.dateConverter.formatDateTime(this.dossier.statutActuel().get().dateDebut()))))
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
@@ -242,7 +226,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statuts[0].libelle",
 						equalTo(this.dossier.historiqueStatuts().get(0).type().libelle())))
 				.andExpect(jsonPath("$.statuts[0].dateDebut",
-						equalTo(this.dateTimeConverter.format(this.dossier.historiqueStatuts().get(0).dateDebut()))))
+						equalTo(this.dateConverter.formatDateTime(this.dossier.historiqueStatuts().get(0).dateDebut()))))
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants", hasSize(6)))

@@ -1,17 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -24,7 +13,7 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBet
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.fichiers.FichiersController;
-
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,16 +25,21 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import io.restassured.RestAssured;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class FichiersControllerIT {
 
-	@Autowired
-	@Qualifier("dateTimeConverter")
-	private DateConverter dateConverter;
+    @Autowired
+    private DateConverter<LocalDateTime> localDateTimeConverter;
 	@Autowired
 	private FichierService fichierService;
 	@Autowired

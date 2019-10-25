@@ -1,25 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.entities;
 
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity(name = "Message")
 @Table(name = "messages")
@@ -30,9 +17,8 @@ public class JpaMessage {
     @GeneratedValue
     private Long id;
     @Column(nullable = true, unique = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
-    private Date date;
+    private LocalDateTime date;
     @Embedded
     @NotNull
     @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "auteur_id")),
@@ -44,7 +30,7 @@ public class JpaMessage {
     @JoinColumn(name = "dossier_id")
     private JpaDossier dossier;
 
-    public JpaMessage(@NotNull JpaDossier dossier, @NotNull JpaUser auteur, @NotNull Date date, String contenu) {
+    public JpaMessage(@NotNull JpaDossier dossier, @NotNull JpaUser auteur, @NotNull LocalDateTime date, String contenu) {
         this();
         this.dossier = dossier;
         this.auteur = auteur;

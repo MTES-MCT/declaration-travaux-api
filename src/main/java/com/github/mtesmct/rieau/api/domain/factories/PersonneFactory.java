@@ -1,7 +1,5 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
@@ -11,6 +9,8 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneService;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
+
+import java.util.Optional;
 
 @Factory
 public class PersonneFactory {

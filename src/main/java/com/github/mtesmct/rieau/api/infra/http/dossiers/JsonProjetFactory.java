@@ -2,7 +2,6 @@ package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-
 import org.springframework.stereotype.Component;
 
 @Component

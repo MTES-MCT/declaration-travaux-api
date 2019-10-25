@@ -1,23 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
@@ -32,7 +15,8 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.JsonDossier;
-
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,8 +28,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -54,9 +44,8 @@ public class DossiersControllerIT {
 
 	@Autowired
 	private DossierRepository dossierRepository;
-	@Autowired
-	@Qualifier("dateTimeConverter")
-	private DateConverter dateConverter;
+    @Autowired
+    private DateConverter<LocalDateTime> localDateTimeConverter;
 	@Autowired
 	private DossierFactory dossierFactory;
 	@Autowired

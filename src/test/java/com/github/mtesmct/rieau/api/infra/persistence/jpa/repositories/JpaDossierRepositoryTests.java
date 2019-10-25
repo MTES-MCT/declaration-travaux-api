@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
@@ -69,9 +71,8 @@ public class JpaDossierRepositoryTests {
 	@Autowired
 	private DossierRepository repository;
 
-	@Autowired
-	@Qualifier("dateTimeConverter")
-	private DateConverter dateConverter;
+    @Autowired
+    private DateConverter<LocalDateTime> localDateTimeConverter;
 
 	@Autowired
 	private DossierFactory dossierFactory;

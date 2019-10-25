@@ -1,20 +1,18 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-
 import com.github.mtesmct.rieau.api.application.auth.MockUsers;
 import com.github.mtesmct.rieau.api.application.auth.UsersService;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 import com.github.mtesmct.rieau.api.domain.factories.PersonneFactory;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class BasicUsersService implements UsersService {

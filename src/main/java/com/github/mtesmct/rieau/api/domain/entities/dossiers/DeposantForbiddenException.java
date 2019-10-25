@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+
+import java.util.Objects;
 
 public class DeposantForbiddenException extends Exception {
     private static final long serialVersionUID = 1L;

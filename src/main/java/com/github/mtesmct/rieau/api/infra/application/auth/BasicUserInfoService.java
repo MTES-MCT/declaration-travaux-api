@@ -1,19 +1,17 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.auth.UserNotFoundException;
 import com.github.mtesmct.rieau.api.application.auth.UsersService;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 @Component
 @Slf4j

@@ -1,22 +1,22 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Date;
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Message implements ValueObject<Message> {
 
     private Personne auteur;
-    private Date date;
+    private LocalDateTime date;
     private String contenu;
 
     public Personne auteur() {
         return this.auteur;
     }
 
-    public Date date() {
+    public LocalDateTime date() {
         return this.date;
     }
 
@@ -30,7 +30,7 @@ public class Message implements ValueObject<Message> {
                 && Objects.equals(this.contenu, other.contenu);
     }
 
-    public Message(Personne auteur, Date date, String contenu) {
+    public Message(Personne auteur, LocalDateTime date, String contenu) {
         if (auteur == null)
             throw new NullPointerException("L'auteur du message ne peut pas être nul.");
         this.auteur = auteur;

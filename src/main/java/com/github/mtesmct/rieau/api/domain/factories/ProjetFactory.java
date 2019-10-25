@@ -1,16 +1,11 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Localisation;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Nature;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneService;
+
+import java.util.Optional;
 
 @Factory
 public class ProjetFactory {

@@ -1,18 +1,12 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 
 
 @DomainService

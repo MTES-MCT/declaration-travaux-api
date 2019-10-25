@@ -1,7 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-
 import org.springframework.stereotype.Component;
 
 @Component

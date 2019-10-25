@@ -1,11 +1,11 @@
 package com.github.mtesmct.rieau.api.domain.repositories;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface DossierRepository {
     public List<Dossier> findByDeposantId(String deposantId);

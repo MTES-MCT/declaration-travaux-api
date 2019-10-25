@@ -1,13 +1,13 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
+import com.github.mtesmct.rieau.api.domain.entities.Factory;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
-import com.github.mtesmct.rieau.api.domain.entities.Factory;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
 
 @Factory
 public class FichierFactory {

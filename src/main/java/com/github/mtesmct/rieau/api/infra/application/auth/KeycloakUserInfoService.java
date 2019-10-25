@@ -1,15 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
-import java.util.Map;
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
 import com.github.mtesmct.rieau.api.domain.factories.PersonneFactory;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
@@ -20,7 +17,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @ConditionalOnProperty(prefix = "keycloak", name = "enabled", havingValue = "true")

@@ -7,7 +7,6 @@ import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaNaissance;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

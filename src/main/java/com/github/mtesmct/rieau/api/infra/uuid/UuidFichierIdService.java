@@ -1,11 +1,10 @@
 package com.github.mtesmct.rieau.api.infra.uuid;
 
-import java.util.UUID;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.services.FichierIdService;
-
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UuidFichierIdService implements FichierIdService {

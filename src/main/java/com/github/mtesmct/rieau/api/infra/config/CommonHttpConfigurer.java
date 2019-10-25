@@ -3,7 +3,6 @@ package com.github.mtesmct.rieau.api.infra.config;
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 import com.github.mtesmct.rieau.api.infra.http.fichiers.FichiersController;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

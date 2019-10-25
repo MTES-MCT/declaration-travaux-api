@@ -1,20 +1,13 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DossierIdService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
+
+import java.util.Optional;
 
 @Factory
 public class DossierFactory {

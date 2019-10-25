@@ -1,16 +1,14 @@
 package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
-
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Optional;
 
 @Component
 public class InMemoryTypeDossierRepository implements TypeDossierRepository {

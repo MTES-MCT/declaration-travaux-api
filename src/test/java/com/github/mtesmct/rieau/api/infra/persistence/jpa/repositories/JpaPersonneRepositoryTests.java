@@ -3,11 +3,13 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.PersonneRepository;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
 
 import org.junit.jupiter.api.Test;
@@ -32,8 +34,7 @@ public class JpaPersonneRepositoryTests {
 	private PersonneRepository personneRepository;
 
     @Autowired
-    @Qualifier("dateTimeConverter")
-	private DateConverter dateConverter;
+    private DateConverter<LocalDateTime> localDateTimeConverter;
     
     @Test
 	public void findByPersonneIdTest() throws Exception {

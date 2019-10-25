@@ -1,18 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.entities;
 
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.Objects;
 
 @Entity(name = "PieceJointe")
 @Table(name = "pieces_jointes")

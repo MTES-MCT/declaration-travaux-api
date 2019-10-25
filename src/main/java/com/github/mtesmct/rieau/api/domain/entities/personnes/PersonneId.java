@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.domain.entities.personnes;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
+import java.util.Objects;
 
 public class PersonneId implements ValueObject<PersonneId> {
 

@@ -1,5 +1,6 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -13,8 +14,6 @@ import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.proxy-host:}')")

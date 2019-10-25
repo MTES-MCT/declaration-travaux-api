@@ -1,22 +1,15 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.CerfaImportService;
 import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.NombrePagesCerfaException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.StringExtractService;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -26,7 +19,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @Slf4j

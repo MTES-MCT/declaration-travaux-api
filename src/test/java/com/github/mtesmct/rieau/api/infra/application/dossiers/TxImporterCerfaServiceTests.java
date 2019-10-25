@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -28,6 +29,7 @@ import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +48,7 @@ public class TxImporterCerfaServiceTests {
         private TxImporterCerfaService importerCerfaService;
 
         @Autowired
-        @Qualifier("dateTimeConverter")
-        private DateConverter dateConverter;
+        private DateConverter<LocalDateTime> localDateTimeConverter;
 
         @Autowired
         private DateService dateService;

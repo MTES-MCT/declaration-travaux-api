@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -34,6 +35,7 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetai
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
+import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,8 +63,7 @@ public class TxDeclarerIncompletDossierServiceTests {
     private ProjetFactory projetFactory;
 
     @Autowired
-    @Qualifier("dateTimeConverter")
-    private DateConverter dateConverter;
+    private DateConverter<LocalDateTime> localDateTimeConverter;
 
     private Dossier dossier;
 

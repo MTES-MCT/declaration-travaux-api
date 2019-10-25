@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
+import java.util.Objects;
 
 public class CodePieceJointe implements ValueObject<CodePieceJointe> {
     private EnumTypes type;

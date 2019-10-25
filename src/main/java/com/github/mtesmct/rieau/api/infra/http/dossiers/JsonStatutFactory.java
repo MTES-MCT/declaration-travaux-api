@@ -4,16 +4,15 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class JsonStatutFactory {
     @Autowired
-    @Qualifier("dateTimeConverter")
-    private DateConverter dateTimeConverter;
+    private DateConverter<LocalDateTime> localDateTimeConverter;
     @Autowired
     private StatutService statutService;
 
@@ -21,7 +20,7 @@ public class JsonStatutFactory {
     public JsonStatut toJson(Statut statut) {
         JsonStatut jsonStatut = null;
         if (statut != null) {
-            jsonStatut = new JsonStatut(statut.type().identity().toString(), statut.type().ordre(),statut.type().libelle(), statut.type().joursDelais(), this.statutService.joursRestants(statut),this.dateTimeConverter.format(statut.dateDebut()));
+            jsonStatut = new JsonStatut(statut.type().identity().toString(), statut.type().ordre(),statut.type().libelle(), statut.type().joursDelais(), this.statutService.joursRestants(statut),this.localDateTimeConverter.formatDateTime(statut.dateDebut()));
         }
         return jsonStatut;
     }

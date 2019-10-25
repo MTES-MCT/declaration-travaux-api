@@ -1,10 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
-
-import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class ParcelleCadastrale implements ValueObject<ParcelleCadastrale> {
 

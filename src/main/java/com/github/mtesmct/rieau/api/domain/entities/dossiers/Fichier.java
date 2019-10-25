@@ -1,10 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import com.github.mtesmct.rieau.api.domain.entities.Entity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-
-import com.github.mtesmct.rieau.api.domain.entities.Entity;
 
 public class Fichier implements Entity<Fichier, FichierId> {
 

@@ -1,17 +1,15 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.PersonneRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonneFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 @Repository
 @Slf4j

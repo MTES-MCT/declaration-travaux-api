@@ -5,11 +5,10 @@ import com.github.mtesmct.rieau.api.application.ApplicationService;
 import com.github.mtesmct.rieau.api.domain.DomainPackageScan;
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
 import com.github.mtesmct.rieau.api.domain.services.DomainService;
-
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.ComponentScan.Filter;
 
 @Configuration
 @ComponentScan(basePackageClasses = {DomainPackageScan.class,ApplicationPackageScan.class},

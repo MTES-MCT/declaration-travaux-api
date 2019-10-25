@@ -1,25 +1,15 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.ApplicationService;
-import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
-import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
-import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
-import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.NumeroPieceJointeException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.application.auth.*;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 @ApplicationService
 public class AppAjouterPieceJointeService implements AjouterPieceJointeService {

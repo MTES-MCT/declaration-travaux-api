@@ -1,8 +1,8 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
+
+import java.util.Objects;
 
 public class Commune implements Entity<Commune, String> {
 

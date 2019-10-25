@@ -1,9 +1,9 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+
+import java.util.Optional;
 
 public interface FichierService {
     public Optional<Fichier> findById(FichierId fichierId) throws FichierServiceException;

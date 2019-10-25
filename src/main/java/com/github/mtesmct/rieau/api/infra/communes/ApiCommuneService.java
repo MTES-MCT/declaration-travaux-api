@@ -1,12 +1,9 @@
 package com.github.mtesmct.rieau.api.infra.communes;
 
-import java.time.Duration;
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
 import com.github.mtesmct.rieau.api.domain.services.CommuneService;
 import com.github.mtesmct.rieau.api.infra.config.AppProperties;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,7 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.util.Optional;
 
 @Component
 @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.communes-url:}')")

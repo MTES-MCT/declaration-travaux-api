@@ -1,5 +1,17 @@
 package com.github.mtesmct.rieau.api.infra.persistence.filesystem;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.services.FichierService;
+import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
+import com.github.mtesmct.rieau.api.infra.config.AppProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,21 +25,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Objects;
 import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.services.FichierService;
-import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
-import com.github.mtesmct.rieau.api.infra.config.AppProperties;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @ConditionalOnProperty(prefix = "minio", name = "enabled", havingValue = "false")

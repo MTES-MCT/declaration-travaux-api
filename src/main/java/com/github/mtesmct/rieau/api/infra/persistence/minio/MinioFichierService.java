@@ -1,41 +1,25 @@
 package com.github.mtesmct.rieau.api.infra.persistence.minio;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
 import com.github.mtesmct.rieau.api.infra.config.MinioProperties;
-
+import io.minio.MinioClient;
+import io.minio.ObjectStat;
+import io.minio.errors.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.xmlpull.v1.XmlPullParserException;
 
-import io.minio.MinioClient;
-import io.minio.ObjectStat;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidArgumentException;
-import io.minio.errors.InvalidBucketNameException;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.NoResponseException;
-import io.minio.errors.RegionConflictException;
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 @Component
 @Slf4j

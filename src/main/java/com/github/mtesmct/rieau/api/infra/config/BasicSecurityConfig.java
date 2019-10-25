@@ -2,7 +2,6 @@ package com.github.mtesmct.rieau.api.infra.config;
 
 import com.github.mtesmct.rieau.api.application.auth.MockUsers;
 import com.github.mtesmct.rieau.api.application.auth.Roles;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

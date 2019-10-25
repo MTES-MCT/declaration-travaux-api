@@ -1,10 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.personnes;
 
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
+
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Personne implements Entity<Personne, PersonneId> {
     public static final String EMAIL_REGEXP = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";

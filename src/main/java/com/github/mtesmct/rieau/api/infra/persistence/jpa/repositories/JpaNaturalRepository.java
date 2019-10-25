@@ -1,14 +1,13 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 
-import java.io.Serializable;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
 import org.hibernate.Session;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.io.Serializable;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 public class JpaNaturalRepository<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>

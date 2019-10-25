@@ -1,9 +1,9 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+
+import java.util.Objects;
 
 public class DossierNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;

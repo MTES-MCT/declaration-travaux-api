@@ -9,7 +9,6 @@ import com.github.mtesmct.rieau.api.application.dossiers.SupprimerDossierService
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

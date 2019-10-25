@@ -1,24 +1,18 @@
 package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
-import java.util.Objects;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
 public class JsonDossierFactory {
     @Autowired
-    @Qualifier("dateTimeConverter")
-    private DateConverter dateTimeConverter;
+    private DateConverter<LocalDateTime> localDateTimeConverter;
     @Autowired
     private JsonPieceJointeFactory jsonPieceJointeFactory;
     @Autowired

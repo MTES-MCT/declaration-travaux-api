@@ -1,15 +1,10 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.CodePieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
-
 import org.springframework.stereotype.Component;
 
 @Component

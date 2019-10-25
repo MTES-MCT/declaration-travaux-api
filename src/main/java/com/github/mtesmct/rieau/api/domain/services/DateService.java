@@ -1,11 +1,11 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public interface DateService {
-    public Date now();
+    public LocalDateTime now();
     public String year();
     public String nowText();
-    public Date parse(String texte);
-    public Integer daysUntilNow(Date start);
+    public LocalDateTime parse(String texte);
+    public Integer daysUntilNow(LocalDateTime start);
 }

@@ -1,9 +1,9 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
 import java.io.Serializable;
 import java.util.Objects;
-
-import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class FichierId implements ValueObject<FichierId>, Serializable {
 

@@ -1,27 +1,55 @@
 package com.github.mtesmct.rieau.api.infra.date;
 
+import com.github.mtesmct.rieau.api.infra.config.AppProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
-public class DateTimeConverter implements DateConverter<LocalDateTime> {
-    private DateTimeFormatter dateTimeFormatter;
+@Component
+public class LocalDateTimeConverter implements DateConverter<LocalDateTime> {
 
-    public DateTimeConverter(String format) {
-        log.trace("Le format utilisé pour la conversion des dates est {}", format);
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern(format, Locale.FRANCE);
+    @Autowired
+    private AppProperties properties;
+
+    @Override
+    public String formatDateTime(LocalDateTime date) {
+        String formatted = "";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(this.properties.getDatetimeFormat(), Locale.FRANCE);
+        try {
+            formatted = dateTimeFormatter.format(date);
+        } catch (DateTimeException e) {
+            log.error("{}",e);
+        }
+        return formatted;
     }
 
     @Override
-    public String format(LocalDateTime date) {
+    public String formatDate(LocalDateTime date) {
         String formatted = "";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(this.properties.getDateFormat(), Locale.FRANCE);
         try {
-            formatted = this.dateTimeFormatter.format(date);
+            formatted = dateTimeFormatter.format(date);
+        } catch (DateTimeException e) {
+            log.error("{}",e);
+        }
+        return formatted;
+    }
+
+    @Override
+    public String formatYear(LocalDateTime date) {
+        String formatted = "";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(this.properties.getYearFormat(), Locale.FRANCE);
+        try {
+            formatted = dateTimeFormatter.format(date);
         } catch (DateTimeException e) {
             log.error("{}",e);
         }
@@ -31,11 +59,13 @@ public class DateTimeConverter implements DateConverter<LocalDateTime> {
     @Override
     public Optional<LocalDateTime> parse(String date) {
         Optional<LocalDateTime> parsed = Optional.empty();
-        try {
-            parsed = Optional.ofNullable(LocalDateTime.parse(date, this.dateTimeFormatter));
-        } catch (DateTimeException e) {
-            log.error("{}",e);
-        }
+        log.debug("format={}", this.properties.getAllDatetimeFormat());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(this.properties.getAllDatetimeFormat(), Locale.FRANCE);
+        TemporalAccessor temporalAccessor = dateTimeFormatter.parseBest(date, LocalDateTime::from, LocalDate::from);
+        if (temporalAccessor instanceof  LocalDate)
+            parsed = Optional.ofNullable(((LocalDate) temporalAccessor).atStartOfDay());
+        if (temporalAccessor instanceof  LocalDateTime)
+            parsed = Optional.ofNullable(((LocalDateTime) temporalAccessor));
         return parsed;
     }
 }

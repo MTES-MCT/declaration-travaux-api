@@ -1,16 +1,16 @@
 package com.github.mtesmct.rieau.api.domain.entities.personnes;
 
-import java.util.Date;
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Naissance implements ValueObject<Naissance> {
 
-  private Date date;
+  private LocalDateTime date;
   private String commune;
 
-  public Date date(){
+  public LocalDateTime date(){
     return this.date;
   }
   public String commune(){
@@ -42,7 +42,7 @@ public class Naissance implements ValueObject<Naissance> {
     return other != null && Objects.equals(this.date, other.date) && Objects.equals(this.commune, other.commune);
   }
 
-  public Naissance(final Date date, final String commune) {
+  public Naissance(final LocalDateTime date, final String commune) {
     this.date = date;
     this.commune = commune;
   }

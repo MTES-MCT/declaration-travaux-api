@@ -1,14 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.file.pdf;
 
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-
-import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j

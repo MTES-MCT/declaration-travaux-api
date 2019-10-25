@@ -1,9 +1,5 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
-import java.util.Optional;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -12,9 +8,12 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaNature;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 @Component
 public class JpaProjetFactory {

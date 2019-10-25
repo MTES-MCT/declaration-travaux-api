@@ -1,9 +1,9 @@
 package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Getter;
 
 @Getter
 public class JsonDossier {

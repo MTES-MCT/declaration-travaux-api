@@ -1,15 +1,15 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.Date;
-import java.util.Objects;
-
 import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Statut implements ValueObject<Statut> {
     private TypeStatut type;
-    private Date dateDebut;
+    private LocalDateTime dateDebut;
 
-    public Date dateDebut() {
+    public LocalDateTime dateDebut() {
         return this.dateDebut;
     }
 
@@ -17,7 +17,7 @@ public class Statut implements ValueObject<Statut> {
         return this.type;
     }
 
-    public Statut(TypeStatut type, Date dateDebut) {
+    public Statut(TypeStatut type, LocalDateTime dateDebut) {
         if (type == null)
             throw new NullPointerException("Le type de statut ne peut pas être nul.");
         this.type = type;

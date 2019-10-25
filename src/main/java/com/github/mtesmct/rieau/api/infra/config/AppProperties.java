@@ -1,13 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.config;
 
-import javax.validation.constraints.NotNull;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -19,6 +18,8 @@ public class AppProperties {
     private String dateFormat;
     @NotNull
     private String datetimeFormat;
+    @NotNull
+    private String allDatetimeFormat;
     @NotNull
     private String yearFormat;
     private String fichiersDir;

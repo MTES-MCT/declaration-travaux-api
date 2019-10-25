@@ -1,10 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
+import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import com.github.mtesmct.rieau.api.domain.entities.ValueObject;
 
 public class Localisation implements ValueObject<Localisation> {
 

@@ -1,7 +1,5 @@
 package com.github.mtesmct.rieau.api.infra.http.fichiers;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
 import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
@@ -12,7 +10,6 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.infra.application.fichiers.TxLireFichierService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -23,6 +20,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(FichiersController.ROOT_URI)

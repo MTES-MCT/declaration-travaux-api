@@ -1,13 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.date;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestComponent;
@@ -19,11 +18,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class MockDateService implements DateService {
 
     @Autowired
-    @Qualifier("dateTimeConverter")
-    private DateConverter dateTimeConverter;
-    @Autowired
-    @Qualifier("dateConverter")
-    private DateConverter dateConverter;
+    private DateConverter<LocalDateTime> localDateTimeConverter;
 
     @Value("${app.datetime.mock}")
     private String dateString;
@@ -32,8 +27,9 @@ public class MockDateService implements DateService {
 
 
     @Override
-    public Date now() {
-        return this.dateTimeConverter.parse(this.dateString);
+    public LocalDateTime now() {
+        Optional<LocalDateTime> parsed = this.localDateTimeConverter.parse(this.dateString);
+        return parsed.isEmpty() ? LocalDateTime.now() : parsed.get();
     }
 
     @Override
@@ -47,15 +43,17 @@ public class MockDateService implements DateService {
     }
 
     @Override
-    public Date parse(String texte){
-        return this.dateConverter.parse(texte);
+    public LocalDateTime parse(String texte){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Optional<LocalDateTime> parsedDateTime = this.localDateTimeConverter.parse(texte);
+        if (parsedDateTime.isPresent())
+            localDateTime = parsedDateTime.get();
+        return localDateTime;
     }
 
     @Override
-    public Integer daysUntilNow(Date start) {
-        LocalDateTime nowLocalDateTime = now().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime dateDebutLocalDateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return Long.valueOf(DAYS.between(nowLocalDateTime, dateDebutLocalDateTime)).intValue();
+    public Integer daysUntilNow(LocalDateTime start) {
+        return Long.valueOf(DAYS.between(now(), start)).intValue();
     }
 
 }

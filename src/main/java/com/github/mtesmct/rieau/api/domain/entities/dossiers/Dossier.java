@@ -1,16 +1,12 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.github.mtesmct.rieau.api.domain.entities.Entity;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
@@ -161,7 +157,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
         this.statutComparator = new StatutComparator();
     }
 
-    public void ajouterStatut(Date dateDebut, TypeStatut type) throws StatutForbiddenException {
+    public void ajouterStatut(LocalDateTime dateDebut, TypeStatut type) throws StatutForbiddenException {
         Statut statut = new Statut(type, dateDebut);
         if (statutActuel().isEmpty() && !Objects.equals(type.identity(), EnumStatuts.DEPOSE))
             throw new StatutForbiddenException();

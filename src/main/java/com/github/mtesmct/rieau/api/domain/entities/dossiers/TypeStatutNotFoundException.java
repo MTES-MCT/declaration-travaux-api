@@ -2,8 +2,6 @@ package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
 import java.util.Objects;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-
 public class TypeStatutNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 

@@ -1,13 +1,12 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.entities;
 
-import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Objects;
 
 @Embeddable
 @Getter

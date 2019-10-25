@@ -1,18 +1,16 @@
 package com.github.mtesmct.rieau.api.infra.persistence.inmemory.repositories;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutComparator;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
-
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryStatutDossierRepository implements TypeStatutDossierRepository {

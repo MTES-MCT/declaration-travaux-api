@@ -5,7 +5,6 @@ import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaMessage;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
-
 import org.springframework.stereotype.Component;
 
 @Component

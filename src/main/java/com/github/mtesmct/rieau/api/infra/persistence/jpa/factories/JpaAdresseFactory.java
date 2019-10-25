@@ -1,15 +1,14 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.factories;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class JpaAdresseFactory {

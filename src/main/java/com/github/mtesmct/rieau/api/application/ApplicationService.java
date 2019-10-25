@@ -1,10 +1,6 @@
 package com.github.mtesmct.rieau.api.application;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 /**
  * <p>
  * A DDD application service is a standalone operation within the context of your application. 

@@ -1,13 +1,7 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import java.util.Optional;
-
 import com.github.mtesmct.rieau.api.application.ApplicationService;
-import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
-import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
-import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
-import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
-import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.application.auth.*;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
@@ -15,6 +9,8 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenExce
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
+
+import java.util.Optional;
 
 @ApplicationService
 public class AppSupprimerDossierService implements SupprimerDossierService {

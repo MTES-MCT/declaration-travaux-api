@@ -46,11 +46,11 @@ public class StatutComparatorTests {
         Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findById(EnumStatuts.INSTRUCTION);
         assertTrue(typeInstruction.isPresent());
         Statut statutInstruction = new Statut(typeInstruction.get(), this.dateService.now());
-        log.debug("dateDebut instruction={}", statutInstruction.dateDebut().getTime());
+        log.debug("dateDebut instruction={}", statutInstruction.dateDebut().getNano());
         Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
         assertTrue(typeIncomplet.isPresent());
         Statut statutIncomplet = new Statut(typeIncomplet.get(), this.dateService.now());
-        log.debug("dateDebut incomplet={}", statutIncomplet.dateDebut().getTime());
+        log.debug("dateDebut incomplet={}", statutIncomplet.dateDebut().getNano());
         assertTrue(statutComparator.compare(statutInstruction, statutIncomplet) < 0);
     }
 
