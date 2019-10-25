@@ -47,12 +47,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-import lombok.extern.slf4j.Slf4j;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Slf4j
 public class DossiersControllerIT {
 
 	@Autowired

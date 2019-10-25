@@ -169,7 +169,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
             throw new StatutForbiddenException(type.identity());
         if (statutActuel().isPresent()) {
             int statutComparedToActuel = this.statutComparator.compare(statut, statutActuel().get());
-            if (statutComparedToActuel <= 0 || statutComparedToActuel > 1)
+            if (statutComparedToActuel != 1)
                 throw new StatutForbiddenException(type.identity(), statutActuel().get().type().identity());
         }
         this.historiqueStatuts.add(statut);

@@ -28,13 +28,15 @@ public class JsonDossierFactory {
     @Autowired
     private JsonMessageFactory jsonMessageFactory;
     @Autowired
+    private JsonTypeDossierFactory jsonTypeDossierFactory;
+    @Autowired
     private StatutService statutService;
 
     public JsonDossier toJson(Dossier dossier) {
         if (dossier == null)
             throw new NullPointerException("Le dossier ne peut pas être nul.");
         JsonDossier jsonDossier = new JsonDossier(Objects.toString(dossier.identity()),
-                Objects.toString(dossier.type() != null ? dossier.type().type() : "null"),
+                this.jsonTypeDossierFactory.toJson(dossier.type()),
                 this.jsonPieceJointeFactory.toJson(dossier.cerfa()), this.jsonProjetFactory.toJson(dossier.projet()),
                 this.jsonStatutFactory.toJson(dossier.statutActuel().get()));
         dossier.pieceJointes().forEach(pieceJointe -> this.ajouterPieceJointe(jsonDossier, pieceJointe));

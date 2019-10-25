@@ -7,4 +7,5 @@ public interface DateService {
     public String year();
     public String nowText();
     public Date parse(String texte);
+    public Integer daysUntilNow(Date start);
 }

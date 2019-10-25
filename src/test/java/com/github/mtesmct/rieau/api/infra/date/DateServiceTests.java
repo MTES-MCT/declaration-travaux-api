@@ -20,5 +20,9 @@ public class DateServiceTests {
     public void year(){
         assertEquals("2019", this.dateService.year());
     }
+    @Test
+    public void daysUntilNow(){
+        assertEquals(Integer.valueOf(2), this.dateService.daysUntilNow(this.dateService.parse("03/01/2019 00:00:00")));
+    }
     
 }

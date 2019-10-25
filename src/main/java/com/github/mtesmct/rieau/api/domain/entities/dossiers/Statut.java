@@ -33,8 +33,8 @@ public class Statut implements ValueObject<Statut> {
 
     @Override
     public String toString() {
-        return "Statut={ type={" + Objects.toString(this.type) + "}, date début={"
-                + Objects.toString(this.dateDebut) + "} }";
+        return "Statut={ type={" + Objects.toString(this.type) + "}, date début={" + Objects.toString(this.dateDebut)
+                + "} }";
     }
 
     @Override

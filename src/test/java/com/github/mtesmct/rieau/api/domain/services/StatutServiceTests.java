@@ -1,35 +1,17 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Localisation;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Nature;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -157,6 +139,15 @@ public class StatutServiceTests {
         assertFalse(types.isEmpty());
         assertEquals(1, types.size());
         assertEquals(EnumStatuts.DECISION, types.get(0).identity());
+    }
+
+    @Test
+    public void joursRestantsDepose() throws StatutForbiddenException, TypeStatutNotFoundException {
+        this.deposer();
+        assertTrue(this.dossier.statutActuel().isPresent());
+        Statut statut = this.dossier.statutActuel().get();
+        Integer expected = statut.type().joursDelais();
+        assertEquals(expected, this.statutService.joursRestants(statut));
     }
 
 }

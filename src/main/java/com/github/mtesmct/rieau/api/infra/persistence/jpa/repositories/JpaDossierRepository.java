@@ -10,7 +10,6 @@ import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJoint
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaDossierFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaMessageFactory;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaStatutFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +29,9 @@ public class JpaDossierRepository implements DossierRepository {
     @Autowired
     private JpaDossierFactory jpaDossierFactory;
     @Autowired
-    private JpaProjetFactory jpaProjetFactory;
-    @Autowired
     private JpaStatutFactory jpaStatutFactory;
     @Autowired
     private JpaMessageFactory jpaMessageFactory;
-    @Autowired
-    private JpaProjetRepository jpaProjetRepository;
 
     @Override
     public Optional<Dossier> findById(String id) {

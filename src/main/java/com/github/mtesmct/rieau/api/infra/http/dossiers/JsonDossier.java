@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class JsonDossier {
     private String id;
-    private String type;
+    private JsonTypeDossier type;
     private List<JsonStatut> statuts = new ArrayList<JsonStatut>();
     private List<JsonStatut> statutsRestants = new ArrayList<JsonStatut>();
     private JsonStatut statutActuel;
@@ -19,7 +19,7 @@ public class JsonDossier {
     private JsonProjet projet;
     private List<JsonMessage> messages = new ArrayList<JsonMessage>();
 
-    public JsonDossier(String id, String type, JsonPieceJointe cerfa, JsonProjet projet, JsonStatut statutActuel) {
+    public JsonDossier(String id, JsonTypeDossier type, JsonPieceJointe cerfa, JsonProjet projet, JsonStatut statutActuel) {
         this.id = id;
         this.type = type;
         this.cerfa = cerfa;

@@ -7,11 +7,13 @@ import java.util.Optional;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
+
 
 @DomainService
 public class StatutService {
@@ -70,5 +72,10 @@ public class StatutService {
             types = this.statutDossierRepository.findAllGreaterThan(dossier.statutActuel().get().type());            
         }
         return types;
+    }
+
+    public Integer joursRestants(Statut statut){
+        Integer joursDepuisDateDebut = this.dateService.daysUntilNow(statut.dateDebut());
+        return statut.type().joursDelais() - joursDepuisDateDebut;
     }
 }
