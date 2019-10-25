@@ -66,6 +66,8 @@ public class JpaDossierRepository implements DossierRepository {
         Optional<JpaDossier> jpaDossier = this.jpaSpringDossierRepository.findOneByPiecesJointesIdFichierId(fichierId);
         Optional<Dossier> dossier = Optional.empty();
         if (jpaDossier.isPresent()) {
+            log.debug("cerfa?={}", jpaDossier.get().cerfa().isPresent());
+            log.debug("piecesJointes={}", jpaDossier.get().getPiecesJointes().stream().map(pj -> pj.getId().getCode().getNumero()).toArray());
             try {
                 dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get()));
             } catch (PatternSyntaxException | CommuneNotFoundException e) {

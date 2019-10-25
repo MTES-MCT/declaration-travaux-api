@@ -7,14 +7,12 @@ import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.infra.application.dossiers.*;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +55,6 @@ public class DossiersController {
 	private TxAjouterMessageDossierService ajouterMessageDossierService;
 	@Autowired
 	private TxSupprimerDossierService supprimerDossierService;
-	@Autowired
-	private DateConverter<LocalDateTime> localDateTimeConverter;
 
 	@Autowired
 	private JsonDossierFactory jsonDossierFactory;

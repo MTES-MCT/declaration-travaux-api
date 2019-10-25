@@ -2,17 +2,13 @@ package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
 public class JsonDossierFactory {
-    @Autowired
-    private DateConverter<LocalDateTime> localDateTimeConverter;
     @Autowired
     private JsonPieceJointeFactory jsonPieceJointeFactory;
     @Autowired

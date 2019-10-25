@@ -12,7 +12,6 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBeta
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.DossiersController;
 import com.github.mtesmct.rieau.api.infra.http.dossiers.JsonDossier;
 import io.restassured.RestAssured;
@@ -29,7 +28,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +42,6 @@ public class DossiersControllerIT {
 
 	@Autowired
 	private DossierRepository dossierRepository;
-    @Autowired
-    private DateConverter<LocalDateTime> localDateTimeConverter;
 	@Autowired
 	private DossierFactory dossierFactory;
 	@Autowired

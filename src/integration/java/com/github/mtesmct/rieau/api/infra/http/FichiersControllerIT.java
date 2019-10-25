@@ -11,7 +11,6 @@ import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBeta
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
 import com.github.mtesmct.rieau.api.infra.http.fichiers.FichiersController;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class FichiersControllerIT {
 
-    @Autowired
-    private DateConverter<LocalDateTime> localDateTimeConverter;
 	@Autowired
 	private FichierService fichierService;
 	@Autowired
