@@ -176,7 +176,7 @@ mvn --batch-mode release:update-versions -DdevelopmentVersion=1.1.0-SNAPSHOT
 * Build:
 
 ```shell
-./mvnw clean package -DskipTests -DskipITs
+./mvnw clean package -DskipTests -DskipITs -Dskip.check=true
 mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 docker build -t tristanrobert/rieau-api -f src/main/docker/Dockerfile .
 ```
