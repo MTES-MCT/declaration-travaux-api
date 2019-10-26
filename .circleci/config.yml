@@ -47,15 +47,6 @@ jobs:
       - attach_workspace:
           at: '~/'
       - run:
-          name: Install java 11 and maven 3.6
-          command: |
-            curl -s "https://get.sdkman.io" | bash
-            source "/home/circleci/.sdkman/bin/sdkman-init.sh"
-            sdk install java 11.0.4.hs-adpt
-            sdk default java 11.0.4.hs-adpt
-            sdk install maven 3.6.2
-            sdk default maven 3.6.2
-      - run:
           name: Launch backend stack
           command: |
             docker-compose -f src/main/docker/docker-compose.yml up --build -d
@@ -63,8 +54,12 @@ jobs:
       - run:
           name: Execute all tests
           command: |
-            sdk use java 11.0.4.hs-adpt
-            sdk use maven 3.6.2
+            curl -s "https://get.sdkman.io" | bash
+            source "/home/circleci/.sdkman/bin/sdkman-init.sh"
+            sdk install java 11.0.4.hs-adpt
+            sdk default java 11.0.4.hs-adpt
+            sdk install maven 3.6.2
+            sdk default maven 3.6.2
             mvn -version
             mvn verify -Dskip.check=true
       - store_test_results:
