@@ -43,24 +43,20 @@ jobs:
   integration-tests:
     working_directory: ~/rieau-api
     machine:
-      image: circleci/classic:latest
+      image: circleci/openjdk:11.0.4-jdk-stretch
     steps:
       - attach_workspace:
           at: '~/'
       - run:
-          name: Execute tests
+          name: Launch backend stack
           command: |
-            set -x
-            docker-compose -f src/main/docker/docker-compose.ci.yml up --build api
+            docker-compose -f src/main/docker/docker-compose.test.yml up --build
+            sleep 40
+            docker-compose -f src/main/docker/docker-compose.test.yml ps
       - run:
-          name: Test the app -> try to connect to the app through HTTP 5000 port
+          name: Execute all tests
           command: |
-            test $(docker run --network container:api appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5000/dossiers) = 403
-      - run:
-          name: Copy result tests to primary container
-          command: |
-            set -x
-            docker cp api:/home/circleci/rieau-api/target/failsafe-reports target/failsafe-reports
+            mvn verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
       
