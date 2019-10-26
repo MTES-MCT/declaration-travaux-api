@@ -49,7 +49,8 @@ jobs:
       - run:
           name: Launch backend stack
           command: |
-            docker-compose -f src/main/docker/docker-compose.test.yml up --build
+            docker-compose -f src/main/docker/docker-compose.yml up --build -d
+            sleep 40
       - run:
           name: Execute all tests
           command: |
