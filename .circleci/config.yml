@@ -47,7 +47,7 @@ jobs:
       - attach_workspace:
           at: '~/'
       - run:
-          name: Install java 11
+          name: Install java 11 and maven 3.6
           command: |
             curl -s "https://get.sdkman.io" | bash
             source "/home/circleci/.sdkman/bin/sdkman-init.sh"
@@ -63,6 +63,9 @@ jobs:
       - run:
           name: Execute all tests
           command: |
+            sdk use java 11.0.4.hs-adpt
+            sdk use maven 3.6.2
+            mvn -version
             mvn verify -Dskip.check=true
       - store_test_results:
           path: target/failsafe-reports
