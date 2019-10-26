@@ -50,6 +50,7 @@ jobs:
           name: Install java 11
           command: |
             curl -s "https://get.sdkman.io" | bash
+            source "/home/circleci/.sdkman/bin/sdkman-init.sh"
             sdk install java 11.0.4.hs-adpt
             sdk default java 11.0.4.hs-adpt
             sdk install maven 3.6.2
