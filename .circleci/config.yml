@@ -47,15 +47,9 @@ jobs:
       - attach_workspace:
           at: '~/'
       - run:
-          name: Install jdk11
-          command: |
-            circleci-install java openjdk11
-      - run:
           name: Launch backend stack
           command: |
             docker-compose -f src/main/docker/docker-compose.test.yml up --build
-            sleep 40
-            docker-compose -f src/main/docker/docker-compose.test.yml ps
       - run:
           name: Execute all tests
           command: |
