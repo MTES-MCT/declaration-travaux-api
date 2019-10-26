@@ -15,7 +15,10 @@ keycloak.enabled = false
 
 # Fichiers
 minio.enabled = false
-app.fichiers-dir = target/fichiers
+# Stockage en FileSystem (HDD):
+# app.fichiers-dir = target/fichiers
+# Stockage RAM:
+app.fichiers-dir = 
 
 #Logging
 logging.level.root = info
