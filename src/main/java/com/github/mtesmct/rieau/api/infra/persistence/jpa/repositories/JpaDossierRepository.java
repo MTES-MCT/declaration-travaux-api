@@ -2,6 +2,7 @@ package com.github.mtesmct.rieau.api.infra.persistence.jpa.repositories;
 
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.factories.PersonneParseException;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
@@ -41,7 +42,7 @@ public class JpaDossierRepository implements DossierRepository {
             JpaDossier jpaDossier = jpaDossiers.get(0);
             try {
                 dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier));
-            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+            } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException e) {
                 log.error("{}", e);
             }
         }
@@ -54,7 +55,7 @@ public class JpaDossierRepository implements DossierRepository {
         this.jpaSpringDossierRepository.findAllByDeposantId(deposantId).forEach(jpaDossier -> {
             try {
                 dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier));
-            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+            } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException e) {
                 log.error("{}", e);
             }
         });
@@ -67,10 +68,11 @@ public class JpaDossierRepository implements DossierRepository {
         Optional<Dossier> dossier = Optional.empty();
         if (jpaDossier.isPresent()) {
             log.debug("cerfa?={}", jpaDossier.get().cerfa().isPresent());
-            log.debug("piecesJointes={}", jpaDossier.get().getPiecesJointes().stream().map(pj -> pj.getId().getCode().getNumero()).toArray());
+            log.debug("piecesJointes={}",
+                    jpaDossier.get().getPiecesJointes().stream().map(pj -> pj.getId().getCode().getNumero()).toArray());
             try {
                 dossier = Optional.ofNullable(this.jpaDossierFactory.fromJpa(jpaDossier.get()));
-            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+            } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException e) {
                 log.error("{}", e);
             }
         }
@@ -83,7 +85,7 @@ public class JpaDossierRepository implements DossierRepository {
         this.jpaSpringDossierRepository.findAllByProjetAdresseCodePostal(commune).forEach(jpaDossier -> {
             try {
                 dossiers.add(this.jpaDossierFactory.fromJpa(jpaDossier));
-            } catch (PatternSyntaxException | CommuneNotFoundException e) {
+            } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException e) {
                 log.error("{}", e);
             }
         });
@@ -129,7 +131,7 @@ public class JpaDossierRepository implements DossierRepository {
         jpaDossierAfter = this.jpaSpringDossierRepository.save(jpaDossierAfter);
         try {
             dossier = this.jpaDossierFactory.fromJpa(jpaDossierAfter);
-        } catch (PatternSyntaxException | CommuneNotFoundException e) {
+        } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException e) {
             log.error("{}", e);
         }
         return dossier;

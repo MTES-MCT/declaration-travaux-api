@@ -16,6 +16,6 @@ public class UuidDossierIdService implements DossierIdService {
 
     @Override
     public DossierId creer(String typeDossier, Commune commune) {
-        return new DossierId(typeDossier + "-" +  commune.department() + "-" + commune.codePostal() + "-" + this.dateService.year() + "-" + UUID.randomUUID().hashCode());
+        return new DossierId(typeDossier + "-" +  commune.departement() + "-" + commune.codePostal() + "-" + this.dateService.year() + "-" + UUID.randomUUID().hashCode());
     }
 }

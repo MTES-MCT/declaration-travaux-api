@@ -17,21 +17,22 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -49,10 +50,14 @@ public class JpaPieceJointeFactoryTests {
         private FichierService fichierService;
         @Autowired
         private FichierFactory fichierFactory;
-
+        @Autowired
+        @Qualifier("deposantBeta")
+        private User deposantBeta;
+        
         @Test
         public void toJpaTest() throws CommuneNotFoundException, FileNotFoundException {
-                JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
+                JpaUser deposant = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
+                JpaDossier jpaDossier = new JpaDossier("0", deposant, EnumTypes.DPMI);
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
                 Optional<TypeDossier> type = this.typeDossierRepository.findByType(EnumTypes.DPMI);
@@ -60,7 +65,7 @@ public class JpaPieceJointeFactoryTests {
                 File cerfaFile = new File("src/test/fixtures/dummy.pdf");
                 Fichier cerfaFichier = this.fichierFactory.creer(cerfaFile, "application/pdf");
                 this.fichierService.save(cerfaFichier);
-                Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), type.get(),
+                Dossier dossier = new Dossier(new DossierId("0"), deposantBeta, type.get(),
                                 projet, cerfaFichier.identity());
                 PieceJointe pieceJointe = new PieceJointe(dossier, new CodePieceJointe(EnumTypes.DPMI, "0"),
                                 new FichierId("0"));
@@ -72,7 +77,8 @@ public class JpaPieceJointeFactoryTests {
 
         @Test
         public void fromJpaTest() throws CommuneNotFoundException, FileNotFoundException {
-                JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
+                JpaUser deposant = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
+                JpaDossier jpaDossier = new JpaDossier("0", deposant, EnumTypes.DPMI);
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
                 Optional<TypeDossier> type = this.typeDossierRepository.findByType(EnumTypes.DPMI);
@@ -80,7 +86,7 @@ public class JpaPieceJointeFactoryTests {
                 File cerfaFile = new File("src/test/fixtures/dummy.pdf");
                 Fichier cerfaFichier = this.fichierFactory.creer(cerfaFile, "application/pdf");
                 this.fichierService.save(cerfaFichier);
-                Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), type.get(),
+                Dossier dossier = new Dossier(new DossierId("0"), deposantBeta, type.get(),
                                 projet, cerfaFichier.identity());
                 JpaPieceJointe jpaPieceJointe = new JpaPieceJointe(new JpaPieceJointeId(jpaDossier,
                                 new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "0"));

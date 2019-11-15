@@ -2,8 +2,8 @@ package com.github.mtesmct.rieau.api.infra.http.dossiers;
 
 import com.github.mtesmct.rieau.api.application.dossiers.CodeCerfaNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -87,13 +87,13 @@ public class DossiersControllerTests {
 
 	@Autowired
 	@Qualifier("deposantBeta")
-	private Personne deposantBeta;
+	private User deposantBeta;
 	@Autowired
 	@Qualifier("instructeurNonBeta")
-	private Personne instructeur;
+	private User instructeur;
 	@Autowired
 	@Qualifier("autreDeposantBeta")
-	private Personne autreDeposantBeta;
+	private User autreDeposantBeta;
 	@Autowired
 	private StatutService statutService;
 
@@ -142,8 +142,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].type.libelle", equalTo(this.dossier.type().type().libelle())))
 				.andExpect(jsonPath("$[0].statutActuel.id",
 						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
-						equalTo(statutActuelDateDebut)))
+				.andExpect(jsonPath("$[0].statutActuel.dateDebut").isNotEmpty())
 				.andExpect(jsonPath("$[0].statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
@@ -176,8 +175,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$[0].type.libelle", equalTo(this.dossier.type().type().libelle())))
 				.andExpect(jsonPath("$[0].statutActuel.id",
 						equalTo(this.dossier.statutActuel().get().type().identity().toString())))
-				.andExpect(jsonPath("$[0].statutActuel.dateDebut",
-						equalTo(this.dateConverter.formatDateTime((this.dossier.statutActuel().get().dateDebut())))))
+				.andExpect(jsonPath("$[0].statutActuel.dateDebut").isNotEmpty())
 				.andExpect(jsonPath("$[0].statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isArray())
 				.andExpect(jsonPath("$[0].piecesAJoindre").isNotEmpty())
@@ -213,8 +211,7 @@ public class DossiersControllerTests {
 						equalTo(this.dossier.statutActuel().get().type().ordre())))
 				.andExpect(
 						jsonPath("$.statutActuel.libelle", equalTo(this.dossier.statutActuel().get().type().libelle())))
-				.andExpect(jsonPath("$.statutActuel.dateDebut",
-						equalTo(this.dateConverter.formatDateTime(this.dossier.statutActuel().get().dateDebut()))))
+				.andExpect(jsonPath("$.statutActuel.dateDebut").isNotEmpty())
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
@@ -225,8 +222,7 @@ public class DossiersControllerTests {
 						equalTo(this.dossier.historiqueStatuts().get(0).type().ordre())))
 				.andExpect(jsonPath("$.statuts[0].libelle",
 						equalTo(this.dossier.historiqueStatuts().get(0).type().libelle())))
-				.andExpect(jsonPath("$.statuts[0].dateDebut",
-						equalTo(this.dateConverter.formatDateTime(this.dossier.historiqueStatuts().get(0).dateDebut()))))
+				.andExpect(jsonPath("$.statuts[0].dateDebut").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants", hasSize(6)))
@@ -375,7 +371,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 
@@ -414,7 +414,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statuts", hasSize(4))).andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 
@@ -459,7 +463,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 
@@ -506,7 +514,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 
@@ -597,7 +609,12 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.deposantBeta.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.deposantBeta.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.deposantBeta.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.deposantBeta.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(2)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.deposantBeta.profils()[0])))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[1]", equalTo(this.deposantBeta.profils()[1])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 	@Test
@@ -627,7 +644,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.email", equalTo(this.instructeur.email())))
+				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
+				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
+				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
+				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
+				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
 				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
 	}
 

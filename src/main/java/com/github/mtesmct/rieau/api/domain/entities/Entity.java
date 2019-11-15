@@ -9,6 +9,8 @@ package com.github.mtesmct.rieau.api.domain.entities;
  * </a>
  */
 public interface Entity<T,ID> {
-    ID identity();
+    String REGEXP = "[=]{1}[\\{]{1}(.*)[\\}]{1}";
+    String ATTRIBUTE_REGEXP = "[=]{1}[\\{]{1}([^\\}]*)[\\}]{1}";
+	ID identity();
     boolean hasSameIdentityAs(T other);
 }

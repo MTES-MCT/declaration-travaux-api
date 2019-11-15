@@ -27,8 +27,7 @@ public class JpaDossier {
     @Column(nullable = false, unique = true)
     @NotNull
     private String dossierId;
-    @OneToOne(mappedBy = "dossier",
-        cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "dossier", cascade = CascadeType.ALL, orphanRemoval = true)
     private JpaProjet projet;
 
     /**
@@ -41,7 +40,9 @@ public class JpaDossier {
     @Embedded
     @NotNull
     @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "deposant_id")),
-            @AttributeOverride(name = "email", column = @Column(name = "deposant_email")) })
+            @AttributeOverride(name = "prenom", column = @Column(name = "deposant_prenom")),
+            @AttributeOverride(name = "nom", column = @Column(name = "deposant_nom")),
+            @AttributeOverride(name = "profils", column = @Column(name = "deposant_profils")) })
     private JpaUser deposant;
     @Column(nullable = false, length = 4)
     @NotNull
@@ -94,21 +95,21 @@ public class JpaDossier {
     }
 
     public void removeProjet(JpaProjet projet) {
-        if (projet != null){
+        if (projet != null) {
             projet.setDossier(null);
         }
         this.projet = null;
     }
-    
-    public void removeAllChildren(){
+
+    public void removeAllChildren() {
         removeProjet(this.projet);
-        for (JpaStatut statut : new HashSet<JpaStatut>(this.statuts)){
+        for (JpaStatut statut : new HashSet<JpaStatut>(this.statuts)) {
             removeStatut(statut);
         }
-        for (JpaMessage message : new HashSet<JpaMessage>(this.messages)){
+        for (JpaMessage message : new HashSet<JpaMessage>(this.messages)) {
             removeMessage(message);
         }
-        for (JpaPieceJointe pieceJointe : new HashSet<JpaPieceJointe>(this.piecesJointes)){
+        for (JpaPieceJointe pieceJointe : new HashSet<JpaPieceJointe>(this.piecesJointes)) {
             removePieceJointe(pieceJointe);
         }
     }

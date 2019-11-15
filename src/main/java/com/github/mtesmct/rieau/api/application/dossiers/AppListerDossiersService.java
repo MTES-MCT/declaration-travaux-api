@@ -1,14 +1,18 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
-import com.github.mtesmct.rieau.api.application.ApplicationService;
-import com.github.mtesmct.rieau.api.application.auth.*;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.github.mtesmct.rieau.api.application.ApplicationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 
 @ApplicationService
 public class AppListerDossiersService implements ListerDossiersService {
@@ -33,7 +37,7 @@ public class AppListerDossiersService implements ListerDossiersService {
     @Override
     public List<Dossier> execute() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException {
         this.authorizationService.isUserAuthorized();
-        Optional<Personne> user = this.authenticationService.user();
+        Optional<User> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new IllegalArgumentException("L'utilisateur connecté est vide");
         List<Dossier> dossiers = new ArrayList<Dossier>();
@@ -41,14 +45,14 @@ public class AppListerDossiersService implements ListerDossiersService {
             dossiers = this.dossierRepository
                     .findByDeposantId(this.authenticationService.user().get().identity().toString());
         if ((this.authenticationService.isMairie() || this.authenticationService.isInstructeur())
-                && user.get().adresse() == null)
+                && user.get().identite().adresse() == null)
             throw new NullPointerException("L'adresse de l'utilisateur connecté ne peut pas être nulle");
         if (this.authenticationService.isMairie())
             dossiers = this.dossierRepository
-                    .findByCommune(this.authenticationService.user().get().adresse().commune().codePostal());
+                    .findByCommune(this.authenticationService.user().get().identite().adresse().commune().codePostal());
         if (this.authenticationService.isInstructeur())
             dossiers = this.dossierRepository
-                    .findByCommune(this.authenticationService.user().get().adresse().commune().codePostal());
+                    .findByCommune(this.authenticationService.user().get().identite().adresse().commune().codePostal());
         return dossiers;
     }
 }

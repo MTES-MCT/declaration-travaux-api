@@ -1,7 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -49,7 +49,7 @@ public class FichiersControllerIT {
 
 	@Autowired
 	@Qualifier("deposantBeta")
-	private Personne deposantBeta;
+	private User deposantBeta;
 	private Fichier fichier;
 	private File cerfa;
 

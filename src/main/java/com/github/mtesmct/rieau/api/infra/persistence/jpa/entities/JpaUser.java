@@ -1,14 +1,13 @@
 package com.github.mtesmct.rieau.api.infra.persistence.jpa.entities;
 
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Embeddable
 @Getter
@@ -19,13 +18,22 @@ public class JpaUser {
     private String id;
     @Column(nullable = false)
     @NotNull
-    @Email(regexp = Personne.EMAIL_REGEXP)
-    private String email;
+    private String nom;
+    @Column(nullable = false)
+    @NotNull
+    private String prenom;
+    @Column(nullable = false)
+    @NotNull
+    private String profils;
 
     public JpaUser(@NotNull String id,
-            @NotNull @Email(regexp = Personne.EMAIL_REGEXP) String email) {
+            @NotNull String nom,
+            @NotNull String prenom,
+            @NotNull String profils) {
         this.id = id;
-        this.email = email;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.profils = profils;
     }
 
     public JpaUser() {
@@ -38,11 +46,11 @@ public class JpaUser {
         if (o == null || getClass() != o.getClass())
             return false;
             JpaUser jpaDeposant = (JpaUser) o;
-        return Objects.equals(this.id, jpaDeposant.id) && Objects.equals(this.email, jpaDeposant.email);
+        return Objects.equals(this.id, jpaDeposant.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.email);
+        return Objects.hash(this.id);
     }
 }

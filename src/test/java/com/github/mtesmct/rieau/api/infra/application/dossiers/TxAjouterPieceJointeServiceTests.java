@@ -23,9 +23,9 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -52,7 +52,7 @@ public class TxAjouterPieceJointeServiceTests {
 
         @Autowired
         @Qualifier("deposantBeta")
-        private Personne deposantBeta;
+        private User deposantBeta;
         @Autowired
         private DossierFactory dossierFactory;
         @Autowired

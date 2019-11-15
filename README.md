@@ -206,3 +206,13 @@ Tagger une version semver et pousser la sur le registry:
 docker tag tristanrobert/rieau-api:[digestid] tristanrobert/rieau-api:[semver]
 docker push tristanrobert/rieau-api:[semver]
 ```
+
+### Diagrammes UML
+
+Les sources des modèles [PlantUML](http://plantuml.com/fr/) sont dans `src/main/docs`.
+
+Pour prévisualiser, lancer un serveur de rendu:
+
+```shell
+docker run -d -p 8080:8080 plantuml/plantuml-server:tomcat
+```

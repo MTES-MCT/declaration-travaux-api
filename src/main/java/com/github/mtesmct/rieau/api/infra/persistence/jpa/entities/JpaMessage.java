@@ -19,18 +19,17 @@ public class JpaMessage {
     @Column(nullable = true, unique = false)
     @NotNull
     private LocalDateTime date;
-    @Embedded
     @NotNull
-    @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "auteur_id")),
-            @AttributeOverride(name = "email", column = @Column(name = "auteur_email")) })
-    private JpaUser auteur;
+    @Column(nullable = false, columnDefinition="TEXT")
+    private String auteur;
+    @Column(nullable = true, columnDefinition="TEXT")
     private String contenu;
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "dossier_id")
     private JpaDossier dossier;
 
-    public JpaMessage(@NotNull JpaDossier dossier, @NotNull JpaUser auteur, @NotNull LocalDateTime date, String contenu) {
+    public JpaMessage(@NotNull JpaDossier dossier, @NotNull String auteur, @NotNull LocalDateTime date, String contenu) {
         this();
         this.dossier = dossier;
         this.auteur = auteur;

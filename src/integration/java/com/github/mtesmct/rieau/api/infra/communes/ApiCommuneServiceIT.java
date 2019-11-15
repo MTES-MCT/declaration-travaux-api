@@ -32,7 +32,7 @@ public class ApiCommuneServiceIT {
 		assertFalse(commune.isEmpty());
 		assertEquals("44100", commune.get().codePostal());
 		assertTrue(Arrays.asList(new String[]{"Nantes", "44100"}).contains(commune.get().nom()));
-		assertEquals("44", commune.get().department());
+		assertEquals("44", commune.get().departement());
 	}
     
 }

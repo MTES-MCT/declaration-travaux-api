@@ -5,10 +5,14 @@ import lombok.Getter;
 @Getter
 public class JsonUser {
     private String id;
-    private String email;
+    private String nom;
+    private String prenom;
+    private String[] profils;
 
-    public JsonUser(String id, String email) {
+    public JsonUser(String id, String nom, String prenom, String[] profils) {
         this.id = id;
-        this.email = email;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.profils = profils;
     }
 }

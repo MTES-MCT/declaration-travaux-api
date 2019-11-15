@@ -8,9 +8,8 @@ public class Commune implements Entity<Commune, String> {
 
     private String codePostal;
     private String nom;
-    private String department;
-
-    public String codePostal() {
+    private String departement;
+	public String codePostal() {
         return this.codePostal;
     }
 
@@ -18,8 +17,8 @@ public class Commune implements Entity<Commune, String> {
         return this.nom;
     }
 
-    public String department() {
-        return this.department;
+    public String departement() {
+        return this.departement;
     }
 
     @Override
@@ -49,20 +48,20 @@ public class Commune implements Entity<Commune, String> {
 
     @Override
     public String toString() {
-        return "Commune={ nom={" + this.nom + "}, code postal={" + this.codePostal + "}, département={"
-                + this.department + "} }";
+        return "Commune={ nom={" + this.nom + "}, codePostal={" + this.codePostal + "}, departement={"
+                + this.departement + "} }";
     }
 
-    public Commune(String codePostal, String nom, String department) {
+    public Commune(String codePostal, String nom, String departement) {
         if (codePostal == null)
             throw new NullPointerException("Le code postal de la commune ne peut pas être nul");
         this.codePostal = codePostal;
         if (nom == null)
             throw new NullPointerException("Le nom de la commune ne peut pas être nul");
         this.nom = nom;
-        if (department == null)
+        if (departement == null)
             throw new NullPointerException("Le départment de la commune ne peut pas être nul");
-        this.department = department;
+        this.departement = departement;
     }
 
 }

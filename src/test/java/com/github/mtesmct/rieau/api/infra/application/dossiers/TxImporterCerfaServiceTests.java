@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -22,14 +21,12 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,13 +45,10 @@ public class TxImporterCerfaServiceTests {
         private TxImporterCerfaService importerCerfaService;
 
         @Autowired
-        private DateConverter<LocalDateTime> localDateTimeConverter;
-
-        @Autowired
         private DateService dateService;
         @Autowired
         @Qualifier("deposantBeta")
-        private Personne deposantBeta;
+        private User deposantBeta;
 
         @Test
         @WithDeposantBetaDetails
@@ -66,7 +60,7 @@ public class TxImporterCerfaServiceTests {
                 "application/pdf", file.length());
         assertTrue(dossier.isPresent());
         assertTrue(dossier.get().identity().toString().startsWith(
-                EnumTypes.DPMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                EnumTypes.DPMI + "-" + dossier.get().projet().localisation().adresse().commune().departement() + "-"
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
         assertEquals(EnumTypes.DPMI, dossier.get().type().type());
         assertTrue(dossier.get().statutActuel().isPresent());
@@ -97,7 +91,7 @@ public class TxImporterCerfaServiceTests {
                 "application/pdf", file.length());
         assertTrue(dossier.isPresent());
         assertTrue(dossier.get().identity().toString().startsWith(
-                EnumTypes.PCMI + "-" + dossier.get().projet().localisation().adresse().commune().department() + "-"
+                EnumTypes.PCMI + "-" + dossier.get().projet().localisation().adresse().commune().departement() + "-"
                         + dossier.get().projet().localisation().adresse().commune().codePostal() + "-" + this.dateService.year() + "-"));
         assertEquals(EnumTypes.PCMI, dossier.get().type().type());
         assertTrue(dossier.get().statutActuel().isPresent());

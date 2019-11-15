@@ -1,7 +1,7 @@
 package com.github.mtesmct.rieau.api.infra.http;
 
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -57,10 +57,10 @@ public class DossiersControllerIT {
 
 	@Autowired
 	@Qualifier("deposantBeta")
-	private Personne deposantBeta;
+	private User deposantBeta;
 	@Autowired
 	@Qualifier("instructeurNonBeta")
-	private Personne instructeur;
+	private User instructeur;
 	private Fichier fichier;
 	private File cerfa;
 	private File dp1;
@@ -280,7 +280,9 @@ public class DossiersControllerIT {
 		assertEquals(1, jsonDossier.getMessages().size());
 		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
 		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
-		assertEquals(this.instructeur.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
+		assertEquals(this.instructeur.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
+		assertEquals(this.instructeur.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
+		assertEquals(String.join(",", this.instructeur.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
 	}
 
 	@Test
@@ -430,7 +432,9 @@ public class DossiersControllerIT {
 		assertEquals(1, jsonDossier.getMessages().size());
 		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
 		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
-		assertEquals(this.instructeur.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
+		assertEquals(this.instructeur.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
+		assertEquals(this.instructeur.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
+		assertEquals(String.join(",", this.instructeur.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
 	}
 
 	@Test
@@ -454,7 +458,9 @@ public class DossiersControllerIT {
 		assertEquals(1, jsonDossier.getMessages().size());
 		assertEquals(message, jsonDossier.getMessages().get(0).getContenu());
 		assertEquals(this.deposantBeta.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
-		assertEquals(this.deposantBeta.email(), jsonDossier.getMessages().get(0).getAuteur().getEmail());
+		assertEquals(this.deposantBeta.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
+		assertEquals(this.deposantBeta.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
+		assertEquals(String.join(",", this.deposantBeta.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
 	}
 
 	@Test

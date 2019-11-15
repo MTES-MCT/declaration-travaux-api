@@ -1,17 +1,93 @@
 @startuml RIEAU
-class Personne {
-    - nom
-    - prenom
-    - email
+class Personne << Entite >> {
+    - id
+    - String nom
+    - String prenom
+    - String email
 }
-class Dossier {
-    - dateDebut
+class Sexe << ValueObject >> {
+    - enum sexe
 }
-class PieceJointe {
-    - file
-    - version
+class User << Entite >> {
+    - String[] profils
 }
-Dossier *-- PieceJointe: joint * >
-Dossier <-- PieceJointe: joint ? > "cerfa"
-Dossier <-- Personne: depose <
+class Dossier << Aggregat >> {
+    - id
+    - Date dateDebut
+}
+class TypeDossier << ValueObject >> {
+    - String code
+    - enum type
+    - List piecesAJoindreObligatoires
+}
+class CodePieceJointe << ValueObject >> {
+    - enum type
+    - String code
+}
+class PieceJointe << ValueObject >> {
+}
+class Fichier << Entite >> {
+    - id
+    - InputStream contenu
+    - Integer taille
+    - Date createdOn
+}
+class Adresse << ValueObject >> {
+    - String numero
+    - String voie
+    - String lieuDit
+    - String bp
+    - String cedex
+}
+class Commune << Entite >> {
+    - String codePostal
+    - String nom
+    - String departement
+}
+class Projet << ValueObject >> {
+}
+class Statut << ValueObject >> {
+    - Date dateDebut
+}
+class TypeStatut << ValueObject >> {
+    - enum id
+    - Integer ordre
+    - String libelle
+    - Boolean unique
+    - Integer joursDelai
+}
+class Localisation << ValueObject >> {
+}
+class Nature << ValueObject >> {
+    - Boolean nouvelleConstruction
+}
+class ParcelleCadastrale << ValueObject >> {
+    - String prefixe
+    - String section
+    - String numero
+}
+class Message << Entite >> {
+    - Date dateDebut
+    - String contenu
+}
+Dossier *-- "*" PieceJointe: > "piecesJointes"
+Dossier *-- "*" Message: > "messages"
+User "1" <-- Message: > "auteur"
+Dossier <-- "1" PieceJointe: > "cerfa"
+Dossier <-- TypeDossier: > "type"
+Dossier <-- "*" Statut: > "statuts"
+TypeStatut <-- "1" Statut: > "type"
+Dossier <-- "0..1" PieceJointe: > "decision"
+Dossier *-- "1" Projet: > "projet"
+CodePieceJointe *-- "1" PieceJointe: > "code"
+Fichier <-- PieceJointe: > "fichier"
+Dossier <-- "1" User: depose <
+User *-- "1" Personne: "identite" <
+Adresse <-- Personne: > "adresse"
+Sexe <-- Personne: > "sexe"
+Commune "1" <-- Adresse: > "commune"
+Adresse "1" <-- Localisation: > "adresse"
+ParcelleCadastrale "*" <-- Localisation: > "parcelles"
+Localisation <-- Projet: > "localise"
+Nature <-- Projet: > "nature"
 @enduml

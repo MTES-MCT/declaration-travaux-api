@@ -1,12 +1,18 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+import com.github.mtesmct.rieau.api.domain.repositories.TypeStatutDossierRepository;
 
 
 @DomainService
@@ -38,7 +44,7 @@ public class StatutService {
         dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.QUALIFIE));
     }
 
-    public void declarerIncomplet(Dossier dossier, Personne auteur, String contenu) throws StatutForbiddenException, TypeStatutNotFoundException {
+    public void declarerIncomplet(Dossier dossier, User auteur, String contenu) throws StatutForbiddenException, TypeStatutNotFoundException {
         dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.INCOMPLET));
         Message message = new Message(auteur, this.dateService.now(), contenu);
         dossier.ajouterMessage(message);

@@ -19,7 +19,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenExce
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -66,10 +66,10 @@ public class FichiersControllerTests {
 	private Fichier fichier;
 	@Autowired
 	@Qualifier("deposantBeta")
-	private Personne deposantBeta;
+	private User deposantBeta;
 	@Autowired
 	@Qualifier("autreDeposantBeta")
-	private Personne autreDeposantBeta;
+	private User autreDeposantBeta;
 
 	@BeforeEach
 	public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,

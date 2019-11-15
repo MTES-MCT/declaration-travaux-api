@@ -7,17 +7,19 @@ import java.util.regex.PatternSyntaxException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaNature;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
+import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -29,10 +31,14 @@ public class JpaProjetFactoryTests {
     private JpaProjetFactory jpaProjetFactory;
     @Autowired
     private ProjetFactory projetFactory;
+    @Autowired
+    @Qualifier("deposantBeta")
+    private User deposantBeta;
 
     @Test
     public void toJpaTest() throws CommuneNotFoundException {
-        JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
+        JpaUser deposant = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
+        JpaDossier jpaDossier = new JpaDossier("0", deposant, EnumTypes.DPMI);
         Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
                 new ParcelleCadastrale("0", "1", "2"), true, true);
         JpaProjet jpaProjet = this.jpaProjetFactory.toJpa(jpaDossier, projet);
@@ -47,7 +53,8 @@ public class JpaProjetFactoryTests {
 
     @Test
     public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
-        JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
+        JpaUser deposant = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
+        JpaDossier jpaDossier = new JpaDossier("0", deposant, EnumTypes.DPMI);
         JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true), new JpaAdresse("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01"), "0-1-2,1-2-3", true);
         Projet projet = this.jpaProjetFactory.fromJpa(jpaProjet);
         assertEquals(jpaProjet.getAdresse().getNumero(), projet.localisation().adresse().numero());

@@ -1,23 +1,46 @@
 package com.github.mtesmct.rieau.api.domain.services;
 
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Commune;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumStatuts;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Localisation;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Nature;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatut;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class StatutServiceTests {
     @Autowired
     private StatutService statutService;
+    @Autowired
+    @Qualifier("deposantBeta")
+    private User deposantBeta;
     private Dossier dossier;
 
     @Test
@@ -25,8 +48,7 @@ public class StatutServiceTests {
         Projet projet = new Projet(new Localisation(
                 new Adresse("numero", "voie", "lieuDit", new Commune("codePostal", "nom", "department"), "bp", "cedex"),
                 new ParcelleCadastrale("prefixe", "section", "numero"), true), new Nature(true));
-        Personne deposant = new Personne("test", "test@test.fr");
-        this.dossier = new Dossier(new DossierId("0"), deposant,
+        this.dossier = new Dossier(new DossierId("0"), deposantBeta,
                 new TypeDossier(EnumTypes.DPMI, "0", new ArrayList<String>()), projet, new FichierId("cerfa"));
         this.statutService.deposer(this.dossier);
         assertTrue(this.dossier.statutActuel().isPresent());
@@ -72,7 +94,7 @@ public class StatutServiceTests {
     @Test
     public void declarerIncomplet() throws StatutForbiddenException, TypeStatutNotFoundException {
         this.instruire();
-        Personne auteur = new Personne("test", "test@test.fr");
+        User auteur = deposantBeta;
         this.statutService.declarerIncomplet(this.dossier, auteur, "Incomplet!");
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.INCOMPLET, this.dossier.statutActuel().get().type().identity());

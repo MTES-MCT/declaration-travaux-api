@@ -40,7 +40,8 @@ public class Adresse implements ValueObject<Adresse> {
     @Override
     public boolean hasSameValuesAs(Adresse other) {
         return other != null && Objects.equals(this.numero, other.numero) && Objects.equals(this.voie, other.voie)
-                && Objects.equals(this.lieuDit, other.lieuDit) && Objects.equals(this.commune, other.commune);
+                && Objects.equals(this.lieuDit, other.lieuDit) && Objects.equals(this.commune, other.commune)
+                && Objects.equals(this.bp, other.bp) && Objects.equals(this.cedex, other.cedex);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class Adresse implements ValueObject<Adresse> {
 
     @Override
     public String toString() {
-        return "Adresse={ numero={" + this.numero + "}, voie={" + this.voie + "}, lieu-dit={" + this.lieuDit
+        return "Adresse={ numero={" + this.numero + "}, voie={" + this.voie + "}, lieuDit={" + this.lieuDit
                 + "}, commune={" + Objects.toString(this.commune) + "}, bp={" + this.bp + "}, cedex={" + this.cedex
                 + "} }";
     }

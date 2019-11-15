@@ -1,13 +1,23 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
+import java.util.Optional;
+
 import com.github.mtesmct.rieau.api.application.ApplicationService;
-import com.github.mtesmct.rieau.api.application.auth.*;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Message;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
-
-import java.util.Optional;
 
 @ApplicationService
 public class AppAjouterMessageDossierService implements AjouterMessageDossierService {
@@ -41,13 +51,13 @@ public class AppAjouterMessageDossierService implements AjouterMessageDossierSer
         Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
         if (dossier.isEmpty())
             throw new DossierNotFoundException(id);
-        Optional<Personne> user = this.authenticationService.user();
+        Optional<User> user = this.authenticationService.user();
         if (user.isEmpty())
             throw new NullPointerException("L'utilisateur connecté ne peut pas être nul");
-        if (this.authenticationService.isInstructeur() && user.get().adresse() == null)
+        if (this.authenticationService.isInstructeur() && user.get().identite().adresse() == null)
             throw new NullPointerException("L'adresse de l'utilisateur connecté ne peut pas être nulle");
         if (this.authenticationService.isInstructeur() && !dossier.isEmpty()
-                && !dossier.get().projet().localisation().adresse().commune().equals(user.get().adresse().commune()))
+                && !dossier.get().projet().localisation().adresse().commune().equals(user.get().identite().adresse().commune()))
             throw new InstructeurForbiddenException(user.get());
         if (this.authenticationService.isDeposant() && !dossier.isEmpty()
                 && !dossier.get().deposant().equals(user.get()))

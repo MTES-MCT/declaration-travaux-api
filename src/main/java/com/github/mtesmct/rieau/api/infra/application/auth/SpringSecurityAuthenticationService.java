@@ -1,15 +1,16 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
+import java.util.Optional;
+
 import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class SpringSecurityAuthenticationService implements AuthenticationService {
@@ -51,7 +52,7 @@ public class SpringSecurityAuthenticationService implements AuthenticationServic
     }
 
     @Override
-    public Optional<Personne> user() throws UserInfoServiceException {
+    public Optional<User> user() throws UserInfoServiceException {
         return Optional.ofNullable(this.userInfoService.user());
     }
 

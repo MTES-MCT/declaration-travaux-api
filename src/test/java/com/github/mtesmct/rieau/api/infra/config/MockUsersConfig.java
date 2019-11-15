@@ -3,7 +3,7 @@ package com.github.mtesmct.rieau.api.infra.config;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.UsersService;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
@@ -22,16 +22,16 @@ public class MockUsersConfig {
 
     @Bean
     @Qualifier("deposantBeta")
-    public Personne deposantBeta(){
-        Optional<Personne> deposantBeta = this.userService.findUserById((WithDeposantBetaDetails.ID));
+    public User deposantBeta(){
+        Optional<User> deposantBeta = this.userService.findUserById((WithDeposantBetaDetails.ID));
         if (deposantBeta.isEmpty())
             throw new NullPointerException("Le bean de l'utilisateur déposant beta ne peut être instantié car le user service ne le trouve pas.");
         return deposantBeta.get();
     }
     @Bean
     @Qualifier("autreDeposantBeta")
-    public Personne autreDeposantBeta(){
-        Optional<Personne> autreDeposantBeta = this.userService.findUserById((WithAutreDeposantBetaDetails.ID));
+    public User autreDeposantBeta(){
+        Optional<User> autreDeposantBeta = this.userService.findUserById((WithAutreDeposantBetaDetails.ID));
         if (autreDeposantBeta.isEmpty())
             throw new NullPointerException("Le bean de l'utilisateur autre déposant beta ne peut être instantié car le user service ne le trouve pas.");
         return autreDeposantBeta.get();
@@ -39,8 +39,8 @@ public class MockUsersConfig {
 
     @Bean
     @Qualifier("instructeurNonBeta")
-    public Personne instructeurNonBeta(){
-        Optional<Personne> instructeurNonBeta = this.userService.findUserById(WithInstructeurNonBetaDetails.ID);
+    public User instructeurNonBeta(){
+        Optional<User> instructeurNonBeta = this.userService.findUserById(WithInstructeurNonBetaDetails.ID);
         if (instructeurNonBeta.isEmpty())
             throw new NullPointerException("Le bean de l'utilisateur instructeur non beta ne peut être instantié car le user service ne le trouve pas.");
         return instructeurNonBeta.get();
@@ -48,8 +48,8 @@ public class MockUsersConfig {
 
     @Bean
     @Qualifier("mairieBeta")
-    public Personne mairieBeta(){
-        Optional<Personne> mairieBeta = this.userService.findUserById(WithMairieBetaDetails.ID);
+    public User mairieBeta(){
+        Optional<User> mairieBeta = this.userService.findUserById(WithMairieBetaDetails.ID);
         if (mairieBeta.isEmpty())
             throw new NullPointerException("Le bean de l'utilisateur mairie beta ne peut être instantié car le user service ne le trouve pas.");
         return mairieBeta.get();

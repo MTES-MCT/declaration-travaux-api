@@ -1,9 +1,9 @@
 package com.github.mtesmct.rieau.api.application.auth;
 
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-
 import java.util.Optional;
 
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+
 public interface UsersService {
-    public Optional<Personne> findUserById(String id);
+    public Optional<User> findUserById(String id);
 }

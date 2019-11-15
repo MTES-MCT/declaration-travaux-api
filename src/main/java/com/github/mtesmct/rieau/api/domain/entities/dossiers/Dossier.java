@@ -1,18 +1,22 @@
 package com.github.mtesmct.rieau.api.domain.entities.dossiers;
 
-import com.github.mtesmct.rieau.api.domain.entities.Entity;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.github.mtesmct.rieau.api.domain.entities.Entity;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 
 public class Dossier implements Entity<Dossier, DossierId> {
     private DossierId id;
     private List<Statut> historiqueStatuts;
     private TypeDossier type;
-    private Personne deposant;
+    private User deposant;
     private Projet projet;
     private PieceJointe cerfa;
     private PieceJointe decision;
@@ -28,7 +32,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return this.historiqueStatuts.stream().sorted(this.statutComparator).collect(Collectors.toList());
     }
 
-    public Personne deposant() {
+    public User deposant() {
         return this.deposant;
     }
 
@@ -135,7 +139,7 @@ public class Dossier implements Entity<Dossier, DossierId> {
         return other != null && Objects.equals(this.id, other.id);
     }
 
-    public Dossier(DossierId id, Personne deposant, TypeDossier type, Projet projet, FichierId fichierIdCerfa) {
+    public Dossier(DossierId id, User deposant, TypeDossier type, Projet projet, FichierId fichierIdCerfa) {
         if (id == null)
             throw new NullPointerException("L'id du dépôt ne peut pas être nul");
         this.id = id;

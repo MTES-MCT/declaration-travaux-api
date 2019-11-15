@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,29 +22,26 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Statut;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
+import com.github.mtesmct.rieau.api.domain.factories.UserFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaAdresse;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaCodePieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaDossier;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaMessage;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaNature;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPersonne;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointe;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaPieceJointeId;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaProjet;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaStatut;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.entities.JpaUser;
-import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaPersonneFactory;
 import com.github.mtesmct.rieau.api.infra.persistence.jpa.factories.JpaProjetFactory;
 
 import org.hibernate.Session;
@@ -71,9 +67,6 @@ public class JpaDossierRepositoryTests {
 	@Autowired
 	private DossierRepository repository;
 
-    @Autowired
-    private DateConverter<LocalDateTime> localDateTimeConverter;
-
 	@Autowired
 	private DossierFactory dossierFactory;
 	@Autowired
@@ -82,20 +75,17 @@ public class JpaDossierRepositoryTests {
 	private Dossier dossier;
 	@Autowired
 	@Qualifier("deposantBeta")
-	private Personne deposantBeta;
+	private User deposantBeta;
 	@Autowired
 	@Qualifier("autreDeposantBeta")
-	private Personne autreDeposantBeta;
+	private User autreDeposantBeta;
 	@Autowired
 	@Qualifier("instructeurNonBeta")
-	private Personne instructeurNonBeta;
-
-	@Autowired
-	private JpaPersonneFactory jpaPersonneFactory;
+	private User instructeurNonBeta;
 	@Autowired
 	private JpaProjetFactory jpaProjetFactory;
 
-	private JpaPersonne jpaPersonne;
+	private JpaUser jpaUser;
 
 	@Autowired
 	private DateService dateService;
@@ -105,11 +95,13 @@ public class JpaDossierRepositoryTests {
 	private FichierFactory fichierFactory;
 	@Autowired
 	private StatutService statutService;
+	@Autowired
+	private UserFactory userFactory;
 
 	@BeforeEach
 	public void setUp() throws CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,
 			TypeDossierNotFoundException, FileNotFoundException {
-		this.jpaPersonne = new JpaPersonne(this.deposantBeta.identity().toString(), this.deposantBeta.email(), "44100");
+		this.jpaUser = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
 		Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
 				new ParcelleCadastrale("0", "1", "2"), true, true);
 		projet.localisation().ajouterParcelle(new ParcelleCadastrale("3", "4", "5"));
@@ -117,12 +109,14 @@ public class JpaDossierRepositoryTests {
 		File cerfaFile = new File("src/test/fixtures/dummy.pdf");
 		Fichier cerfaFichier = this.fichierFactory.creer(cerfaFile, "application/pdf");
 		this.fichierService.save(cerfaFichier);
-		this.dossier = this.dossierFactory.creer(this.jpaPersonneFactory.fromJpa(this.jpaPersonne), EnumTypes.DPMI,
+		this.dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI,
 				projet, cerfaFichier.identity());
 		assertFalse(this.dossier.historiqueStatuts().isEmpty());
 		assertEquals(1, this.dossier.historiqueStatuts().size());
 		assertEquals(this.dossier.deposant().identity().toString(), this.deposantBeta.identity().toString());
-		assertEquals(this.dossier.deposant().email(), jpaPersonne.getEmail());
+		assertEquals(this.dossier.deposant().identite().nom(), jpaUser.getNom());
+		assertEquals(this.dossier.deposant().identite().prenom(), jpaUser.getPrenom());
+		assertEquals(String.join(",", this.dossier.deposant().profils()), jpaUser.getProfils());
 	}
 
 	@Test
@@ -135,7 +129,9 @@ public class JpaDossierRepositoryTests {
 		assertEquals(4, this.dossier.historiqueStatuts().size());
 		assertEquals(2, this.dossier.projet().localisation().parcellesCadastrales().size());
 		assertEquals(this.dossier.deposant().identity().toString(), this.deposantBeta.identity().toString());
-		assertEquals(this.dossier.deposant().email(), this.deposantBeta.email());
+		assertEquals(this.dossier.deposant().identite().nom(), this.deposantBeta.identite().nom());
+		assertEquals(this.dossier.deposant().identite().prenom(), this.deposantBeta.identite().prenom());
+		assertEquals(String.join(",", this.dossier.deposant().profils()), String.join(",", this.deposantBeta.profils()));
 		Optional<JpaDossier> optionalJpaDossier = this.entityManager.getEntityManager().unwrap(Session.class)
 				.bySimpleNaturalId(JpaDossier.class).loadOptional(this.dossier.identity().toString());
 		assertTrue(optionalJpaDossier.isPresent());
@@ -164,23 +160,26 @@ public class JpaDossierRepositoryTests {
 		assertFalse(jpaDossier.getMessages().isEmpty());
 		assertEquals(1, jpaDossier.getMessages().size());
 		JpaMessage jpaMessage = jpaDossier.getMessages().iterator().next();
-		assertEquals(this.instructeurNonBeta.identity().toString(), jpaMessage.getAuteur().getId());
-		assertEquals(this.instructeurNonBeta.email(), jpaMessage.getAuteur().getEmail());
+		Optional<User> auteur = this.userFactory.parse(jpaMessage.getAuteur());
+		assertTrue(auteur.isPresent());
+		assertEquals(this.instructeurNonBeta.identity(), auteur.get().identity());
+		assertEquals(this.instructeurNonBeta.identite().nom(), auteur.get().identite().nom());
+		assertEquals(this.instructeurNonBeta.identite().prenom(), auteur.get().identite().prenom());
+		assertEquals(String.join(",", this.instructeurNonBeta.profils()), String.join(",", auteur.get().profils()));
 		assertEquals("Incomplet!", jpaMessage.getContenu());
 	}
 
 	@Test
 	public void findByIdTest() throws Exception {
-		JpaUser user = new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail());
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
-				user, EnumTypes.DPMI);
+				this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.QUALIFIE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.INSTRUCTION, this.dateService.now()));
 		JpaStatut jpaStatutActuel = new JpaStatut(jpaDossier, EnumStatuts.INCOMPLET, this.dateService.now());
 		jpaDossier.addStatut(jpaStatutActuel);
 		String contenu = "Incomplet!";
-		jpaDossier.addMessage(new JpaMessage(jpaDossier, user, this.dateService.now(), contenu));
+		jpaDossier.addMessage(new JpaMessage(jpaDossier, this.deposantBeta.toString(), this.dateService.now(), contenu));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
@@ -211,13 +210,13 @@ public class JpaDossierRepositoryTests {
 		assertEquals(1, jpaDossier.getMessages().size());
 		JpaMessage jpaMessage = jpaDossier.getMessages().iterator().next();
 		assertEquals(contenu, jpaMessage.getContenu());
-		assertEquals(user, jpaMessage.getAuteur());
+		assertEquals(this.deposantBeta.toString(), jpaMessage.getAuteur());
 	}
 
 	@Test
 	public void findByDeposantTest() throws Exception {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
-				new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "0")));
@@ -245,7 +244,7 @@ public class JpaDossierRepositoryTests {
 	@Test
 	public void findByCommuneTest() throws Exception {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
-				new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
@@ -270,7 +269,7 @@ public class JpaDossierRepositoryTests {
 	@Test
 	public void findByFichierIdTest() throws Exception {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
-				new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail()), EnumTypes.DPMI);
+		this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
@@ -287,21 +286,20 @@ public class JpaDossierRepositoryTests {
 		assertEquals(jpaDossier.getDossierId(), dossier.get().identity().toString());
 		assertEquals(jpaProjet.getAdresse().getCodePostal(),
 				dossier.get().projet().localisation().adresse().commune().codePostal());
-		assertEquals(this.jpaPersonne.getPersonneId(), dossier.get().deposant().identity().toString());
+		assertEquals(this.jpaUser.getId(), dossier.get().deposant().identity().toString());
 	}
 
 	@Test
-	public void deleteTest() throws Exception {
-		JpaUser user = new JpaUser(this.jpaPersonne.getPersonneId(), this.jpaPersonne.getEmail());
+	public void deleteTest() throws Exception {		
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(),
-				user, EnumTypes.DPMI);
+		this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.QUALIFIE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.INSTRUCTION, this.dateService.now()));
 		JpaStatut jpaStatutActuel = new JpaStatut(jpaDossier, EnumStatuts.INCOMPLET, this.dateService.now());
 		jpaDossier.addStatut(jpaStatutActuel);
 		String contenu = "Incomplet!";
-		jpaDossier.addMessage(new JpaMessage(jpaDossier, user, this.dateService.now(), contenu));
+		jpaDossier.addMessage(new JpaMessage(jpaDossier, this.deposantBeta.toString(), this.dateService.now(), contenu));
 		jpaDossier.addPieceJointe(new JpaPieceJointe(
 				new JpaPieceJointeId(jpaDossier, new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "0"), "1")));
 		JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),

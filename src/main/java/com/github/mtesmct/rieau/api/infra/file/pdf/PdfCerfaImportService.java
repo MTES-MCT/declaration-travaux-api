@@ -32,6 +32,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 	private CerfaFormMapper cerfaFormMapper;
 	@Autowired
 	private TypeDossierRepository typeDossierRepository;
+	public static final String CODE_CERFA_REGEXP = "N° ([\\d]{5})[\\*]{1}[\\d]{2}";
 
 	@Override
 	public Map<String, String> lire(Fichier fichier) throws CerfaImportException {
@@ -63,7 +64,7 @@ public class PdfCerfaImportService implements CerfaImportService {
 			log.debug("{} lignes de texte", lines.length);
 			for (String line : lines) {
 				log.trace("line={}", line);
-				Optional<String> lCode = this.stringExtractService.extract("[\\d]{5}", line, 0);
+				Optional<String> lCode = this.stringExtractService.extract(CODE_CERFA_REGEXP, line, 1);
 				if (lCode.isPresent()) {
 					type = this.typeDossierRepository.findByCode(lCode.get());
 					if (type.isEmpty())

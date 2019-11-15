@@ -1,9 +1,27 @@
 package com.github.mtesmct.rieau.api.application.dossiers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import com.github.mtesmct.rieau.api.application.ApplicationService;
-import com.github.mtesmct.rieau.api.application.auth.*;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
+import com.github.mtesmct.rieau.api.application.auth.AuthenticationService;
+import com.github.mtesmct.rieau.api.application.auth.AuthorizationService;
+import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
+import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.EnumTypes;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -11,13 +29,8 @@ import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
-import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @ApplicationService
 @Slf4j
@@ -77,7 +90,7 @@ public class AppImporterCerfaService implements ImporterCerfaService {
             String type = valeurs.get("type");
             if (type == null)
                 throw new DossierImportException("Aucun type de dossier reconnu dans le fichier pdf pour le code");
-            Personne deposant = this.authenticationService.user().get();
+            User deposant = this.authenticationService.user().get();
             for (String nomChamp : this.cerfaImportService.keys(EnumTypes.valueOf(type))) {
                 if (Objects.equals(nomChamp, "codePostal") && Objects.equals(valeurs.get(nomChamp), "null"))
                     throw new DossierImportException("Le champ code postal ne peut pas être vide",

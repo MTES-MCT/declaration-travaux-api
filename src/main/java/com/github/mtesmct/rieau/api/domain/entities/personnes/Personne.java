@@ -1,10 +1,10 @@
 package com.github.mtesmct.rieau.api.domain.entities.personnes;
 
-import com.github.mtesmct.rieau.api.domain.entities.Entity;
-import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
-
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import com.github.mtesmct.rieau.api.domain.entities.Entity;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.Adresse;
 
 public class Personne implements Entity<Personne, PersonneId> {
     public static final String EMAIL_REGEXP = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
@@ -13,7 +13,6 @@ public class Personne implements Entity<Personne, PersonneId> {
     private Sexe sexe;
     private String nom;
     private String prenom;
-    private Naissance naissance;
     private Adresse adresse;
 
     public String email() {
@@ -32,10 +31,6 @@ public class Personne implements Entity<Personne, PersonneId> {
         return this.sexe;
     }
 
-    public Naissance naissance() {
-        return this.naissance;
-    }
-
     public Adresse adresse() {
         return this.adresse;
     }
@@ -43,8 +38,8 @@ public class Personne implements Entity<Personne, PersonneId> {
     @Override
     public String toString() {
         return "Personne={ id={" + Objects.toString(this.id) + "}, prenom={" + this.prenom + "}, nom={" + this.nom
-                + "}, sexe={" + Objects.toString(this.sexe) + "}, email={" + this.email + "}, naissance={"
-                + Objects.toString(this.naissance) + "}, adresse={" + Objects.toString(this.adresse) + "} }";
+                + "}, sexe={" + Objects.toString(this.sexe) + "}, email={" + this.email + "}, adresse={"
+                + Objects.toString(this.adresse) + "} }";
     }
 
     @Override
@@ -67,24 +62,20 @@ public class Personne implements Entity<Personne, PersonneId> {
         return this.hasSameIdentityAs(other);
     }
 
-    public Personne(final String personneId, final String email) {
+    public Personne(final String personneId, final String nom, final String prenom) {
         if (personneId == null || personneId.isBlank())
             throw new NullPointerException("L'id de la personne ne peut pas être nul ou vide");
         this.id = new PersonneId(personneId);
-        if (email == null || email.isEmpty())
-            throw new NullPointerException("L'email de la personne ne peut pas être nul ou vide");
+        this.nom = nom;
+        this.prenom = prenom;
+    }
+
+    public Personne(final String personneId, final String nom, final String prenom, final Sexe sexe, final String email, final Adresse adresse) {
+        this(personneId, nom, prenom);
         if (!Pattern.compile(EMAIL_REGEXP).matcher(email).matches())
             throw new IllegalArgumentException("L'email de la personne est non conforme RFC 5322");
         this.email = email;
-    }
-
-    public Personne(final String personneId, String email, String nom, String prenom, Sexe sexe, Naissance naissance, Adresse adresse) {
-        this(personneId, email);
-        this.email = email;
-        this.nom = nom;
-        this.prenom = prenom;
         this.sexe = sexe;
-        this.naissance = naissance;
         this.adresse = adresse;
     }
 

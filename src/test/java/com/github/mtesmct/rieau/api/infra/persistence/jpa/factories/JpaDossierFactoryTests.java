@@ -22,7 +22,10 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+import com.github.mtesmct.rieau.api.domain.factories.UserFactory;
+import com.github.mtesmct.rieau.api.domain.factories.UserParseException;
+import com.github.mtesmct.rieau.api.domain.factories.PersonneParseException;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.TypeDossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
@@ -61,23 +64,31 @@ public class JpaDossierFactoryTests {
         private StatutService statutService;
         @Autowired
         @Qualifier("instructeurNonBeta")
-        private Personne instructeur;
+        private User instructeur;
+        @Autowired
+        @Qualifier("deposantBeta")
+        private User deposantBeta;
+        @Autowired
+        private UserFactory userFactory;
 
         @Test
         public void toJpaTest() throws CommuneNotFoundException, StatutForbiddenException, PieceNonAJoindreException,
-                        AjouterPieceJointeException, TypeStatutNotFoundException {
+                        AjouterPieceJointeException, TypeStatutNotFoundException, UserParseException {
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
                 Optional<TypeDossier> type = this.typeDossierRepository.findByType(EnumTypes.DPMI);
                 assertTrue(type.isPresent());
-                Dossier dossier = new Dossier(new DossierId("0"), new Personne("toto", "toto@fai.fr"), type.get(),
+                Dossier dossier = new Dossier(new DossierId("0"), deposantBeta, type.get(),
                                 projet, new FichierId("cerfa"));
                 dossier.ajouterPieceJointe("1", new FichierId("dp1"));
                 this.statutService.deposer(dossier);
                 this.statutService.qualifier(dossier);
                 this.statutService.declarerIncomplet(dossier, this.instructeur, "Incomplet!");
                 JpaDossier jpaDossier = this.jpaDossierFactory.toJpa(dossier);
-                assertEquals(new JpaUser("toto", "toto@fai.fr"), jpaDossier.getDeposant());
+                assertEquals(this.deposantBeta.identity().toString(), jpaDossier.getDeposant().getId());
+                assertEquals(this.deposantBeta.identite().nom(), jpaDossier.getDeposant().getNom());
+                assertEquals(this.deposantBeta.identite().prenom(), jpaDossier.getDeposant().getPrenom());
+                assertEquals(String.join(",", this.deposantBeta.profils()), jpaDossier.getDeposant().getProfils());
                 assertEquals("0", jpaDossier.getDossierId());
                 assertFalse(jpaDossier.getStatuts().isEmpty());
                 assertEquals(3, jpaDossier.getStatuts().size());
@@ -93,14 +104,19 @@ public class JpaDossierFactoryTests {
                 assertFalse(jpaDossier.getMessages().isEmpty());
                 assertEquals(1, jpaDossier.getMessages().size());
                 JpaMessage jpaMessage = jpaDossier.getMessages().iterator().next();
-                assertEquals(this.instructeur.identity().toString(), jpaMessage.getAuteur().getId());
-                assertEquals(this.instructeur.email(), jpaMessage.getAuteur().getEmail());
+                Optional<User> auteur = this.userFactory.parse(jpaMessage.getAuteur());
+                assertTrue(auteur.isPresent());
+                assertEquals(this.instructeur.identity(), auteur.get().identity());
+                assertEquals(this.instructeur.identite().nom(), auteur.get().identite().nom());
+                assertEquals(this.instructeur.identite().prenom(), auteur.get().identite().prenom());
+                assertEquals(String.join(",", this.instructeur.profils()), String.join(",", auteur.get().profils()));
                 assertEquals("Incomplet!", jpaMessage.getContenu());
         }
 
         @Test
-        public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException {
-                JpaDossier jpaDossier = new JpaDossier("0", new JpaUser("toto", "toto@fai.fr"), EnumTypes.DPMI);
+        public void fromJpaTest() throws PatternSyntaxException, CommuneNotFoundException, PersonneParseException {
+                JpaUser deposant = new JpaUser(this.deposantBeta.identity().toString(), this.deposantBeta.identite().nom(), this.deposantBeta.identite().prenom(), String.join(",", this.deposantBeta.profils()));
+                JpaDossier jpaDossier = new JpaDossier("0", deposant, EnumTypes.DPMI);
                 JpaProjet jpaProjet = new JpaProjet(jpaDossier, new JpaNature(true),
                                 new JpaAdresse("1", "rue des Fleurs", "ZI les roses", "44100", "BP 1", "Cedex 1"),
                                 "1-2-3,4-5-6", true);
@@ -112,9 +128,12 @@ public class JpaDossierFactoryTests {
                                 new JpaCodePieceJointe(EnumTypes.DPMI.toString(), "1"), "dp1"));
                 jpaDossier.addPieceJointe(dp1);
                 jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
-                jpaDossier.addMessage(new JpaMessage(jpaDossier, new JpaUser(this.instructeur.identity().toString(), this.instructeur.email()), this.dateService.now(), "Incomplet!"));
+                jpaDossier.addMessage(new JpaMessage(jpaDossier, this.instructeur.toString(), this.dateService.now(), "Incomplet!"));
                 Dossier dossier = this.jpaDossierFactory.fromJpa(jpaDossier);
-                assertEquals(new Personne("toto", "toto@fai.fr"), dossier.deposant());
+                assertEquals(this.deposantBeta.identity().toString(), dossier.deposant().identity().toString());
+                assertEquals(this.deposantBeta.identite().nom(), dossier.deposant().identite().nom());
+                assertEquals(this.deposantBeta.identite().prenom(), dossier.deposant().identite().prenom());
+                assertEquals(String.join(",", this.deposantBeta.profils()), String.join(",", dossier.deposant().profils()));
                 assertEquals(new DossierId("0"), dossier.identity());
                 assertTrue(dossier.statutActuel().isPresent());
                 assertEquals(EnumStatuts.DEPOSE, dossier.statutActuel().get().type().identity());
@@ -130,8 +149,11 @@ public class JpaDossierFactoryTests {
                                 new CodePieceJointe(EnumTypes.DPMI, "1"), new FichierId("dp1"))));
                 assertFalse(dossier.messages().isEmpty());
                 assertEquals(1, dossier.messages().size());
-                assertEquals(this.instructeur.identity(), dossier.messages().get(0).auteur().identity());
-                assertEquals(this.instructeur.email(), dossier.messages().get(0).auteur().email());
+                User auteur = dossier.messages().get(0).auteur();
+                assertEquals(this.instructeur.identity(), auteur.identity());
+                assertEquals(this.instructeur.identite().nom(), auteur.identite().nom());
+                assertEquals(this.instructeur.identite().prenom(), auteur.identite().prenom());
+                assertEquals(String.join(",", this.instructeur.profils()), String.join(",", auteur.profils()));
                 assertEquals("Incomplet!", dossier.messages().get(0).contenu());
         }
 

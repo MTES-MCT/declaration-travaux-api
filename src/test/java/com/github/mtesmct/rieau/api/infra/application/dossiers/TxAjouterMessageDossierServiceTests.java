@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.application.auth.AuthRequiredException;
@@ -25,7 +24,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Projet;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
@@ -35,8 +34,6 @@ import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithInstructeurNonBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
-import com.github.mtesmct.rieau.api.infra.date.DateConverter;
-import com.github.mtesmct.rieau.api.infra.date.LocalDateTimeConverter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,21 +60,18 @@ public class TxAjouterMessageDossierServiceTests {
     @Autowired
     private ProjetFactory projetFactory;
 
-    @Autowired
-    private DateConverter<LocalDateTime> localDateTimeConverter;
-
     private Dossier dossier;
 
     private Dossier otherDossier;
     @Autowired
     @Qualifier("deposantBeta")
-    private Personne deposantBeta;
+    private User deposantBeta;
     @Autowired
     @Qualifier("autreDeposantBeta")
-    private Personne autreDeposant;
+    private User autreDeposant;
     @Autowired
     @Qualifier("instructeurNonBeta")
-    private Personne instructeur;
+    private User instructeur;
     @Autowired
     private FichierService fichierService;
     @Autowired

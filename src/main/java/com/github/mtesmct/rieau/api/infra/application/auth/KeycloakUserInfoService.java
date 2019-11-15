@@ -1,12 +1,15 @@
 package com.github.mtesmct.rieau.api.infra.application.auth;
 
+import java.util.Map;
+import java.util.Objects;
+
 import com.github.mtesmct.rieau.api.application.auth.Roles;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
-import com.github.mtesmct.rieau.api.domain.entities.personnes.Personne;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.Sexe;
-import com.github.mtesmct.rieau.api.domain.factories.PersonneFactory;
+import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+import com.github.mtesmct.rieau.api.domain.factories.UserFactory;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
-import lombok.extern.slf4j.Slf4j;
+
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
@@ -17,8 +20,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @ConditionalOnProperty(prefix = "keycloak", name = "enabled", havingValue = "true")
@@ -27,7 +29,7 @@ import java.util.Objects;
 public class KeycloakUserInfoService implements UserInfoService {
 
         @Autowired
-        private PersonneFactory personneFactory;
+        private UserFactory userFactory;
 
         private void checkUserAttribute(KeycloakAuthenticationToken token, AccessToken accessToken,
                         Map<String, Object> otherClaims, String userRole, String attribute)
@@ -42,7 +44,7 @@ public class KeycloakUserInfoService implements UserInfoService {
         }
 
         @Override
-        public Personne user() throws UserInfoServiceException {
+        public User user() throws UserInfoServiceException {
                 SecurityContext context = SecurityContextHolder.getContext();
                 if (!KeycloakAuthenticationToken.class.isAssignableFrom(context.getAuthentication().getClass()))
                         throw new UserInfoServiceException("Expected a KeycloakAuthenticationToken, but found "
@@ -59,22 +61,22 @@ public class KeycloakUserInfoService implements UserInfoService {
                 Sexe sexe = null;
                 if (accessToken.getGender() != null)
                         sexe = Sexe.valueOf(accessToken.getGender());
-                Personne user;
+                User user;
                 Map<String, Object> otherClaims = accessToken.getOtherClaims();
                 log.debug("otherClaims={}", otherClaims);
                 checkUserAttribute(token, accessToken, otherClaims, Roles.MAIRIE, "codePostal");
                 checkUserAttribute(token, accessToken, otherClaims, Roles.INSTRUCTEUR, "codePostal");
                 try {
-                        user = this.personneFactory.creer(accessToken.getPreferredUsername(), accessToken.getEmail(),
+                        user = this.userFactory.creer(accessToken.getPreferredUsername(), accessToken.getEmail(),
                                         sexe, accessToken.getFamilyName(), accessToken.getGivenName(),
-                                        accessToken.getBirthdate(),
-                                        (String) accessToken.getOtherClaims().get("birthPostalCode"),
                                         (String) accessToken.getOtherClaims().get("codePostal"),
                                         (String) accessToken.getOtherClaims().get("numero"),
                                         (String) accessToken.getOtherClaims().get("voie"),
                                         (String) accessToken.getOtherClaims().get("lieuDit"),
                                         (String) accessToken.getOtherClaims().get("bp"),
-                                        (String) accessToken.getOtherClaims().get("cedex"));
+                                        (String) accessToken.getOtherClaims().get("cedex"),
+                                        token.getAccount().getRoles()
+                                                        .toArray(new String[token.getAccount().getRoles().size()]));
                 } catch (CommuneNotFoundException e) {
                         throw new UserInfoServiceException(e);
                 }
