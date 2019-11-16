@@ -56,8 +56,8 @@ jobs:
           command: |
             curl -s "https://get.sdkman.io" | bash
             source "/home/circleci/.sdkman/bin/sdkman-init.sh"
-            sdk install java 11.0.4.hs-adpt
-            sdk default java 11.0.4.hs-adpt
+            sdk install java 11.0.5.hs-adpt
+            sdk default java 11.0.5.hs-adpt
             sdk install maven 3.6.2
             sdk default maven 3.6.2
             mvn -version
