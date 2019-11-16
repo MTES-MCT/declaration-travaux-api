@@ -11,6 +11,7 @@ import com.github.mtesmct.rieau.api.domain.services.StringExtractService;
 public class CommuneFactory {
     private StringExtractService stringExtractService;
     private CommuneService communeService;
+
     public CommuneFactory(StringExtractService stringExtractService, CommuneService communeService) {
         if (stringExtractService == null)
             throw new NullPointerException("Le service des string extract ne peut pas être nul.");
@@ -22,6 +23,9 @@ public class CommuneFactory {
 
     public Optional<Commune> parse(String texte) throws CommuneParseException {
         Optional<Commune> commune = Optional.empty();
+        Optional<String> communeString = this.stringExtractService.entityExtract("Commune", texte);
+        if (communeString.isEmpty())
+            throw new CommuneParseException(texte);
         Optional<String> codePostal = this.stringExtractService.attributeExtract("codePostal", texte);
         if (codePostal.isEmpty())
             throw new CommuneParseException(texte);

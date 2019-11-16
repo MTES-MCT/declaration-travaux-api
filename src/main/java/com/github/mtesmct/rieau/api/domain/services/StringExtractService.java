@@ -21,16 +21,16 @@ public class StringExtractService {
     public Optional<String> entityExtract(String entity, String text) throws PatternSyntaxException {
         return this.extract(entityRegexp(entity), text, 1);
     }
-    
+
     public Optional<String> attributeExtract(String attribute, String text) throws PatternSyntaxException {
         return this.extract(attributeRegexp(attribute), text, 1);
     }
 
     public String entityRegexp(String entity) {
-        return entity + Entity.REGEXP;
+        return "\\b" + entity + "\\b" + Entity.REGEXP;
     }
 
     public String attributeRegexp(String attribute) {
-        return attribute+Entity.ATTRIBUTE_REGEXP;
+        return "\\b" + attribute + "\\b" + Entity.ATTRIBUTE_REGEXP;
     }
 }

@@ -1,6 +1,5 @@
 package com.github.mtesmct.rieau.api.domain.factories;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.github.mtesmct.rieau.api.domain.entities.Factory;
@@ -57,20 +56,20 @@ public class UserFactory {
 
     public Optional<User> parse(String texte) throws UserParseException {
         Optional<User> user = Optional.empty();
-        // Optional<String> userString = this.stringExtractService.entityExtract("User", texte);
-        // if (userString.isEmpty())
-        //     throw new UserParseException(texte);
+        Optional<String> userString = this.stringExtractService.entityExtract("User", texte);
+        if (userString.isEmpty())
+            throw new UserParseException(texte);
         Optional<String> id = this.stringExtractService.attributeExtract("id", texte);
         Optional<String> email = this.stringExtractService.attributeExtract("email", texte);
-        Optional<String> nom = this.stringExtractService.attributeExtract("\\bnom\\b", texte);
+        Optional<String> nom = this.stringExtractService.attributeExtract("nom", texte);
         Optional<String> prenom = this.stringExtractService.attributeExtract("prenom", texte);
         Optional<String> sexe = this.stringExtractService.attributeExtract("sexe", texte);
-        Optional<String> adresseString = this.stringExtractService.entityExtract("adresse", texte);
+        Optional<String> adresseString = this.stringExtractService.entityExtract("Adresse", texte);
         Optional<String> profils = this.stringExtractService.attributeExtract("profils", texte);
         Optional<Adresse> adresse = Optional.empty();
         if (adresseString.isPresent() && !adresseString.get().equals("null")) {
             try {
-                adresse = this.adresseFactory.parse(adresseString.get());
+                adresse = this.adresseFactory.parse("Adresse={" + adresseString.get() + "}");
             } catch (AdresseParseException e) {
                 throw new UserParseException(texte, e);
             }
@@ -84,13 +83,15 @@ public class UserFactory {
 
             }
         }
-        if (sex.isPresent() && email.isPresent() && adresse.isPresent()) {
+        if (id.isPresent() && nom.isPresent() && prenom.isPresent() && sex.isPresent() && email.isPresent()
+                && adresse.isPresent()) {
             personne = new Personne(id.get(), nom.get(), prenom.get(), sex.get(), email.get(), adresse.get());
-        } else {
+        } else if (id.isPresent() && nom.isPresent() && prenom.isPresent()) {
             personne = new Personne(id.get(), nom.get(), prenom.get());
 
         }
-        user = Optional.ofNullable(new User(personne, profils.get().split(",")));
+        if (profils.isPresent())
+            user = Optional.ofNullable(new User(personne, profils.get().split(",")));
         return user;
     }
 }

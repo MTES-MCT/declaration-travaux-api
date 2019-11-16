@@ -29,17 +29,19 @@ public class AdresseFactory {
         Optional<String> numero = this.stringExtractService.attributeExtract("numero", texte);
         Optional<String> voie = this.stringExtractService.attributeExtract("voie", texte);
         Optional<String> lieuDit = this.stringExtractService.attributeExtract("lieuDit", texte);
-        Optional<String> communeString = this.stringExtractService.entityExtract("commune", texte);
+        Optional<String> communeString = this.stringExtractService.entityExtract("Commune", texte);
         Optional<String> bp = this.stringExtractService.attributeExtract("bp", texte);
         Optional<String> cedex = this.stringExtractService.attributeExtract("cedex", texte);
         Optional<Commune> commune = Optional.empty();
         try {
-            commune = this.communeFactory.parse(communeString.get());
+            commune = this.communeFactory.parse("Commune={" + communeString.get() + "}");
         } catch (CommuneParseException e) {
             throw new AdresseParseException(texte, e);
         }
-        adresse = Optional
-                .ofNullable(new Adresse(numero.get(), voie.get(), lieuDit.get(), commune.get(), bp.get(), cedex.get()));
+        if (numero.isPresent() && voie.isPresent() && lieuDit.isPresent() && commune.isPresent() && bp.isPresent()
+                && cedex.isPresent())
+            adresse = Optional.ofNullable(
+                    new Adresse(numero.get(), voie.get(), lieuDit.get(), commune.get(), bp.get(), cedex.get()));
         return adresse;
     }
 

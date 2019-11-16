@@ -282,7 +282,7 @@ public class DossiersControllerIT {
 		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
 		assertEquals(this.instructeur.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
 		assertEquals(this.instructeur.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
-		assertEquals(String.join(",", this.instructeur.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
+		assertEquals(String.join(",", this.instructeur.profils()), String.join(",", jsonDossier.getMessages().get(0).getAuteur().getProfils()));
 	}
 
 	@Test
@@ -434,7 +434,7 @@ public class DossiersControllerIT {
 		assertEquals(this.instructeur.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
 		assertEquals(this.instructeur.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
 		assertEquals(this.instructeur.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
-		assertEquals(String.join(",", this.instructeur.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
+		assertEquals(String.join(",", this.instructeur.profils()), String.join(",", jsonDossier.getMessages().get(0).getAuteur().getProfils()));
 	}
 
 	@Test
@@ -460,7 +460,7 @@ public class DossiersControllerIT {
 		assertEquals(this.deposantBeta.identity().toString(), jsonDossier.getMessages().get(0).getAuteur().getId());
 		assertEquals(this.deposantBeta.identite().nom(), jsonDossier.getMessages().get(0).getAuteur().getNom());
 		assertEquals(this.deposantBeta.identite().prenom(), jsonDossier.getMessages().get(0).getAuteur().getPrenom());
-		assertEquals(String.join(",", this.deposantBeta.profils()), jsonDossier.getMessages().get(0).getAuteur().getProfils());
+		assertEquals(String.join(",", this.deposantBeta.profils()), String.join(",", jsonDossier.getMessages().get(0).getAuteur().getProfils()));
 	}
 
 	@Test
