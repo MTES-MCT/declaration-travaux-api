@@ -216,3 +216,5 @@ Pour prévisualiser, lancer un serveur de rendu:
 ```shell
 docker run -d -p 8080:8080 plantuml/plantuml-server:tomcat
 ```
+
+![Diagramme de classes du domaine métier](/src/main/docs/RIEAU.png)
