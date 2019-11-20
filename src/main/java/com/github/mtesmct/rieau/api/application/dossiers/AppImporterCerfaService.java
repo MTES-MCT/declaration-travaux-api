@@ -26,6 +26,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
@@ -77,7 +78,8 @@ public class AppImporterCerfaService implements ImporterCerfaService {
     @Override
     public Optional<Dossier> execute(InputStream is, String nom, String mimeType, long taille)
             throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
-            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
+            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException,
+            TypeDossierNotFoundException, SaveDossierException {
         Dossier dossier;
         try {
             this.authorizationService.isDeposantAndBetaAuthorized();

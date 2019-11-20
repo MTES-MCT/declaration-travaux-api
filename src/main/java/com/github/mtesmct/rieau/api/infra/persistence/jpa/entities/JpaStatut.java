@@ -47,11 +47,11 @@ public class JpaStatut {
         if (o == null || getClass() != o.getClass())
             return false;
         JpaStatut jpaStatut = (JpaStatut) o;
-        return Objects.equals(this.statut, jpaStatut.statut) && Objects.equals(this.dateDebut, jpaStatut.dateDebut);
+        return Objects.equals(this.id, jpaStatut.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.statut, this.dateDebut);
+        return Objects.hash(this.id);
     }
 }

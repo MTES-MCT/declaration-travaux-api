@@ -32,6 +32,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
@@ -46,9 +47,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxPrendreDecisionDossierServiceTests {
         @Autowired
@@ -77,7 +80,7 @@ public class TxPrendreDecisionDossierServiceTests {
 
         @BeforeEach
         public void setUp() throws StatutForbiddenException, TypeStatutNotFoundException, TypeDossierNotFoundException,
-                        FileNotFoundException, CommuneNotFoundException {
+                        FileNotFoundException, CommuneNotFoundException, SaveDossierException {
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, false);
                 File cerfaFile = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
@@ -100,7 +103,8 @@ public class TxPrendreDecisionDossierServiceTests {
         public void executeMairieTest() throws IOException, MairieForbiddenException, AuthRequiredException,
                         UserForbiddenException, UserInfoServiceException, CommuneNotFoundException,
                         StatutForbiddenException, TypeStatutNotFoundException, TypeDossierNotFoundException,
-                        PieceNonAJoindreException, DossierNotFoundException, AjouterPieceJointeException {
+                        PieceNonAJoindreException, DossierNotFoundException, AjouterPieceJointeException,
+                        SaveDossierException {
                 File file = new File("src/test/fixtures/dummy.pdf");
                 Optional<Dossier> dossier = this.service.execute(this.dossier.identity(),
                                 new FileInputStream(file), file.getName(), "application/pdf", file.length());
@@ -115,7 +119,7 @@ public class TxPrendreDecisionDossierServiceTests {
                         throws IOException, AjouterPieceJointeException, AuthRequiredException, UserForbiddenException,
                         UserInfoServiceException, CommuneNotFoundException, StatutForbiddenException,
                         TypeStatutNotFoundException, TypeDossierNotFoundException, PieceNonAJoindreException,
-                        DossierNotFoundException, MairieForbiddenException {
+                        DossierNotFoundException, MairieForbiddenException, SaveDossierException {
                 Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "75100", "BP 44",
                                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, false);
                 File cerfaFile = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");

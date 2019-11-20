@@ -7,6 +7,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.AppQualifierDossierServ
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.QualifierDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +25,7 @@ public class TxQualifierDossierService implements QualifierDossierService {
     @Override
     public Optional<Dossier> execute(DossierId id)
             throws DossierNotFoundException, MairieForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
+            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException, SaveDossierException {
         return this.applicationQualifierDossierService.execute(id);
     }
 }

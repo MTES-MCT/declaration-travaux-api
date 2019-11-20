@@ -20,6 +20,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundE
 import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 
@@ -60,7 +61,7 @@ public class AppPrendreDecisionDossierService implements PrendreDecisionDossierS
     public Optional<Dossier> execute(DossierId id, InputStream is, String nom, String mimeType, long taille)
             throws DossierNotFoundException, MairieForbiddenException, AuthRequiredException, UserForbiddenException,
             UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException, FileNotFoundException,
-            AjouterPieceJointeException {
+            AjouterPieceJointeException, SaveDossierException {
         this.authorizationService.isMairieAndBetaAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
         if (dossier.isEmpty())

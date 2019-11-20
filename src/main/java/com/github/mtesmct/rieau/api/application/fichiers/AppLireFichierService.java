@@ -14,20 +14,21 @@ import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 
 @ApplicationService
-public class ApplicationLireFichierService implements LireFichierService {
+public class AppLireFichierService implements LireFichierService {
 
     private FichierService fichierService;
     private AuthenticationService authenticationService;
     private AuthorizationService authorizationService;
     private DossierRepository dossierRepository;
 
-    public ApplicationLireFichierService(FichierService fichierService, AuthenticationService authenticationService,
+    public AppLireFichierService(FichierService fichierService, AuthenticationService authenticationService,
             AuthorizationService authorizationService, DossierRepository dossierRepository) {
         if (authenticationService == null)
             throw new IllegalArgumentException("Le service d'authentification ne peut pas être nul.");
@@ -46,8 +47,8 @@ public class ApplicationLireFichierService implements LireFichierService {
     @Override
     public Optional<Fichier> execute(FichierId fichierId)
             throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
-        this.authorizationService.isDeposantOrMairieAndBetaAuthorized();
+            UserNotOwnerException, DossierNotFoundException, MairieForbiddenException, InstructeurForbiddenException {
+        this.authorizationService.isUserAuthorized();
         Optional<Fichier> fichier = Optional.empty();
         Optional<User> user = this.authenticationService.user();
         if (user.isEmpty())
@@ -61,6 +62,9 @@ public class ApplicationLireFichierService implements LireFichierService {
         }
         if (this.authenticationService.isMairie() && !dossier.get().projet().localisation().adresse().commune().equals(user.get().identite().adresse().commune())) {
             throw new MairieForbiddenException(user.get());
+        }
+        if (this.authenticationService.isInstructeur() && !dossier.get().projet().localisation().adresse().commune().equals(user.get().identite().adresse().commune())) {
+            throw new InstructeurForbiddenException(user.get());
         }
         fichier = this.fichierService.findById(fichierId);
         return fichier;

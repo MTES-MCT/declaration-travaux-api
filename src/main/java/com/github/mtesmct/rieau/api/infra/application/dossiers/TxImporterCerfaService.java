@@ -7,6 +7,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.AppImporterCerfaService
 import com.github.mtesmct.rieau.api.application.dossiers.DossierImportException;
 import com.github.mtesmct.rieau.api.application.dossiers.ImporterCerfaService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,8 @@ public class TxImporterCerfaService implements ImporterCerfaService {
     @Override
     public Optional<Dossier> execute(InputStream is, String nom, String mimeType, long taille)
             throws DossierImportException, AuthRequiredException, UserForbiddenException, UserInfoServiceException,
-            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
+            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException,
+            TypeDossierNotFoundException, SaveDossierException {
         return this.applicationImporterCerfaService.execute(is, nom, mimeType, taille);
     }
 

@@ -27,6 +27,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
@@ -112,7 +113,7 @@ public class TxLancerConsultationsDossierServiceTests {
     @WithInstructeurNonBetaDetails
     public void executeInstructeurTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
             InstructeurForbiddenException, DossierNotFoundException, TypeStatutNotFoundException,
-            StatutForbiddenException {
+            StatutForbiddenException, SaveDossierException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierConsulte = this.service.execute(this.dossier.identity());
         assertTrue(dossierConsulte.isPresent());

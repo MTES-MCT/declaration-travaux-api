@@ -63,6 +63,10 @@ public class PieceJointe implements ValueObject<PieceJointe> {
         return this.code != null && this.code.isCerfa();
     }
 
+    public boolean isDecision() {
+        return this.code != null && this.code.isDecision();
+    }
+
     public boolean isAJoindre() {
         return this.dossier != null && this.dossier.piecesAJoindre() != null && this.dossier.piecesAJoindre().contains(this.code().numero());
     }

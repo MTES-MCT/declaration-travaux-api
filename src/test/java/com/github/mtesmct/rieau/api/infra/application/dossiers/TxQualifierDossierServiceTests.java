@@ -27,6 +27,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
@@ -83,7 +84,8 @@ public class TxQualifierDossierServiceTests {
         assertTrue(this.dossier.pieceJointes().isEmpty());
         Projet otherProjet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "75400", "BP 44",
                 "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
-        this.otherDossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, otherProjet, cerfaFichier.identity());
+        this.otherDossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, otherProjet,
+                cerfaFichier.identity());
         Mockito.when(this.dossierRepository.save(this.otherDossier)).thenReturn(this.otherDossier);
         this.otherDossier = this.dossierRepository.save(this.otherDossier);
         assertNotNull(this.otherDossier);
@@ -93,8 +95,9 @@ public class TxQualifierDossierServiceTests {
 
     @Test
     @WithMairieBetaDetails
-    public void executeMairieTest() throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
-            MairieForbiddenException, DossierNotFoundException, TypeStatutNotFoundException, StatutForbiddenException {
+    public void executeMairieTest()
+            throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, MairieForbiddenException,
+            DossierNotFoundException, TypeStatutNotFoundException, StatutForbiddenException, SaveDossierException {
         Mockito.when(this.dossierRepository.findById(anyString())).thenReturn(Optional.ofNullable(this.dossier));
         Optional<Dossier> dossierQualifie = this.qualifierDossierService.execute(this.dossier.identity());
         assertTrue(dossierQualifie.isPresent());

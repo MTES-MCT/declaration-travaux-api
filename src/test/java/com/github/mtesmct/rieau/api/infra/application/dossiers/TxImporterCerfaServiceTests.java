@@ -24,6 +24,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenExce
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeDossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.DateService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithDeposantBetaDetails;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithMairieBetaDetails;
@@ -52,9 +53,10 @@ public class TxImporterCerfaServiceTests {
 
         @Test
         @WithDeposantBetaDetails
-        public void executeDPTest() throws IOException, DossierImportException, AuthRequiredException,
-                        UserForbiddenException, UserInfoServiceException, StatutForbiddenException,
-                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
+        public void executeDPTest()
+                        throws IOException, DossierImportException, AuthRequiredException, UserForbiddenException,
+                        UserInfoServiceException, StatutForbiddenException, TypeStatutNotFoundException,
+                        PieceNonAJoindreException, TypeDossierNotFoundException, SaveDossierException {
         File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
         Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
                 "application/pdf", file.length());
@@ -85,7 +87,8 @@ public class TxImporterCerfaServiceTests {
     @WithDeposantBetaDetails
     public void executePCMITest() throws IOException, DossierImportException, AuthRequiredException,
             UserForbiddenException, UserInfoServiceException, StatutForbiddenException,
-                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
+                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException,
+                        SaveDossierException {
         File file = new File("src/test/fixtures/cerfa_13406_PCMI.pdf");
         Optional<Dossier> dossier = this.importerCerfaService.execute(new FileInputStream(file), file.getName(),
                 "application/pdf", file.length());

@@ -8,6 +8,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.AppAjouterPieceJointeSe
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.AjouterPieceJointeException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DossierId;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceJointe;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +25,9 @@ public class TxAjouterPieceJointeService implements AjouterPieceJointeService {
     private AppAjouterPieceJointeService applicationAjouterPieceJointeService;
 
     @Override
-    public Optional<PieceJointe> execute(DossierId id, String numero, InputStream is, String nom, String mimeType, long taille)
-            throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException, UserInfoServiceException {
+    public Optional<PieceJointe> execute(DossierId id, String numero, InputStream is, String nom, String mimeType,
+            long taille) throws AjouterPieceJointeException, AuthRequiredException, UserForbiddenException,
+            UserInfoServiceException, SaveDossierException {
         return this.applicationAjouterPieceJointeService.execute(id, numero, is, nom, mimeType, taille);
     }
 

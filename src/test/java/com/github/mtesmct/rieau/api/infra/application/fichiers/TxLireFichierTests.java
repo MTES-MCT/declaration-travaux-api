@@ -17,6 +17,7 @@ import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundExceptio
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Dossier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.ParcelleCadastrale;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.PieceNonAJoindreException;
@@ -30,6 +31,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.infra.application.auth.WithAutreDeposantBetaDetails;
@@ -45,63 +47,98 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TxLireFichierTests {
-    @Autowired
-    private TxLireFichierService lireFichierService;
-    @Autowired
-    private FichierService fichierService;
-    @Autowired
-    private FichierFactory fichierFactory;
-    @Autowired
-    private DossierFactory dossierFactory;
-    @Autowired
-    private ProjetFactory projetFactory;
-    @Autowired
-    private DossierRepository dossierRepository;
+        @Autowired
+        private TxLireFichierService lireFichierService;
+        @Autowired
+        private FichierService fichierService;
+        @Autowired
+        private FichierFactory fichierFactory;
+        @Autowired
+        private DossierFactory dossierFactory;
+        @Autowired
+        private ProjetFactory projetFactory;
+        @Autowired
+        private DossierRepository dossierRepository;
 
-    private Fichier fichier;
-    @Autowired
-    @Qualifier("deposantBeta")
-    private User deposantBeta;
+        private Fichier fichier;
+        @Autowired
+        @Qualifier("deposantBeta")
+        private User deposantBeta;
 
-    @BeforeEach
-    public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException, TypeStatutNotFoundException,
-            PieceNonAJoindreException, TypeDossierNotFoundException {
-        File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
-        fichier = this.fichierFactory.creer(file, "application/pdf");
-        this.fichierService.save(fichier);
-        Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44", "Cedex 01",
-                new ParcelleCadastrale("0", "1", "2"), true, true);
-        Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
-        dp = this.dossierRepository.save(dp);
-    }
+        @BeforeEach
+        public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException,
+                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException,
+                        SaveDossierException {
+                File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
+                fichier = this.fichierFactory.creer(file, "application/pdf");
+                this.fichierService.save(fichier);
+                Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44100", "BP 44",
+                                "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
+                Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
+                dp = this.dossierRepository.save(dp);
+        }
 
-    @Test
-    @WithDeposantBetaDetails
-    public void lireDeposantTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
-            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
-        Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
-        assertTrue(fichierLu.isPresent());
-    }
+        @Test
+        @WithDeposantBetaDetails
+        public void lireDeposantTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
+                        UserInfoServiceException, UserNotOwnerException, DossierNotFoundException,
+                        MairieForbiddenException, InstructeurForbiddenException {
+                Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
+                assertTrue(fichierLu.isPresent());
+        }
 
-    @Test
-    @WithMairieBetaDetails
-    public void lireMairieTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
-            UserInfoServiceException, UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
-        Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
-        assertTrue(fichierLu.isPresent());
-    }
+        @Test
+        @WithMairieBetaDetails
+        public void lireMairieTest() throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
+                        UserInfoServiceException, UserNotOwnerException, DossierNotFoundException,
+                        MairieForbiddenException, InstructeurForbiddenException {
+                Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
+                assertTrue(fichierLu.isPresent());
+        }
 
-    @Test
-    @WithMairieBetaDetails
-    public void lireMairieNonLocaliseeTest()
-            throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException, DossierNotFoundException, FileNotFoundException, CommuneNotFoundException,
-            StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException {
+        @Test
+        @WithInstructeurNonBetaDetails
+        public void lireInstructeurTest() throws FichierNotFoundException, UserForbiddenException,
+                        AuthRequiredException, UserInfoServiceException, UserNotOwnerException,
+                        DossierNotFoundException, MairieForbiddenException, InstructeurForbiddenException {
+                Optional<Fichier> fichierLu = this.lireFichierService.execute(fichier.identity());
+                assertTrue(fichierLu.isPresent());
+        }
+
+        @Test
+        @WithInstructeurNonBetaDetails
+        public void lireInstructeurNonLocaliseTest()
+                        throws FichierNotFoundException, UserForbiddenException, AuthRequiredException,
+                        UserInfoServiceException, UserNotOwnerException, DossierNotFoundException,
+                        FileNotFoundException, CommuneNotFoundException, StatutForbiddenException,
+                        TypeStatutNotFoundException, PieceNonAJoindreException, TypeDossierNotFoundException,
+                        SaveDossierException {
+                File file = new File("src/test/fixtures/dummy.pdf");
+                Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
+                this.fichierService.save(fichier);
+                Projet projet = this.projetFactory.creer("1", "rue des Lilas", "ZA des Fleurs", "44500", "BP 44",
+                                "Cedex 01", new ParcelleCadastrale("0", "1", "2"), true, true);
+                Dossier dp = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, fichier.identity());
+                dp = this.dossierRepository.save(dp);
+                InstructeurForbiddenException exception = assertThrows(InstructeurForbiddenException.class,
+                                () -> lireFichierService.execute(fichier.identity()));
+                assertNotNull(exception);
+        }
+
+        @Test
+        @WithMairieBetaDetails
+        public void lireMairieNonLocaliseeTest() throws FichierNotFoundException, UserForbiddenException,
+                        AuthRequiredException, UserInfoServiceException, UserNotOwnerException,
+                        DossierNotFoundException, FileNotFoundException, CommuneNotFoundException,
+                        StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException,
+                        TypeDossierNotFoundException, SaveDossierException {
         File file = new File("src/test/fixtures/dummy.pdf");
         Fichier fichier = this.fichierFactory.creer(file, "application/pdf");
         this.fichierService.save(fichier);
@@ -117,14 +154,6 @@ public class TxLireFichierTests {
     @Test
     public void lireNonAuthentifieTest() throws FichierNotFoundException, UserForbiddenException {
         AuthRequiredException exception = assertThrows(AuthRequiredException.class,
-                () -> lireFichierService.execute(fichier.identity()));
-        assertNotNull(exception);
-    }
-
-    @Test
-    @WithInstructeurNonBetaDetails
-    public void lireInterditTest() throws FichierNotFoundException, UserForbiddenException {
-        UserForbiddenException exception = assertThrows(UserForbiddenException.class,
                 () -> lireFichierService.execute(fichier.identity()));
         assertNotNull(exception);
     }

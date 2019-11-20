@@ -8,6 +8,7 @@ import com.github.mtesmct.rieau.api.application.dossiers.FichierNotFoundExceptio
 import com.github.mtesmct.rieau.api.application.dossiers.UserNotOwnerException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.Fichier;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.FichierId;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.infra.application.fichiers.TxLireFichierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class FichiersController {
     @GetMapping("/{id}")
     public ResponseEntity<Resource> lireFichier(@PathVariable String id)
             throws FichierNotFoundException, UserForbiddenException, AuthRequiredException, UserInfoServiceException,
-            UserNotOwnerException, DossierNotFoundException, MairieForbiddenException {
+            UserNotOwnerException, DossierNotFoundException, MairieForbiddenException, InstructeurForbiddenException {
         Optional<Fichier> fichier = this.lireFichierService.execute(new FichierId(id));
         if (fichier.isEmpty())
             return ResponseEntity.notFound().build();

@@ -88,7 +88,7 @@ public class JpaDossierFactory {
                 try {
                     this.ajouterPieceJointe(dossier, jpaPieceJointe);
                 } catch (PieceNonAJoindreException | AjouterPieceJointeException e) {
-                    log.warn("Erreur {} de transformation de la piece jointe {}", e.getMessage(),
+                    log.error("Erreur {} de transformation de la piece jointe {}", e.getMessage(),
                             Objects.toString(jpaPieceJointe));
                 }
             });
@@ -97,7 +97,7 @@ public class JpaDossierFactory {
                 try {
                     this.ajouterStatut(dossier, jpaStatut);
                 } catch (StatutForbiddenException | TypeStatutNotFoundException e) {
-                    log.warn("Erreur {} de transformation du statut {}", e.getMessage(), Objects.toString(jpaStatut));
+                    log.error("Erreur {} de transformation du statut {}", e.getMessage(), Objects.toString(jpaStatut));
                 }
             });
         if (!jpaDossier.getMessages().isEmpty())
@@ -105,7 +105,7 @@ public class JpaDossierFactory {
                 try {
                     this.ajouterMessage(dossier, jpaMessage);
                 } catch (UserParseException e) {
-                    log.debug("Erreur de parse du user {} dans le message {}", e.getMessage(),
+                    log.error("Erreur de parse du user {} dans le message {}", e.getMessage(),
                             Objects.toString(jpaMessage));
                 }
             });

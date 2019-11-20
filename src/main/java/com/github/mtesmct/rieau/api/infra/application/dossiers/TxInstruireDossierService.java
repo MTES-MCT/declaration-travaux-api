@@ -7,6 +7,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.AppInstruireDossierServ
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.application.dossiers.InstruireDossierService;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +23,9 @@ public class TxInstruireDossierService implements InstruireDossierService {
     private AppInstruireDossierService appInstruireDossierService;
 
     @Override
-    public Optional<Dossier> execute(DossierId id)
-            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
+    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, InstructeurForbiddenException,
+            AuthRequiredException, UserForbiddenException, UserInfoServiceException, TypeStatutNotFoundException,
+            StatutForbiddenException, SaveDossierException {
         return this.appInstruireDossierService.execute(id);
     }
 }

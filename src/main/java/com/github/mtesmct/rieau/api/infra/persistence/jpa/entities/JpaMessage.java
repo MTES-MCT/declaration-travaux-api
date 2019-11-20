@@ -25,7 +25,6 @@ public class JpaMessage {
     @Column(nullable = true, columnDefinition="TEXT")
     private String contenu;
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
     @JoinColumn(name = "dossier_id")
     private JpaDossier dossier;
 

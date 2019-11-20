@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,9 +60,11 @@ public class FichiersControllerIT {
 	private int serverPort;
 	private String accessToken;
 	private String mairieAccessToken;
+	private String instructeurAccessToken;
 	private String invalidToken = "invalid-token";
 
 	@BeforeEach
+	@Transactional
 	public void initData() throws Exception {
 		cerfa = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		fichier = this.fichierFactory.creer(cerfa, "application/pdf");
@@ -75,10 +78,12 @@ public class FichiersControllerIT {
 				WithDeposantBetaDetails.ID);
 		this.mairieAccessToken = this.keycloakTestsHelper.getAccessToken(WithMairieBetaDetails.ID,
 				WithMairieBetaDetails.ID);
+		this.instructeurAccessToken = this.keycloakTestsHelper.getAccessToken(WithInstructeurNonBetaDetails.ID,
+				WithInstructeurNonBetaDetails.ID);
 	}
 
 	@Test
-	public void lireTest() throws Exception {
+	public void lireDeposantTest() throws Exception {
 		InputStream inputStream = given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth()
 				.preemptive().oauth2(this.accessToken).multiPart("file", this.cerfa).expect().statusCode(200).when()
 				.get("/{id}", this.fichier.identity().toString()).asInputStream();
@@ -93,16 +98,7 @@ public class FichiersControllerIT {
 	}
 
 	@Test
-	public void lireInterditTest() throws Exception {
-		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.keycloakTestsHelper.getAccessToken(WithInstructeurNonBetaDetails.ID,
-						WithInstructeurNonBetaDetails.ID))
-				.multiPart("file", this.cerfa).expect().statusCode(403).when()
-				.get("/{id}", this.fichier.identity().toString());
-	}
-
-	@Test
-	public void lireNonProprietaireTest() throws Exception {
+	public void lireDeposantNonProprietaireTest() throws Exception {
 		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.keycloakTestsHelper.getAccessToken(WithAutreDeposantBetaDetails.ID,
 						WithAutreDeposantBetaDetails.ID))
@@ -128,8 +124,29 @@ public class FichiersControllerIT {
 		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, otherFichier.identity());
 		dossier = this.dossierRepository.save(dossier);
 		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken)
-				.multiPart("file", otherFile).expect().statusCode(403).when()
+				.oauth2(this.mairieAccessToken).multiPart("file", otherFile).expect().statusCode(403).when()
+				.get("/{id}", otherFichier.identity().toString());
+	}
+
+	@Test
+	public void lireInstructeurTest() throws Exception {
+		InputStream inputStream = given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.instructeurAccessToken).multiPart("file", this.cerfa).expect().statusCode(200)
+				.when().get("/{id}", this.fichier.identity().toString()).asInputStream();
+		assertTrue(this.keycloakTestsHelper.isEqual(new FileInputStream(this.cerfa), inputStream));
+	}
+
+	@Test
+	public void lireInstructeurNonLocaliseTest() throws Exception {
+		File otherFile = new File("src/test/fixtures/dummy.pdf");
+		Fichier otherFichier = this.fichierFactory.creer(otherFile, "application/pdf");
+		this.fichierService.save(otherFichier);
+		Projet projet = this.projetFactory.creer("2", "rue des Fleurs", "ZI", "44500", "BP 1", "Cedex 02",
+				new ParcelleCadastrale("1", "2", "3"), true, true);
+		Dossier dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet, otherFichier.identity());
+		dossier = this.dossierRepository.save(dossier);
+		given().port(this.serverPort).basePath(FichiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.instructeurAccessToken).multiPart("file", otherFile).expect().statusCode(403).when()
 				.get("/{id}", otherFichier.identity().toString());
 	}
 }

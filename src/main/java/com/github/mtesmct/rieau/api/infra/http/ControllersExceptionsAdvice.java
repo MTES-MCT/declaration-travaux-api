@@ -5,6 +5,7 @@ import com.github.mtesmct.rieau.api.application.auth.UserForbiddenException;
 import com.github.mtesmct.rieau.api.application.auth.UserInfoServiceException;
 import com.github.mtesmct.rieau.api.application.dossiers.*;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.DeposantForbiddenException;
+import com.github.mtesmct.rieau.api.domain.entities.dossiers.InstructeurForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.MairieForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
@@ -52,6 +53,14 @@ public class ControllersExceptionsAdvice {
   public MairieForbiddenException handleMairieForbiddenException(MairieForbiddenException e) {
     return e;
   }
+
+
+  @ExceptionHandler({ InstructeurForbiddenException.class })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public InstructeurForbiddenException handleInstructeurForbiddenException(InstructeurForbiddenException e) {
+    return e;
+  }
+
   @ExceptionHandler({ FichierNotFoundException.class })
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public FichierNotFoundException handleFichierNotFoundException(FichierNotFoundException e) {

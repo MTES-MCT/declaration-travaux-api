@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface DossierRepository {
     public List<Dossier> findByDeposantId(String deposantId);
     public List<Dossier> findByCommune(String commune);
-    public Dossier save(Dossier dossier);
+    public Dossier save(Dossier dossier) throws SaveDossierException;
     public Optional<Dossier> findById(String id);
     public void delete(DossierId id) throws DossierNotFoundException;
 	public Optional<Dossier> findByFichierId(String fichierId);

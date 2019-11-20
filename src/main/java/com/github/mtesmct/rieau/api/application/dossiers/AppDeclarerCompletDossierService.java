@@ -15,6 +15,7 @@ import com.github.mtesmct.rieau.api.domain.entities.dossiers.StatutForbiddenExce
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.TypeStatutNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.personnes.User;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.StatutService;
 
 @ApplicationService
@@ -43,9 +44,9 @@ public class AppDeclarerCompletDossierService implements DeclarerCompletDossierS
     }
 
     @Override
-    public Optional<Dossier> execute(DossierId id)
-            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
+    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, InstructeurForbiddenException,
+            AuthRequiredException, UserForbiddenException, UserInfoServiceException, TypeStatutNotFoundException,
+            StatutForbiddenException, SaveDossierException {
         this.authorizationService.isInstructeurAuthorized();
         Optional<Dossier> dossier = this.dossierRepository.findById(id.toString());
         if (dossier.isEmpty())

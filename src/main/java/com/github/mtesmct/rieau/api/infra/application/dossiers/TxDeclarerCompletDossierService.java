@@ -7,6 +7,8 @@ import com.github.mtesmct.rieau.api.application.dossiers.AppDeclarerCompletDossi
 import com.github.mtesmct.rieau.api.application.dossiers.DeclarerCompletDossierService;
 import com.github.mtesmct.rieau.api.application.dossiers.DossierNotFoundException;
 import com.github.mtesmct.rieau.api.domain.entities.dossiers.*;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +23,9 @@ public class TxDeclarerCompletDossierService implements DeclarerCompletDossierSe
     private AppDeclarerCompletDossierService appDeclarerCompletDossierService;
 
     @Override
-    public Optional<Dossier> execute(DossierId id)
-            throws DossierNotFoundException, InstructeurForbiddenException, AuthRequiredException, UserForbiddenException,
-            UserInfoServiceException, TypeStatutNotFoundException, StatutForbiddenException {
+    public Optional<Dossier> execute(DossierId id) throws DossierNotFoundException, InstructeurForbiddenException,
+            AuthRequiredException, UserForbiddenException, UserInfoServiceException, TypeStatutNotFoundException,
+            StatutForbiddenException, SaveDossierException {
         return this.appDeclarerCompletDossierService.execute(id);
     }
 }

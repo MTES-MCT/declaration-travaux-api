@@ -34,9 +34,8 @@ public class JpaDossier {
      * Statut minimal = DEPOSE
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dossier", orphanRemoval = true)
-    @OrderBy("dateDebut")
     @Size(min = 1)
-    private Set<JpaStatut> statuts;
+    private List<JpaStatut> statuts;
     @Embedded
     @NotNull
     @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "deposant_id")),
@@ -53,12 +52,10 @@ public class JpaDossier {
      * Piece jointe minimale = CERFA
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "id.dossier", orphanRemoval = true)
-    @OrderBy("createdOn")
     @Size(min = 1)
-    private Set<JpaPieceJointe> piecesJointes;
+    private List<JpaPieceJointe> piecesJointes;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dossier", orphanRemoval = true)
-    @OrderBy("date")
-    private Set<JpaMessage> messages;
+    private List<JpaMessage> messages;
 
     public void addPieceJointe(JpaPieceJointe pieceJointe) {
         pieceJointe.getId().setDossier(this);
@@ -137,9 +134,9 @@ public class JpaDossier {
     }
 
     public JpaDossier() {
-        this.piecesJointes = new LinkedHashSet<JpaPieceJointe>();
-        this.statuts = new LinkedHashSet<JpaStatut>();
-        this.messages = new LinkedHashSet<JpaMessage>();
+        this.piecesJointes = new ArrayList<JpaPieceJointe>();
+        this.statuts = new ArrayList<JpaStatut>();
+        this.messages = new ArrayList<JpaMessage>();
     }
 
     @Transient

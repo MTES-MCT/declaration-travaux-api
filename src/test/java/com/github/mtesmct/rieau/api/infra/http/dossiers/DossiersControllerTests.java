@@ -8,6 +8,7 @@ import com.github.mtesmct.rieau.api.domain.factories.DossierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.FichierFactory;
 import com.github.mtesmct.rieau.api.domain.factories.ProjetFactory;
 import com.github.mtesmct.rieau.api.domain.repositories.DossierRepository;
+import com.github.mtesmct.rieau.api.domain.repositories.SaveDossierException;
 import com.github.mtesmct.rieau.api.domain.services.CommuneNotFoundException;
 import com.github.mtesmct.rieau.api.domain.services.FichierService;
 import com.github.mtesmct.rieau.api.domain.services.FichierServiceException;
@@ -36,6 +37,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Slf4j
@@ -100,7 +103,7 @@ public class DossiersControllerTests {
 	@BeforeEach
 	public void setup() throws IOException, CommuneNotFoundException, StatutForbiddenException,
 			TypeStatutNotFoundException, PieceNonAJoindreException, FichierServiceException,
-			AjouterPieceJointeException, TypeDossierNotFoundException {
+			AjouterPieceJointeException, TypeDossierNotFoundException, SaveDossierException {
 		this.uri = DossiersController.ROOT_URI;
 		File file = new File("src/test/fixtures/cerfa_13703_DPMI.pdf");
 		Fichier fichier = this.fichierFactory.creer(file, "application/pdf");

@@ -25,6 +25,10 @@ public class CodePieceJointe implements ValueObject<CodePieceJointe> {
     return Objects.equals(this.numero, "0");
   }
 
+  public boolean isDecision() {
+    return Objects.equals(this.numero, "d");
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
