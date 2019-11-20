@@ -31,19 +31,4 @@ public class TypeStatutComparatorTests {
         assertTrue(this.typestatutComparator.compare(typeDepose.get(), typeQualifie.get()) < 0);
     }
 
-    @Test
-    public void compareInstructionIncomplet() {
-        Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findById(EnumStatuts.INSTRUCTION);
-        assertTrue(typeInstruction.isPresent());
-        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
-        assertTrue(typeIncomplet.isPresent());
-        assertTrue(this.typestatutComparator.compare(typeInstruction.get(), typeIncomplet.get()) > 0);
-    }
-    @Test
-    public void compareInstructionInstruction() {
-        Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findById(EnumStatuts.INSTRUCTION);
-        assertTrue(typeInstruction.isPresent());
-        assertTrue(this.typestatutComparator.compare(typeInstruction.get(), typeInstruction.get()) == 0);
-    }
-
 }

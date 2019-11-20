@@ -253,45 +253,10 @@ public class DossiersControllerIT {
 	}
 
 	@Test
-	public void instruireInstructeurTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		assertNotNull(jsonDossier);
-		assertEquals(this.jsonDossier.getId(), jsonDossier.getId());
-		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatutActuel().getId());
-		assertFalse(jsonDossier.getStatuts().isEmpty());
-		assertEquals(3, jsonDossier.getStatuts().size());
-		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
-		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
-		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(2).getId());
-	}
-
-	@Test
-	public void instruireDeposantInterditTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.deposantAccessToken).expect().statusCode(403).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId());
-	}
-
-	@Test
 	public void declarerCompletInstructeurTest() throws Exception {
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
 				.extract().jsonPath().getObject("", JsonDossier.class);
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
 				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
@@ -301,11 +266,10 @@ public class DossiersControllerIT {
 		assertEquals(this.jsonDossier.getId(), jsonDossier.getId());
 		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatutActuel().getId());
 		assertFalse(jsonDossier.getStatuts().isEmpty());
-		assertEquals(4, jsonDossier.getStatuts().size());
+		assertEquals(3, jsonDossier.getStatuts().size());
 		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
 		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
-		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(2).getId());
-		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(3).getId());
+		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
 	}
 
 	@Test
@@ -315,61 +279,8 @@ public class DossiersControllerIT {
 				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
 				.extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.deposantAccessToken).expect().statusCode(403).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId());
-	}
-
-	@Test
-	public void lancerConsultationsInstructeurTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
-				.and().extract().jsonPath().getObject("", JsonDossier.class);
-		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
-				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.LANCER_CONSULTATIONS_URI, this.jsonDossier.getId()).then()
-				.assertThat().and().extract().jsonPath().getObject("", JsonDossier.class);
-		assertNotNull(jsonDossier);
-		assertEquals(this.jsonDossier.getId(), jsonDossier.getId());
-		assertEquals(EnumStatuts.CONSULTATIONS.toString(), jsonDossier.getStatutActuel().getId());
-		assertFalse(jsonDossier.getStatuts().isEmpty());
-		assertEquals(5, jsonDossier.getStatuts().size());
-		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
-		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
-		assertEquals(EnumStatuts.INSTRUCTION.toString(), jsonDossier.getStatuts().get(2).getId());
-		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(3).getId());
-		assertEquals(EnumStatuts.CONSULTATIONS.toString(), jsonDossier.getStatuts().get(4).getId());
-	}
-
-	@Test
-	public void lancerConsultationsDeposantInterditTest() throws Exception {
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
-				.and().extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.deposantAccessToken).expect().statusCode(403).when()
-				.post("/{id}" + DossiersController.LANCER_CONSULTATIONS_URI, this.jsonDossier.getId());
 	}
 
 	@Test
@@ -380,16 +291,8 @@ public class DossiersControllerIT {
 				.extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
 				.and().extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.LANCER_CONSULTATIONS_URI, this.jsonDossier.getId()).then()
-				.assertThat().and().extract().jsonPath().getObject("", JsonDossier.class);
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.PRENDRE_DECISION_URI, this.jsonDossier.getId()).then()
@@ -406,16 +309,8 @@ public class DossiersControllerIT {
 				.extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.INSTRUIRE_URI, this.jsonDossier.getId()).then().assertThat().and()
-				.extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
 				.and().extract().jsonPath().getObject("", JsonDossier.class);
-		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.LANCER_CONSULTATIONS_URI, this.jsonDossier.getId()).then()
-				.assertThat().and().extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.deposantAccessToken).multiPart("file", this.dp1).expect().statusCode(403).when()
 				.post("/{id}" + DossiersController.PRENDRE_DECISION_URI, this.jsonDossier.getId());

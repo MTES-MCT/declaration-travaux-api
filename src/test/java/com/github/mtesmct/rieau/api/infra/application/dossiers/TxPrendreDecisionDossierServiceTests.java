@@ -89,13 +89,10 @@ public class TxPrendreDecisionDossierServiceTests {
                 this.dossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet,
                                 cerfaFichier.identity());
                 this.statutService.qualifier(this.dossier);    
-                this.statutService.instruire(this.dossier);    
-                this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");       
-                this.statutService.instruire(this.dossier);    
-                this.statutService.declarerComplet(this.dossier);     
-                this.statutService.lancerConsultations(this.dossier);             
+                this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!"); 
+                this.statutService.declarerComplet(this.dossier);               
                 this.dossier = this.dossierRepository.save(this.dossier);
-                assertEquals(this.dossier.statutActuel().get().type().identity(), EnumStatuts.CONSULTATIONS);
+                assertEquals(EnumStatuts.COMPLET, this.dossier.statutActuel().get().type().identity());
         }
 
         @Test
@@ -128,13 +125,10 @@ public class TxPrendreDecisionDossierServiceTests {
                 this.otherDossier = this.dossierFactory.creer(this.deposantBeta, EnumTypes.DPMI, projet,
                                 cerfaFichier.identity());
                 this.statutService.qualifier(this.otherDossier);    
-                this.statutService.instruire(this.otherDossier);    
-                this.statutService.declarerIncomplet(this.otherDossier, this.instructeur, "Incomplet!");       
-                this.statutService.instruire(this.otherDossier);    
-                this.statutService.declarerComplet(this.otherDossier);     
-                this.statutService.lancerConsultations(this.otherDossier);             
+                this.statutService.declarerIncomplet(this.otherDossier, this.instructeur, "Incomplet!");    
+                this.statutService.declarerComplet(this.otherDossier);            
                 this.otherDossier = this.dossierRepository.save(this.otherDossier);
-                assertEquals(EnumStatuts.CONSULTATIONS, this.otherDossier.statutActuel().get().type().identity());
+                assertEquals(EnumStatuts.COMPLET, this.otherDossier.statutActuel().get().type().identity());
                 File file = new File("src/test/fixtures/dummy.pdf");
                 assertThrows(MairieForbiddenException.class, () -> this.service.execute(this.otherDossier.identity(),
                                 new FileInputStream(file), file.getName(), "application/pdf", file.length()));

@@ -82,19 +82,8 @@ public class StatutServiceTests {
     }
 
     @Test
-    public void instruire() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.qualifier();
-        this.statutService.instruire(this.dossier);
-        assertTrue(this.dossier.statutActuel().isPresent());
-        assertEquals(EnumStatuts.INSTRUCTION, this.dossier.statutActuel().get().type().identity());
-        assertFalse(this.dossier.historiqueStatuts().isEmpty());
-        assertEquals(3, this.dossier.historiqueStatuts().size());
-    }
-
-    @Test
     public void declarerIncomplet() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.instruire();
-        User auteur = deposantBeta;
+        User auteur = this.deposantBeta;
         this.statutService.declarerIncomplet(this.dossier, auteur, "Incomplet!");
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.INCOMPLET, this.dossier.statutActuel().get().type().identity());
@@ -119,20 +108,7 @@ public class StatutServiceTests {
     }
 
     @Test
-    public void lancerConsultations() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.declarerComplet();
-        this.statutService.lancerConsultations(this.dossier);
-        assertTrue(this.dossier.statutActuel().isPresent());
-        assertEquals(EnumStatuts.CONSULTATIONS, this.dossier.statutActuel().get().type().identity());
-        assertFalse(this.dossier.historiqueStatuts().isEmpty());
-        assertEquals(6, this.dossier.historiqueStatuts().size());
-        assertFalse(this.dossier.messages().isEmpty());
-        assertEquals(1, this.dossier.messages().size());
-    }
-
-    @Test
     public void prononcerDecision() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.lancerConsultations();
         this.statutService.prononcerDecision(this.dossier);
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.DECISION, this.dossier.statutActuel().get().type().identity());
@@ -147,16 +123,13 @@ public class StatutServiceTests {
         this.declarerIncomplet();
         List<TypeStatut> types = this.statutService.statutsRestants(this.dossier);
         assertFalse(types.isEmpty());
-        assertEquals(4, types.size());
-        assertEquals(EnumStatuts.INSTRUCTION, types.get(0).identity());
-        assertEquals(EnumStatuts.COMPLET, types.get(1).identity());
-        assertEquals(EnumStatuts.CONSULTATIONS, types.get(2).identity());
-        assertEquals(EnumStatuts.DECISION, types.get(3).identity());
+        assertEquals(2, types.size());
+        assertEquals(EnumStatuts.COMPLET, types.get(0).identity());
+        assertEquals(EnumStatuts.DECISION, types.get(1).identity());
     }
 
     @Test
     public void statutsRestantsApresConsulte() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.lancerConsultations();
         List<TypeStatut> types = this.statutService.statutsRestants(this.dossier);
         assertFalse(types.isEmpty());
         assertEquals(1, types.size());

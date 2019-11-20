@@ -17,11 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import lombok.extern.slf4j.Slf4j;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Slf4j
 public class StatutComparatorTests {
     @Autowired
     private DateService dateService;
@@ -38,20 +35,6 @@ public class StatutComparatorTests {
         assertTrue(typeQualifie.isPresent());
         Statut statutQualifie = new Statut(typeQualifie.get(), this.dateService.now());
         assertTrue(statutComparator.compare(statutDepose, statutQualifie) < 0);
-    }
-
-    @Test
-    public void compareInstructionIncomplet() {
-        StatutComparator statutComparator = new StatutComparator();
-        Optional<TypeStatut> typeInstruction = this.statutDossierRepository.findById(EnumStatuts.INSTRUCTION);
-        assertTrue(typeInstruction.isPresent());
-        Statut statutInstruction = new Statut(typeInstruction.get(), this.dateService.now());
-        log.debug("dateDebut instruction={}", statutInstruction.dateDebut().getNano());
-        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
-        assertTrue(typeIncomplet.isPresent());
-        Statut statutIncomplet = new Statut(typeIncomplet.get(), this.dateService.now());
-        log.debug("dateDebut incomplet={}", statutIncomplet.dateDebut().getNano());
-        assertTrue(statutComparator.compare(statutInstruction, statutIncomplet) < 0);
     }
 
 }

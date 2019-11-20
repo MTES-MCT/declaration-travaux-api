@@ -50,16 +50,8 @@ public class StatutService {
         dossier.ajouterMessage(message);
     }
 
-    public void instruire(Dossier dossier) throws StatutForbiddenException, TypeStatutNotFoundException {
-        dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.INSTRUCTION));
-    }
-
     public void declarerComplet(Dossier dossier) throws StatutForbiddenException, TypeStatutNotFoundException {
         dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.COMPLET));
-    }
-
-    public void lancerConsultations(Dossier dossier) throws StatutForbiddenException, TypeStatutNotFoundException {
-        dossier.ajouterStatut(this.dateService.now(), type(EnumStatuts.CONSULTATIONS));
     }
 
     public void prononcerDecision(Dossier dossier) throws StatutForbiddenException, TypeStatutNotFoundException {

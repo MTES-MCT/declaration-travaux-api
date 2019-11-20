@@ -85,9 +85,7 @@ public class TxDeclarerCompletDossierServiceTests {
                                 cerfaFichier.identity());
                 Mockito.when(this.dossierRepository.save(this.dossier)).thenReturn(this.dossier);
                 this.statutService.qualifier(this.dossier);
-                this.statutService.instruire(this.dossier);
                 this.statutService.declarerIncomplet(this.dossier, this.instructeur, "Incomplet!");
-                this.statutService.instruire(this.dossier);
                 this.dossier = this.dossierRepository.save(this.dossier);
                 assertNotNull(this.dossier);
                 assertNotNull(this.dossier.identity());
@@ -99,9 +97,7 @@ public class TxDeclarerCompletDossierServiceTests {
                                 cerfaFichier.identity());
                 Mockito.when(this.dossierRepository.save(this.otherDossier)).thenReturn(this.otherDossier);
                 this.statutService.qualifier(this.otherDossier);
-                this.statutService.instruire(this.otherDossier);
                 this.statutService.declarerIncomplet(this.otherDossier, this.instructeur, "Incomplet!");
-                this.statutService.instruire(this.otherDossier);
                 this.otherDossier = this.dossierRepository.save(this.otherDossier);
                 assertNotNull(this.otherDossier);
                 assertNotNull(this.otherDossier.identity());

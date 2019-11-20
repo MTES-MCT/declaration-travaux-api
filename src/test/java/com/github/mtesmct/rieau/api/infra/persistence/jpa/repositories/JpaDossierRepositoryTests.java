@@ -126,7 +126,6 @@ public class JpaDossierRepositoryTests {
 	@Test
 	public void saveTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.statutService.declarerIncomplet(this.dossier, this.instructeurNonBeta, "Incomplet!");
 		this.repository.save(this.dossier); //create
 		Optional<JpaDossier> optionalJpaDossier = this.jpaSpringDossierRepository.findOneByDossierIdWithPiecesJointes(this.dossier.identity().toString());
@@ -136,7 +135,7 @@ public class JpaDossierRepositoryTests {
 		JpaDossier jpaDossier = optionalJpaDossier.get();
 		assertEquals(this.dossier.identity().toString(), jpaDossier.getDossierId());
 		assertFalse(jpaDossier.getStatuts().isEmpty());
-		assertEquals(4, jpaDossier.getStatuts().size());
+		assertEquals(3, jpaDossier.getStatuts().size());
 		JpaStatut jpaStatut = jpaDossier.getStatuts().stream().reduce((first, second) -> second).orElse(null);
 		assertEquals(this.dossier.statutActuel().get().type().identity(), jpaStatut.getStatut());
 		assertEquals(this.dossier.type().type(), jpaDossier.getType());
@@ -198,7 +197,6 @@ public class JpaDossierRepositoryTests {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.QUALIFIE, this.dateService.now()));
-		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.INSTRUCTION, this.dateService.now()));
 		JpaStatut jpaStatutActuel = new JpaStatut(jpaDossier, EnumStatuts.INCOMPLET, this.dateService.now());
 		jpaDossier.addStatut(jpaStatutActuel);
 		String contenu = "Incomplet!";
@@ -214,7 +212,7 @@ public class JpaDossierRepositoryTests {
 		assertTrue(dossier.isPresent());
 		assertEquals(dossier.get().identity().toString(), jpaDossier.getDossierId());
 		assertFalse(jpaDossier.getStatuts().isEmpty());
-		assertEquals(4, jpaDossier.getStatuts().size());
+		assertEquals(3, jpaDossier.getStatuts().size());
 		assertEquals(jpaStatutActuel.getStatut(), dossier.get().statutActuel().get().type().identity());
 		assertEquals(jpaStatutActuel.getDateDebut(), dossier.get().statutActuel().get().dateDebut());
 		assertEquals(jpaDossier.getType(), dossier.get().type().type());
@@ -315,7 +313,6 @@ public class JpaDossierRepositoryTests {
 		JpaDossier jpaDossier = new JpaDossier(this.dossier.identity().toString(), this.jpaUser, EnumTypes.DPMI);
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.DEPOSE, this.dateService.now()));
 		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.QUALIFIE, this.dateService.now()));
-		jpaDossier.addStatut(new JpaStatut(jpaDossier, EnumStatuts.INSTRUCTION, this.dateService.now()));
 		JpaStatut jpaStatutActuel = new JpaStatut(jpaDossier, EnumStatuts.INCOMPLET, this.dateService.now());
 		jpaDossier.addStatut(jpaStatutActuel);
 		String contenu = "Incomplet!";

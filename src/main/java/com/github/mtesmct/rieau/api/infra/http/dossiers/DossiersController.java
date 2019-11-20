@@ -30,8 +30,6 @@ public class DossiersController {
 	public static final String QUALIFIER_URI = "/qualifier";
 	public static final String DECLARER_INCOMPLET_URI = "/declarer-incomplet";
 	public static final String DECLARER_COMPLET_URI = "/declarer-complet";
-	public static final String INSTRUIRE_URI = "/instruire";
-	public static final String LANCER_CONSULTATIONS_URI = "/lancer-consultations";
 	public static final String PRENDRE_DECISION_URI = "/prendre-decision";
 	public static final String MESSAGES_URI = "/messages";
 
@@ -47,10 +45,6 @@ public class DossiersController {
 	private TxQualifierDossierService qualifierDossierService;
 	@Autowired
 	private TxPrendreDecisionDossierService prendreDecisionDossierService;
-	@Autowired
-	private TxInstruireDossierService instruireDossierService;
-	@Autowired
-	private TxLancerConsultationsDossierService lancerConsultationsDossierService;
 	@Autowired
 	private TxDeclarerIncompletDossierService declarerIncompletDossierService;
 	@Autowired
@@ -116,17 +110,6 @@ public class DossiersController {
 		return jsonDossier;
 	}
 
-	@PostMapping("/{id}" + INSTRUIRE_URI)
-	public Optional<JsonDossier> instruire(@PathVariable String id)
-			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, DossierNotFoundException,
-			TypeStatutNotFoundException, StatutForbiddenException, InstructeurForbiddenException, SaveDossierException {
-		Optional<Dossier> dossier = this.instruireDossierService.execute(new DossierId(id));
-		Optional<JsonDossier> jsonDossier = Optional.empty();
-		if (dossier.isPresent())
-			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
-		return jsonDossier;
-	}
-
 	@PostMapping("/{id}" + DECLARER_INCOMPLET_URI)
 	public Optional<JsonDossier> declarerIncomplet(@PathVariable String id, @RequestBody String message)
 			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException,
@@ -144,17 +127,6 @@ public class DossiersController {
 			UserForbiddenException, UserInfoServiceException, InstructeurForbiddenException, DossierNotFoundException,
 			TypeStatutNotFoundException, StatutForbiddenException, SaveDossierException {
 		Optional<Dossier> dossier = this.declarerCompletDossierService.execute(new DossierId(id));
-		Optional<JsonDossier> jsonDossier = Optional.empty();
-		if (dossier.isPresent())
-			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));
-		return jsonDossier;
-	}
-
-	@PostMapping("/{id}" + LANCER_CONSULTATIONS_URI)
-	public Optional<JsonDossier> lancerSupprimerations(@PathVariable String id)
-			throws AuthRequiredException, UserForbiddenException, UserInfoServiceException, DossierNotFoundException,
-			TypeStatutNotFoundException, StatutForbiddenException, InstructeurForbiddenException, SaveDossierException {
-		Optional<Dossier> dossier = this.lancerConsultationsDossierService.execute(new DossierId(id));
 		Optional<JsonDossier> jsonDossier = Optional.empty();
 		if (dossier.isPresent())
 			jsonDossier = Optional.ofNullable(this.jsonDossierFactory.toJson(dossier.get()));

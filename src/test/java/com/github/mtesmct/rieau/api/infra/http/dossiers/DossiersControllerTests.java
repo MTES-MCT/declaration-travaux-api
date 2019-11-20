@@ -228,7 +228,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statuts[0].dateDebut").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statutsRestants", hasSize(6)))
+				.andExpect(jsonPath("$.statutsRestants", hasSize(4)))
 				.andExpect(jsonPath("$.piecesAJoindre").isArray()).andExpect(jsonPath("$.piecesAJoindre").isNotEmpty())
 				.andExpect(jsonPath("$.piecesAJoindre", hasSize(2)))
 				.andExpect(jsonPath("$.piecesAJoindre", equalTo(this.dossier.piecesAJoindre())))
@@ -351,7 +351,6 @@ public class DossiersControllerTests {
 	@WithInstructeurNonBetaDetails
 	public void declarerIncompletInstructeurTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
@@ -367,7 +366,7 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(4)))
+				.andExpect(jsonPath("$.statuts", hasSize(3)))
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants", hasSize(4)))
@@ -386,7 +385,6 @@ public class DossiersControllerTests {
 	@WithMairieBetaDetails
 	public void declarerIncompletMairieInterditTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
@@ -394,50 +392,7 @@ public class DossiersControllerTests {
 						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	@WithInstructeurNonBetaDetails
-	public void instruireInstructeurTest() throws Exception {
-		this.statutService.qualifier(this.dossier);
-		String message = "Incomplet!";
-		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.dossier = this.dossierRepository.save(this.dossier);
-		this.mvc.perform(
-				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.INSTRUIRE_URI)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$").isNotEmpty())
-				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
-				.andExpect(jsonPath("$.type.id", equalTo(this.dossier.type().type().toString())))
-				.andExpect(jsonPath("$.type.libelle", equalTo(this.dossier.type().type().libelle())))
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INSTRUCTION.toString())))
-				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statuts").isArray()).andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(4))).andExpect(jsonPath("$.messages").isArray())
-				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
-				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
-				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
-				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
-				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
-				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
-				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
-	}
-
-	@Test
-	@WithDeposantBetaDetails
-	public void instruireDeposantInterditTest() throws Exception {
-		this.statutService.qualifier(this.dossier);
-		String message = "Incomplet!";
-		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.dossier = this.dossierRepository.save(this.dossier);
-		this.mvc.perform(
-				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.INSTRUIRE_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-						.content(message))
-				.andExpect(status().isForbidden());
-	}
+	}	
 
 	@Test
 	@WithInstructeurNonBetaDetails
@@ -445,7 +400,6 @@ public class DossiersControllerTests {
 		this.statutService.qualifier(this.dossier);
 		String message = "Incomplet!";
 		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_COMPLET_URI)
@@ -459,10 +413,10 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(5)))
+				.andExpect(jsonPath("$.statuts", hasSize(4)))
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statutsRestants", hasSize(2)))
+				.andExpect(jsonPath("$.statutsRestants", hasSize(1)))
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
@@ -480,62 +434,9 @@ public class DossiersControllerTests {
 		this.statutService.qualifier(this.dossier);
 		String message = "Incomplet!";
 		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		this.mvc.perform(
 				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.DECLARER_COMPLET_URI)
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-						.content(message))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	@WithInstructeurNonBetaDetails
-	public void lancerConsultationsInstructeurTest() throws Exception {
-		this.statutService.qualifier(this.dossier);
-		String message = "Incomplet!";
-		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.statutService.instruire(this.dossier);
-		this.statutService.declarerComplet(this.dossier);
-		this.dossier = this.dossierRepository.save(this.dossier);
-		this.mvc.perform(
-				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.LANCER_CONSULTATIONS_URI)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$").isNotEmpty())
-				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
-				.andExpect(jsonPath("$.type.id", equalTo(this.dossier.type().type().toString())))
-				.andExpect(jsonPath("$.type.libelle", equalTo(this.dossier.type().type().libelle())))
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.CONSULTATIONS.toString())))
-				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statuts").isArray())
-				.andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(6)))
-				.andExpect(jsonPath("$.statutsRestants").isArray())
-				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statutsRestants", hasSize(1)))
-				.andExpect(jsonPath("$.messages").isArray())
-				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
-				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
-				.andExpect(jsonPath("$.messages[0].auteur.nom", equalTo(this.instructeur.identite().nom())))
-				.andExpect(jsonPath("$.messages[0].auteur.prenom", equalTo(this.instructeur.identite().prenom())))
-				.andExpect(jsonPath("$.messages[0].auteur.profils").isArray())
-				.andExpect(jsonPath("$.messages[0].auteur.profils", hasSize(1)))
-				.andExpect(jsonPath("$.messages[0].auteur.profils[0]", equalTo(this.instructeur.profils()[0])))
-				.andExpect(jsonPath("$.messages[0].contenu", equalTo(message)));
-	}
-
-	@Test
-	@WithDeposantBetaDetails
-	public void lancerConsultationsDeposantInterditTest() throws Exception {
-		this.statutService.qualifier(this.dossier);
-		String message = "Incomplet!";
-		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.statutService.instruire(this.dossier);
-		this.statutService.declarerComplet(this.dossier);
-		this.dossier = this.dossierRepository.save(this.dossier);
-		this.mvc.perform(
-				post(this.uri + "/" + this.dossier.identity().toString() + DossiersController.LANCER_CONSULTATIONS_URI)
 						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 						.content(message))
 				.andExpect(status().isForbidden());
@@ -549,9 +450,7 @@ public class DossiersControllerTests {
 		this.statutService.qualifier(this.dossier);
 		String message = "Incomplet!";
 		this.statutService.declarerIncomplet(this.dossier, this.instructeur, message);
-		this.statutService.instruire(this.dossier);
 		this.statutService.declarerComplet(this.dossier);
-		this.statutService.lancerConsultations(this.dossier);
 		this.statutService.prononcerDecision(this.dossier);
 		this.dossier.ajouterDecision(new FichierId("d0"));
 		Mockito.when(this.mockPrendreDecisionService.execute(any(), any(), anyString(), anyString(),
@@ -589,7 +488,6 @@ public class DossiersControllerTests {
 	@WithDeposantBetaDetails
 	public void ajouterMessageDeposantTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Quel échelle pour le plan de masse?";
 		this.mvc.perform(
@@ -601,11 +499,11 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type.id", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.type.libelle", equalTo(this.dossier.type().type().libelle())))
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INSTRUCTION.toString())))
+				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.QUALIFIE.toString())))
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(3)))
+				.andExpect(jsonPath("$.statuts", hasSize(2)))
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statutsRestants", hasSize(4)))
@@ -624,7 +522,6 @@ public class DossiersControllerTests {
 	@WithInstructeurNonBetaDetails
 	public void ajouterMessageInstructeurTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Echelle 1/10000 ème";
 		this.mvc.perform(
@@ -636,14 +533,14 @@ public class DossiersControllerTests {
 				.andExpect(jsonPath("$.id", equalTo(this.dossier.identity().toString())))
 				.andExpect(jsonPath("$.type.id", equalTo(this.dossier.type().type().toString())))
 				.andExpect(jsonPath("$.type.libelle", equalTo(this.dossier.type().type().libelle())))
-				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.INSTRUCTION.toString())))
+				.andExpect(jsonPath("$.statutActuel.id", equalTo(EnumStatuts.QUALIFIE.toString())))
 				.andExpect(jsonPath("$.statutActuel.joursRestants").isNotEmpty())
 				.andExpect(jsonPath("$.statuts").isArray())
 				.andExpect(jsonPath("$.statuts").isNotEmpty())
-				.andExpect(jsonPath("$.statuts", hasSize(3)))
+				.andExpect(jsonPath("$.statuts", hasSize(2)))
 				.andExpect(jsonPath("$.statutsRestants").isArray())
 				.andExpect(jsonPath("$.statutsRestants").isNotEmpty())
-				.andExpect(jsonPath("$.statutsRestants", hasSize(4)))
+				.andExpect(jsonPath("$.statutsRestants", hasSize(3)))
 				.andExpect(jsonPath("$.messages").isArray())
 				.andExpect(jsonPath("$.messages").isNotEmpty()).andExpect(jsonPath("$.messages", hasSize(1)))
 				.andExpect(jsonPath("$.messages[0].auteur.id", equalTo(this.instructeur.identity().toString())))
@@ -659,7 +556,6 @@ public class DossiersControllerTests {
 	@WithMairieBetaDetails
 	public void ajouterMessageMairieInterditTest() throws Exception {
 		this.statutService.qualifier(this.dossier);
-		this.statutService.instruire(this.dossier);
 		this.dossier = this.dossierRepository.save(this.dossier);
 		String message = "Le dossier est incomplet car le plan de masse est illisible";
 		this.mvc.perform(
