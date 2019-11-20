@@ -258,6 +258,12 @@ public class DossiersControllerIT {
 				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
 				.extract().jsonPath().getObject("", JsonDossier.class);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(message).expect()
+				.statusCode(200).when()
+				.post("/{id}" + DossiersController.DECLARER_INCOMPLET_URI, this.jsonDossier.getId()).then().assertThat()
+				.and().extract().jsonPath().getObject("", JsonDossier.class);
 		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
 				.preemptive().oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
@@ -266,10 +272,11 @@ public class DossiersControllerIT {
 		assertEquals(this.jsonDossier.getId(), jsonDossier.getId());
 		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatutActuel().getId());
 		assertFalse(jsonDossier.getStatuts().isEmpty());
-		assertEquals(3, jsonDossier.getStatuts().size());
+		assertEquals(4, jsonDossier.getStatuts().size());
 		assertEquals(EnumStatuts.DEPOSE.toString(), jsonDossier.getStatuts().get(0).getId());
 		assertEquals(EnumStatuts.QUALIFIE.toString(), jsonDossier.getStatuts().get(1).getId());
-		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertEquals(EnumStatuts.INCOMPLET.toString(), jsonDossier.getStatuts().get(2).getId());
+		assertEquals(EnumStatuts.COMPLET.toString(), jsonDossier.getStatuts().get(3).getId());
 	}
 
 	@Test
@@ -289,14 +296,20 @@ public class DossiersControllerIT {
 				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
 				.extract().jsonPath().getObject("", JsonDossier.class);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(message).expect()
+				.statusCode(200).when()
+				.post("/{id}" + DossiersController.DECLARER_INCOMPLET_URI, this.jsonDossier.getId()).then().assertThat()
+				.and().extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()
 				.and().extract().jsonPath().getObject("", JsonDossier.class);
-		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
-				.oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
-				.post("/{id}" + DossiersController.PRENDRE_DECISION_URI, this.jsonDossier.getId()).then()
-				.assertThat().and().extract().jsonPath().getObject("", JsonDossier.class);
+		JsonDossier jsonDossier = given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth()
+				.preemptive().oauth2(this.mairieAccessToken).multiPart("file", this.dp1).expect().statusCode(200).when()
+				.post("/{id}" + DossiersController.PRENDRE_DECISION_URI, this.jsonDossier.getId()).then().assertThat()
+				.and().extract().jsonPath().getObject("", JsonDossier.class);
 		assertEquals(EnumStatuts.DECISION.toString(), jsonDossier.getStatutActuel().getId());
 		assertNotNull(jsonDossier.getDecision());
 	}
@@ -307,6 +320,12 @@ public class DossiersControllerIT {
 				.oauth2(this.mairieAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.QUALIFIER_URI, this.jsonDossier.getId()).then().assertThat().and()
 				.extract().jsonPath().getObject("", JsonDossier.class);
+		String message = "Le dossier est incomplet car le plan de masse est illisible";
+		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
+				.oauth2(this.instructeurAccessToken).contentType(ContentType.JSON).body(message).expect()
+				.statusCode(200).when()
+				.post("/{id}" + DossiersController.DECLARER_INCOMPLET_URI, this.jsonDossier.getId()).then().assertThat()
+				.and().extract().jsonPath().getObject("", JsonDossier.class);
 		given().port(this.serverPort).basePath(DossiersController.ROOT_URI).auth().preemptive()
 				.oauth2(this.instructeurAccessToken).expect().statusCode(200).when()
 				.post("/{id}" + DossiersController.DECLARER_COMPLET_URI, this.jsonDossier.getId()).then().assertThat()

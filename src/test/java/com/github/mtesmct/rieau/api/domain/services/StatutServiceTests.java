@@ -83,12 +83,13 @@ public class StatutServiceTests {
 
     @Test
     public void declarerIncomplet() throws StatutForbiddenException, TypeStatutNotFoundException {
+        this.qualifier();
         User auteur = this.deposantBeta;
         this.statutService.declarerIncomplet(this.dossier, auteur, "Incomplet!");
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.INCOMPLET, this.dossier.statutActuel().get().type().identity());
         assertFalse(this.dossier.historiqueStatuts().isEmpty());
-        assertEquals(4, this.dossier.historiqueStatuts().size());
+        assertEquals(3, this.dossier.historiqueStatuts().size());
         assertFalse(this.dossier.messages().isEmpty());
         assertEquals(1, this.dossier.messages().size());
         assertEquals(auteur, this.dossier.messages().get(0).auteur());
@@ -102,18 +103,19 @@ public class StatutServiceTests {
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.COMPLET, this.dossier.statutActuel().get().type().identity());
         assertFalse(this.dossier.historiqueStatuts().isEmpty());
-        assertEquals(5, this.dossier.historiqueStatuts().size());
+        assertEquals(4, this.dossier.historiqueStatuts().size());
         assertFalse(this.dossier.messages().isEmpty());
         assertEquals(1, this.dossier.messages().size());
     }
 
     @Test
     public void prononcerDecision() throws StatutForbiddenException, TypeStatutNotFoundException {
+        this.declarerComplet();
         this.statutService.prononcerDecision(this.dossier);
         assertTrue(this.dossier.statutActuel().isPresent());
         assertEquals(EnumStatuts.DECISION, this.dossier.statutActuel().get().type().identity());
         assertFalse(this.dossier.historiqueStatuts().isEmpty());
-        assertEquals(7, this.dossier.historiqueStatuts().size());
+        assertEquals(5, this.dossier.historiqueStatuts().size());
         assertFalse(this.dossier.messages().isEmpty());
         assertEquals(1, this.dossier.messages().size());
     }
@@ -126,14 +128,6 @@ public class StatutServiceTests {
         assertEquals(2, types.size());
         assertEquals(EnumStatuts.COMPLET, types.get(0).identity());
         assertEquals(EnumStatuts.DECISION, types.get(1).identity());
-    }
-
-    @Test
-    public void statutsRestantsApresConsulte() throws StatutForbiddenException, TypeStatutNotFoundException {
-        List<TypeStatut> types = this.statutService.statutsRestants(this.dossier);
-        assertFalse(types.isEmpty());
-        assertEquals(1, types.size());
-        assertEquals(EnumStatuts.DECISION, types.get(0).identity());
     }
 
     @Test
