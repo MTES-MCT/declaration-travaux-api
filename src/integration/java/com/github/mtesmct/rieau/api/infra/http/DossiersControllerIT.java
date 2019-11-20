@@ -312,6 +312,8 @@ public class DossiersControllerIT {
 				.and().extract().jsonPath().getObject("", JsonDossier.class);
 		assertEquals(EnumStatuts.DECISION.toString(), jsonDossier.getStatutActuel().getId());
 		assertNotNull(jsonDossier.getDecision());
+		assertEquals("d", jsonDossier.getDecision().getNumero());
+		assertEquals(EnumTypes.PCMI.toString(), jsonDossier.getDecision().getType());
 	}
 
 	@Test

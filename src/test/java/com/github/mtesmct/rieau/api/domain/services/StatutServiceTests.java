@@ -76,9 +76,9 @@ public class StatutServiceTests {
 
     @Test
     public void declarerCompletInterdit() throws StatutForbiddenException, TypeStatutNotFoundException {
-        this.qualifier();
+        this.deposer();
         StatutForbiddenException exception = assertThrows(StatutForbiddenException.class, () -> this.statutService.declarerComplet(this.dossier));
-        assertEquals(StatutForbiddenException.messageNonConsecutif(EnumStatuts.COMPLET, EnumStatuts.QUALIFIE), exception.getMessage());
+        assertEquals(StatutForbiddenException.messageNonConsecutif(EnumStatuts.COMPLET, EnumStatuts.DEPOSE), exception.getMessage());
     }
 
     @Test

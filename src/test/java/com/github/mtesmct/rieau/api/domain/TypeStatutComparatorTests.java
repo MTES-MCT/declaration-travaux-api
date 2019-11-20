@@ -30,5 +30,13 @@ public class TypeStatutComparatorTests {
         assertTrue(typeQualifie.isPresent());
         assertTrue(this.typestatutComparator.compare(typeDepose.get(), typeQualifie.get()) < 0);
     }
+    @Test
+    public void compareQualifieIncomplet() {
+        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
+        assertTrue(typeIncomplet.isPresent());
+        Optional<TypeStatut> typeQualifie = this.statutDossierRepository.findById(EnumStatuts.QUALIFIE);
+        assertTrue(typeQualifie.isPresent());
+        assertTrue(this.typestatutComparator.compare(typeIncomplet.get(), typeQualifie.get()) > 0);
+    }
 
 }

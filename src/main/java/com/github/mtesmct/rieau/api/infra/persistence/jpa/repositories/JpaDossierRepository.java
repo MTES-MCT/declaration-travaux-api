@@ -137,7 +137,7 @@ public class JpaDossierRepository implements DossierRepository {
                 }
                 for (JpaPieceJointe newJpaPieceJointe : newJpaDossier.getPiecesJointes()) {
                     PieceJointe newPieceJointe = this.jpaPieceJointeFactory.fromJpa(oldDossier, newJpaPieceJointe);
-                    if (!newPieceJointe.isCerfa() && !newPieceJointe.isDecision() && !oldDossier.pieceJointes().contains(newPieceJointe))
+                    if (!newPieceJointe.isCerfa() && !oldDossier.pieceJointes().contains(newPieceJointe))
                         oldJpaDossier.get().addPieceJointe(newJpaPieceJointe);
                 }
             } catch (PatternSyntaxException | CommuneNotFoundException | PersonneParseException

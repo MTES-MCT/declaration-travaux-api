@@ -37,4 +37,16 @@ public class StatutComparatorTests {
         assertTrue(statutComparator.compare(statutDepose, statutQualifie) < 0);
     }
 
+    @Test
+    public void compareQualifieIncomplet() {
+        StatutComparator statutComparator = new StatutComparator();
+        Optional<TypeStatut> typeIncomplet = this.statutDossierRepository.findById(EnumStatuts.INCOMPLET);
+        assertTrue(typeIncomplet.isPresent());
+        Statut statutIncomplet = new Statut(typeIncomplet.get(), this.dateService.now());
+        Optional<TypeStatut> typeQualifie = this.statutDossierRepository.findById(EnumStatuts.QUALIFIE);
+        assertTrue(typeQualifie.isPresent());
+        Statut statutQualifie = new Statut(typeQualifie.get(), this.dateService.now());
+        assertTrue(statutComparator.compare(statutIncomplet, statutQualifie) > 0);
+    }
+
 }

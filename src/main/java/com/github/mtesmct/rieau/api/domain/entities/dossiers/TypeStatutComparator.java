@@ -9,7 +9,7 @@ public class TypeStatutComparator implements Comparator<TypeStatut> {
         int compared = 0;
         compared = type1.ordre() - type2.ordre();
         if (compared == 0)
-            compared = type1.identity().equals(type2.identity()) ? 0 : 1;
+            compared = type1.identity().equals(type2.identity()) ? 0 : type1.unique() ? -1 : 1;
         return compared;
     }
 
