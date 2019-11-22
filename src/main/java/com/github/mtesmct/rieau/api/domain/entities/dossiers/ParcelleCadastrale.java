@@ -69,15 +69,15 @@ public class ParcelleCadastrale implements ValueObject<ParcelleCadastrale> {
     }
 
     public ParcelleCadastrale(String prefixe, String section, String numero) {
-        if (Objects.isNull(prefixe))
+        if (Objects.isNull(prefixe) || prefixe.isBlank())
             throw new NullPointerException(
                     "Le préfixe de la référence cadastrale de la parcelle ne peut pas être nulle");
         this.prefixe = prefixe;
-        if (Objects.isNull(section))
+        if (Objects.isNull(section) || section.isBlank())
             throw new NullPointerException(
                     "La section de la référence cadastrale de la parcelle ne peut pas être nulle");
         this.section = section;
-        if (Objects.isNull(numero))
+        if (Objects.isNull(numero) || numero.isBlank())
             throw new NullPointerException(
                     "Le numéro de la référence cadastrale de la parcelle ne peut pas être nulle");
         this.numero = numero;
