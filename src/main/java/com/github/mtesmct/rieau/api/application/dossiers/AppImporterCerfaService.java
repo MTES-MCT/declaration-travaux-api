@@ -119,12 +119,6 @@ public class AppImporterCerfaService implements ImporterCerfaService {
             fichierLu.get().fermer();
         } catch (FichierServiceException | CerfaImportException | IOException | NullPointerException e) {
             throw new DossierImportException(e);
-        } finally {
-            try {
-                fichierLu.get().fermer();
-            } catch (IOException e) {
-                throw new DossierImportException(e);
-            }
         }
         return Optional.ofNullable(dossier);
     }
