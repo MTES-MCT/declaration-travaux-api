@@ -81,11 +81,12 @@ public class AppImporterCerfaService implements ImporterCerfaService {
             StatutForbiddenException, TypeStatutNotFoundException, PieceNonAJoindreException,
             TypeDossierNotFoundException, SaveDossierException {
         Dossier dossier;
+        Optional<Fichier> fichierLu = Optional.empty();
         try {
             this.authorizationService.isDeposantAndBetaAuthorized();
             Fichier fichier = this.fichierFactory.creer(is, nom, mimeType, taille);
             this.fichierService.save(fichier);
-            Optional<Fichier> fichierLu = this.fichierService.findById(fichier.identity());
+            fichierLu = this.fichierService.findById(fichier.identity());
             if (fichierLu.isEmpty())
                 throw new DossierImportException(new FichierNotFoundException(fichier.identity().toString()));
             Map<String, String> valeurs = this.cerfaImportService.lire(fichierLu.get());
@@ -118,6 +119,12 @@ public class AppImporterCerfaService implements ImporterCerfaService {
             fichierLu.get().fermer();
         } catch (FichierServiceException | CerfaImportException | IOException | NullPointerException e) {
             throw new DossierImportException(e);
+        } finally {
+            try {
+                fichierLu.get().fermer();
+            } catch (IOException e) {
+                throw new DossierImportException(e);
+            }
         }
         return Optional.ofNullable(dossier);
     }
